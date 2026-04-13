@@ -1,0 +1,31 @@
+<!-- ===== SIDEBAR (composant réutilisable) ===== -->
+<!-- Inclure via un script JS ou template engine -->
+<aside class="sidebar" id="sidebar">
+
+    <div class="sidebar__logo">
+        ⚡ <span>Artisans</span>Pro
+    </div>
+
+    <nav class="sidebar__nav">
+        <a href="/dashboard" data-page="dashboard">
+            <span class="sidebar__icon">📊</span> Tableau de bord
+        </a>
+        <a href="/clients" data-page="clients">
+            <span class="sidebar__icon">👤</span> Clients
+        </a>
+        <a href="/leads" data-page="leads">
+            <span class="sidebar__icon">🎯</span> Prospects
+        </a>
+        <a href="/quotes" data-page="quotes">
+            <span class="sidebar__icon">📄</span> Devis
+        </a>
+        <a href="/invoices" data-page="invoices">
+            <span class="sidebar__icon">💰</span> Factures
+        </a>
+    </nav>
+
+    <div class="sidebar__footer">
+        <span id="sidebar-user-email"></span>
+    </div>
+
+</aside>

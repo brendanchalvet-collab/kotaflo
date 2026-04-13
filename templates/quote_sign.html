@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature de devis — Kotaflo</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f1f5f9;
+            color: #1f2937;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem 3rem;
+        }
+
+        /* ===== LOGO ===== */
+        .page-logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #6366f1;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ===== BARRE DE PROGRESSION ===== */
+        .progress {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 1.75rem;
+            width: 100%;
+            max-width: 520px;
+        }
+        .progress__step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+        .progress__dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            color: #9ca3af;
+            font-size: .75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            transition: background .3s, color .3s;
+        }
+        .progress__dot.active  { background: #6366f1; color: #fff; }
+        .progress__dot.done    { background: #22c55e; color: #fff; }
+        .progress__label {
+            font-size: .67rem;
+            color: #9ca3af;
+            margin-top: .3rem;
+            text-align: center;
+            font-weight: 500;
+            transition: color .3s;
+        }
+        .progress__dot.active ~ .progress__label,
+        .progress__label.active { color: #6366f1; }
+        .progress__line {
+            flex: 1;
+            height: 2px;
+            background: #e2e8f0;
+            margin-top: -14px; /* align with dot center */
+            transition: background .3s;
+        }
+        .progress__line.done { background: #22c55e; }
+
+        /* ===== CARTE ===== */
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 24px rgba(0,0,0,.08);
+            padding: 1.75rem 2rem;
+            width: 100%;
+            max-width: 520px;
+        }
+        @media (max-width: 480px) { .card { padding: 1.25rem 1.1rem; } }
+
+        .card__title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: .3rem;
+        }
+        .card__sub {
+            font-size: .875rem;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+            line-height: 1.55;
+        }
+
+        /* ===== INFOBOX DEVIS ===== */
+        .quote-info {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #6366f1;
+            border-radius: 8px;
+            padding: .8rem 1rem;
+            margin-bottom: 1.5rem;
+            font-size: .875rem;
+        }
+        .quote-info__ref    { color: #6366f1; font-weight: 600; font-size: .78rem; margin-bottom: .1rem; }
+        .quote-info__title  { font-weight: 700; font-size: .95rem; margin-bottom: .15rem; }
+        .quote-info__meta   { color: #6b7280; font-size: .82rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+
+        /* ===== ÉTAPES ===== */
+        .step { display: none; }
+        .step.active { display: block; animation: fadeIn .2s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+        /* ===== OTP BOXES ===== */
+        .otp-row {
+            display: flex;
+            gap: .5rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        .otp-box {
+            width: 52px;
+            height: 60px;
+            border: 2px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            text-align: center;
+            outline: none;
+            color: #1f2937;
+            caret-color: #6366f1;
+            transition: border-color .15s, box-shadow .15s;
+            -moz-appearance: textfield;
+        }
+        .otp-box::-webkit-outer-spin-button,
+        .otp-box::-webkit-inner-spin-button { display: none; }
+        .otp-box:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.15); }
+        .otp-box.filled { border-color: #6366f1; background: #f5f3ff; }
+        .otp-box.error  { border-color: #ef4444; animation: shake .35s; }
+
+        @keyframes shake {
+            0%,100% { transform: translateX(0); }
+            20%,60%  { transform: translateX(-4px); }
+            40%,80%  { transform: translateX(4px); }
+        }
+
+        /* ===== BOUTONS ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .45rem;
+            padding: .7rem 1.25rem;
+            border-radius: 8px;
+            font-size: .9rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            margin-top: .75rem;
+            transition: background .15s, opacity .15s;
+        }
+        .btn:disabled { opacity: .55; cursor: not-allowed; }
+
+        .btn--primary { background: #6366f1; color: #fff; }
+        .btn--primary:hover:not(:disabled) { background: #4f46e5; }
+
+        .btn--success { background: #22c55e; color: #fff; }
+        .btn--success:hover:not(:disabled) { background: #16a34a; }
+
+        .btn--outline {
+            background: transparent;
+            color: #6366f1;
+            border: 1.5px solid #6366f1;
+            margin-top: .5rem;
+        }
+        .btn--outline:hover:not(:disabled) { background: #f5f3ff; }
+
+        /* Spinner */
+        .spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+            display: none;
+        }
+        .btn.loading .spinner { display: block; }
+        .btn.loading .btn-text { display: none; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== PDF ===== */
+        .pdf-wrap { position: relative; margin-bottom: 1rem; }
+        .pdf-frame {
+            width: 100%;
+            height: 480px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            display: block;
+        }
+        .pdf-mobile-note {
+            display: none;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1.25rem;
+            text-align: center;
+            font-size: .875rem;
+            color: #6b7280;
+        }
+        @media (max-width: 600px) {
+            .pdf-frame     { display: none; }
+            .pdf-mobile-note { display: block; }
+        }
+
+        /* ===== MESSAGES ===== */
+        .msg-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            color: #dc2626;
+            padding: .6rem .9rem;
+            font-size: .84rem;
+            margin-top: .75rem;
+            display: none;
+            line-height: 1.4;
+        }
+
+        /* Code dev (fallback SMTP) */
+        .dev-banner {
+            background: #fefce8;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: .6rem .9rem;
+            font-size: .84rem;
+            color: #92400e;
+            margin-top: .75rem;
+            display: none;
+        }
+        .dev-banner strong { font-size: 1.1rem; letter-spacing: .15em; }
+
+        /* ===== RÉSUMÉ SIGNATURE ===== */
+        .sign-summary {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: .8rem 1rem;
+            font-size: .875rem;
+            color: #166534;
+            margin-bottom: 1.25rem;
+            line-height: 1.5;
+        }
+
+        /* ===== SUCCÈS ===== */
+        .success-box {
+            text-align: center;
+            padding: 1.5rem 0 .5rem;
+        }
+        .success-box .icon { font-size: 3.5rem; margin-bottom: .75rem; }
+        .success-box h2    { font-size: 1.2rem; font-weight: 700; margin-bottom: .5rem; }
+        .success-box p     { font-size: .875rem; color: #6b7280; line-height: 1.6; }
+
+        /* ===== RENVOI ===== */
+        .resend-row {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: .82rem;
+            color: #9ca3af;
+        }
+        .resend-link {
+            color: #6366f1;
+            font-weight: 600;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: .82rem;
+            padding: 0;
+        }
+        .resend-link:disabled { color: #9ca3af; cursor: default; }
+
+        /* ===== FOOTER ===== */
+        .page-footer {
+            margin-top: 2rem;
+            font-size: .75rem;
+            color: #9ca3af;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-logo">⚡ Kotaflo</div>
+
+<!-- ===== BARRE DE PROGRESSION ===== -->
+<div class="progress" id="progress-bar">
+    <div class="progress__step">
+        <div class="progress__dot active" id="pdot-1">1</div>
+        <div class="progress__label">Vérification</div>
+    </div>
+    <div class="progress__line" id="pline-1"></div>
+    <div class="progress__step">
+        <div class="progress__dot" id="pdot-2">2</div>
+        <div class="progress__label">Lecture</div>
+    </div>
+    <div class="progress__line" id="pline-2"></div>
+    <div class="progress__step">
+        <div class="progress__dot" id="pdot-3">3</div>
+        <div class="progress__label">Signature</div>
+    </div>
+</div>
+
+<div class="card">
+
+    <!-- Infobox devis (commune à toutes les étapes) -->
+    <div class="quote-info" id="quote-info" style="display:none">
+        <div class="quote-info__ref"   id="info-ref"></div>
+        <div class="quote-info__title" id="info-title"></div>
+        <div class="quote-info__meta"  id="info-meta"></div>
+    </div>
+
+    <!-- ===== ÉTAPE 1a : demande code ===== -->
+    <div class="step active" id="step-request">
+        <div class="card__title">Accès sécurisé à votre devis</div>
+        <div class="card__sub" id="step1-sub">
+            Pour consulter votre devis, cliquez ci-dessous. Nous allons envoyer un code à 5 chiffres à votre adresse email.
+        </div>
+        <button class="btn btn--primary" id="btn-request-code" onclick="requestViewCode()">
+            <span class="spinner"></span>
+            <span class="btn-text">📧 Recevoir mon code par email</span>
+        </button>
+        <div class="msg-error" id="err-request"></div>
+    </div>
+
+    <!-- ===== ÉTAPE 1b : saisie code consultation ===== -->
+    <div class="step" id="step-verify">
+        <div class="card__title">Code envoyé !</div>
+        <div class="card__sub">
+            Vérifiez votre boîte email et entrez le code à 5 chiffres.<br>
+            Valable <strong>10 minutes</strong> · 5 essais maximum
+        </div>
+        <div class="dev-banner" id="dev-view-banner">
+            Code dev (SMTP non configuré) : <strong id="dev-view-code"></strong>
+        </div>
+        <div class="otp-row" id="otp-view">
+            <input class="otp-box" type="number" maxlength="1" min="0" max="9" inputmode="numeric">
+            <input class="otp-box" type="number" maxlength="1" min="0" max="9" inputmode="numeric">
+            <input class="otp-box" type="number" maxlength="1" min="0" max="9" inputmode="numeric">
+            <input class="otp-box" type="number" maxlength="1" min="0" max="9" inputmode="numeric">
+            <input class="otp-box" type="number" maxlength="1" min="0" max="9" inputmode="numeric">
+        </div>
+        <button class="btn btn--primary" id="btn-verify" onclick="verifyViewCode()" disabled>
+            <span class="spinner"></span>
+            <span class="btn-text">Accéder au devis →</span>
+        </button>
+        <div class="resend-row">
+            Pas reçu ?
+            <button class="resend-link" id="btn-resend-view" onclick="requestViewCode()" disabled>
+                Renvoyer <span id="resend-view-timer"></span>
+            </button>
+        </div>
+        <div class="msg-error" id="err-verify"></div>
+    </div>
+
+    <!-- ===== ÉTAPE 2 : lecture PDF ===== -->
+    <div class="step" id="step-view">
+        <div class="card__title">Votre devis</div>
+        <div class="card__sub">Lisez attentivement le devis avant de le signer.</div>
+
+        <div class="pdf-wrap">
+            <iframe class="pdf-frame" id="pdf-frame" src=""></iframe>
+            <!-- Fallback mobile : bouton télécharger -->
+            <div class="pdf-mobile-note">
+                <p style="margin-bottom:.75rem">Votre navigateur ne peut pas afficher le PDF directement.</p>
+                <a id="pdf-dl-link" href="#" class="btn btn--outline" style="display:inline-flex;width:auto;text-decoration:none">
+                    📄 Ouvrir / Télécharger le PDF
+                </a>
+            </div>
+        </div>
+
+        <button class="btn btn--success" id="btn-sign-start" onclick="requestSignCode()">
+            <span class="spinner"></span>
+            <span class="btn-text">✍️ Signer ce devis</span>
+        </button>
+        <div class="msg-error" id="err-view"></div>
+    </div>
+
+    <!-- ===== ÉTAPE 3 : saisie code signature ===== -->
+    <div class="step" id="step-sign">
+        <div class="card__title">Confirmer la signature</div>
+        <div class="card__sub">
+            Un code de confirmation vient d'être envoyé à votre email.<br>
+            Valable <strong>10 minutes</strong> · 5 essais maximum
+        </div>
+        <div class="sign-summary" id="sign-summary"></div>
+        <div class="dev-banner" id="dev-sign-banner">
+            Code dev (SMTP non configuré) : <strong id="dev-sign-code"></strong>
+        </div>
+        <div class="otp-row" id="otp-sign">
+            <input class="otp-box" type="number" maxlength="1" min="0" max="9" inputmode="numeric">
+            <input class="otp-box" type="number" maxlength="1" min="0" max="9" inputmode="numeric">
+            <input class="otp-box" type="number" maxlength="1" min="0" max="9" inputmode="numeric">
+            <input class="otp-box" type="number" maxlength="1" min="0" max="9" inputmode="numeric">
+            <input class="otp-box" type="number" maxlength="1" min="0" max="9" inputmode="numeric">
+        </div>
+        <button class="btn btn--success" id="btn-sign" onclick="signQuote()" disabled>
+            <span class="spinner"></span>
+            <span class="btn-text">✅ Valider ma signature</span>
+        </button>
+        <div class="resend-row">
+            Pas reçu ?
+            <button class="resend-link" id="btn-resend-sign" onclick="requestSignCode()" disabled>
+                Renvoyer <span id="resend-sign-timer"></span>
+            </button>
+        </div>
+        <div class="msg-error" id="err-sign"></div>
+    </div>
+
+    <!-- ===== SUCCÈS ===== -->
+    <div class="step" id="step-done">
+        <div class="success-box">
+            <div class="icon">🎉</div>
+            <h2>Devis signé — Merci !</h2>
+            <p>
+                Votre signature électronique a bien été enregistrée.<br>
+                <span id="company-thanks"></span>vous contactera prochainement.
+            </p>
+        </div>
+    </div>
+
+    <!-- ===== DÉJÀ SIGNÉ ===== -->
+    <div class="step" id="step-already-signed">
+        <div class="success-box">
+            <div class="icon">✅</div>
+            <h2>Devis déjà signé</h2>
+            <p>Ce devis a déjà été signé électroniquement. Merci de votre confiance !</p>
+        </div>
+    </div>
+
+    <!-- ===== LIEN INVALIDE ===== -->
+    <div class="step" id="step-invalid">
+        <div class="success-box">
+            <div class="icon">⚠️</div>
+            <h2>Lien invalide</h2>
+            <p>Ce lien est introuvable ou a expiré.<br>Contactez votre artisan pour obtenir un nouveau lien.</p>
+        </div>
+    </div>
+
+</div>
+
+<div class="page-footer">Lien sécurisé · chiffrement SSL · Kotaflo &copy; 2025</div>
+
+<script>
+// ===== QUOTE_SIGN.JS =====
+
+const ACCESS_TOKEN = window.location.pathname.split('/').pop();
+const API          = `/api/quote-access/${ACCESS_TOKEN}`;
+
+let _quoteInfo = {};  // cache infos du devis
+
+// ───── Progression ─────
+const STEP_PROGRESS = {
+    'step-request':       1,
+    'step-verify':        1,
+    'step-view':          2,
+    'step-sign':          3,
+    'step-done':          3,
+    'step-already-signed':3,
+    'step-invalid':       1,
+};
+
+function showStep(id) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    updateProgress(STEP_PROGRESS[id] || 1, id === 'step-done' || id === 'step-already-signed');
+}
+
+function updateProgress(activeStep, allDone = false) {
+    [1, 2, 3].forEach(n => {
+        const dot  = document.getElementById(`pdot-${n}`);
+        const line = document.getElementById(`pline-${n}`);
+        dot.className  = 'progress__dot';
+        if (allDone || n < activeStep) dot.classList.add('done');
+        else if (n === activeStep)     dot.classList.add('active');
+        if (line) line.className = `progress__line${(allDone || n < activeStep) ? ' done' : ''}`;
+    });
+    // Icône ✓ sur les étapes terminées
+    [1, 2, 3].forEach(n => {
+        const dot = document.getElementById(`pdot-${n}`);
+        if (dot.classList.contains('done')) dot.textContent = '✓';
+        else dot.textContent = n;
+    });
+}
+
+// ───── UI helpers ─────
+function showError(elId, msg) {
+    const el = document.getElementById(elId);
+    el.textContent = msg;
+    el.style.display = 'block';
+}
+
+function clearError(elId) {
+    document.getElementById(elId).style.display = 'none';
+}
+
+function setLoading(btn, loading) {
+    btn.disabled = loading;
+    btn.classList.toggle('loading', loading);
+}
+
+function showDevCode(bannerId, codeId, code) {
+    document.getElementById(codeId).textContent    = code;
+    document.getElementById(bannerId).style.display = '';
+}
+
+// ───── Minuterie renvoi ─────
+function startResendTimer(timerId, btnId, seconds = 60) {
+    const btn   = document.getElementById(btnId);
+    const timer = document.getElementById(timerId);
+    btn.disabled = true;
+    let secs = seconds;
+    const iv = setInterval(() => {
+        secs--;
+        timer.textContent = secs > 0 ? `(${secs}s)` : '';
+        if (secs <= 0) {
+            clearInterval(iv);
+            btn.disabled = false;
+        }
+    }, 1000);
+}
+
+// ───── OTP boxes ─────
+function initOTP(rowId, submitBtnId, onComplete) {
+    const boxes = document.querySelectorAll(`#${rowId} .otp-box`);
+
+    boxes.forEach((box, i) => {
+        // Filtrer les non-chiffres
+        box.addEventListener('input', () => {
+            const val = box.value.replace(/\D/g, '').slice(-1);
+            box.value = val;
+            box.classList.toggle('filled', val !== '');
+
+            if (val && i < boxes.length - 1) boxes[i + 1].focus();
+
+            // Activer le bouton si toutes les cases sont remplies
+            const code = getOTPValue(rowId);
+            const btn  = document.getElementById(submitBtnId);
+            btn.disabled = code.length !== 5;
+
+            // Auto-submit quand complet
+            if (code.length === 5 && onComplete) onComplete(code);
+        });
+
+        // Effacer et reculer sur Backspace
+        box.addEventListener('keydown', e => {
+            if (e.key === 'Backspace' && !box.value && i > 0) {
+                boxes[i - 1].focus();
+                boxes[i - 1].value = '';
+                boxes[i - 1].classList.remove('filled');
+            }
+        });
+
+        // Coller depuis le presse-papier
+        box.addEventListener('paste', e => {
+            e.preventDefault();
+            const pasted = (e.clipboardData || window.clipboardData)
+                .getData('text').replace(/\D/g, '').slice(0, 5);
+            pasted.split('').forEach((ch, j) => {
+                if (boxes[j]) { boxes[j].value = ch; boxes[j].classList.add('filled'); }
+            });
+            const last = Math.min(pasted.length, boxes.length) - 1;
+            boxes[last]?.focus();
+            const btn = document.getElementById(submitBtnId);
+            btn.disabled = getOTPValue(rowId).length !== 5;
+            if (pasted.length === 5 && onComplete) onComplete(pasted);
+        });
+    });
+}
+
+function getOTPValue(rowId) {
+    return [...document.querySelectorAll(`#${rowId} .otp-box`)]
+        .map(b => b.value).join('');
+}
+
+function markOTPError(rowId) {
+    document.querySelectorAll(`#${rowId} .otp-box`).forEach(b => {
+        b.classList.add('error');
+        setTimeout(() => b.classList.remove('error'), 500);
+    });
+}
+
+function clearOTP(rowId) {
+    document.querySelectorAll(`#${rowId} .otp-box`).forEach(b => {
+        b.value = '';
+        b.classList.remove('filled', 'error');
+    });
+    const boxes = document.querySelectorAll(`#${rowId} .otp-box`);
+    if (boxes[0]) boxes[0].focus();
+}
+
+// ───── Init page ─────
+window.addEventListener('DOMContentLoaded', async () => {
+    // Wiring OTP auto-submit
+    initOTP('otp-view', 'btn-verify', () => verifyViewCode());
+    initOTP('otp-sign', 'btn-sign',   () => signQuote());
+
+    const res  = await fetch(API);
+    const data = await res.json();
+
+    if (!res.ok) { showStep('step-invalid'); return; }
+
+    _quoteInfo = data;
+
+    // Remplir infobox
+    document.getElementById('info-ref').textContent   = data.quote_ref;
+    document.getElementById('info-title').textContent = data.quote_title;
+    const amount = Number(data.quote_amount || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2 });
+    document.getElementById('info-meta').innerHTML =
+        `<span>Montant HT : <strong>${amount} €</strong></span>`
+        + (data.company_name ? `<span>De : ${data.company_name}</span>` : '');
+    document.getElementById('quote-info').style.display = '';
+
+    // Personnaliser le sous-titre
+    const company = data.company_name || 'votre artisan';
+    document.getElementById('step1-sub').textContent =
+        `${company} vous a transmis un devis. Cliquez ci-dessous — nous enverrons un code sécurisé à votre email.`;
+
+    // Précharger le "remerciement"
+    document.getElementById('company-thanks').textContent =
+        data.company_name ? `${data.company_name} ` : 'Votre artisan ';
+
+    // Routage selon état
+    if (data.signed)        { showStep('step-already-signed'); return; }
+    if (data.view_verified) { loadPDF(); showStep('step-view'); return; }
+    showStep('step-request');
+});
+
+// ───── Étape 1a : demande code consultation ─────
+async function requestViewCode() {
+    clearError('err-request');
+    const btn = document.getElementById('btn-request-code');
+    setLoading(btn, true);
+
+    const res  = await fetch(`${API}/request-view-code`, { method: 'POST' });
+    const data = await res.json();
+    setLoading(btn, false);
+
+    if (!res.ok) { showError('err-request', data.error || 'Erreur réseau'); return; }
+
+    // Affichage code dev si SMTP non configuré
+    if (data.dev_code) showDevCode('dev-view-banner', 'dev-view-code', data.dev_code);
+
+    showStep('step-verify');
+    clearOTP('otp-view');
+    startResendTimer('resend-view-timer', 'btn-resend-view');
+    setTimeout(() => document.querySelector('#otp-view .otp-box')?.focus(), 100);
+}
+
+// ───── Étape 1b : vérification code consultation ─────
+async function verifyViewCode() {
+    clearError('err-verify');
+    const code = getOTPValue('otp-view');
+    if (code.length !== 5) return;
+
+    const btn = document.getElementById('btn-verify');
+    setLoading(btn, true);
+
+    const res  = await fetch(`${API}/verify-view`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+    });
+    const data = await res.json();
+    setLoading(btn, false);
+
+    if (!res.ok) {
+        markOTPError('otp-view');
+        clearOTP('otp-view');
+        showError('err-verify', data.error || 'Code invalide');
+        return;
+    }
+
+    loadPDF();
+    showStep('step-view');
+}
+
+// ───── Étape 2 : affichage PDF ─────
+function loadPDF() {
+    const pdfUrl = `${API}/pdf`;
+    document.getElementById('pdf-frame').src  = pdfUrl;
+    document.getElementById('pdf-dl-link').href = pdfUrl;
+}
+
+// ───── Étape 3a : demande code signature ─────
+async function requestSignCode() {
+    clearError('err-view');
+    const btn = document.getElementById('btn-sign-start');
+    setLoading(btn, true);
+
+    const res  = await fetch(`${API}/request-sign-code`, { method: 'POST' });
+    const data = await res.json();
+    setLoading(btn, false);
+
+    if (!res.ok) { showError('err-view', data.error || 'Erreur réseau'); return; }
+
+    if (data.dev_code) showDevCode('dev-sign-banner', 'dev-sign-code', data.dev_code);
+
+    // Résumé engagement
+    document.getElementById('sign-summary').textContent =
+        `En validant ce code, vous approuvez le devis ${_quoteInfo.quote_ref}`
+        + (_quoteInfo.quote_title ? ` — ${_quoteInfo.quote_title}` : '')
+        + ` d'un montant HT de ${Number(_quoteInfo.quote_amount || 0)
+            .toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €.`;
+
+    showStep('step-sign');
+    clearOTP('otp-sign');
+    startResendTimer('resend-sign-timer', 'btn-resend-sign');
+    setTimeout(() => document.querySelector('#otp-sign .otp-box')?.focus(), 100);
+}
+
+// ───── Étape 3b : validation signature ─────
+async function signQuote() {
+    clearError('err-sign');
+    const code = getOTPValue('otp-sign');
+    if (code.length !== 5) return;
+
+    const btn = document.getElementById('btn-sign');
+    setLoading(btn, true);
+
+    const res  = await fetch(`${API}/sign`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+    });
+    const data = await res.json();
+    setLoading(btn, false);
+
+    if (!res.ok) {
+        markOTPError('otp-sign');
+        clearOTP('otp-sign');
+        showError('err-sign', data.error || 'Code invalide');
+        return;
+    }
+
+    showStep('step-done');
+}
+</script>
+</body>
+</html>

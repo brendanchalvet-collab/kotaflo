@@ -1,0 +1,214 @@
+/* ============================================================
+   LAYOUT.CSS — Sidebar, topbar, grille principale
+   ============================================================ */
+
+/* ===== APP SHELL ===== */
+.app {
+    display: flex;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+    width: 230px;
+    background: var(--color-sidebar);
+    color: var(--color-white);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0; left: 0;
+    height: 100vh;
+    z-index: 100;
+    transition: transform var(--transition);
+}
+
+.sidebar__logo {
+    padding: 1.25rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 700;
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    letter-spacing: .3px;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+
+.sidebar__logo-icon {
+    width: 30px;
+    height: 30px;
+    background: var(--color-primary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .9rem;
+    flex-shrink: 0;
+}
+
+.sidebar__logo-text {
+    color: var(--color-white);
+}
+
+.sidebar__logo-text span {
+    color: var(--color-primary);
+}
+
+.sidebar__nav {
+    padding: 1rem .75rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sidebar__nav a {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    padding: .65rem .85rem;
+    color: rgba(255,255,255,.55);
+    font-size: .9rem;
+    transition: background var(--transition), color var(--transition);
+    border-radius: var(--radius);
+    font-weight: 400;
+    letter-spacing: .01em;
+}
+
+.sidebar__nav a:hover {
+    background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.9);
+    text-decoration: none;
+}
+
+.sidebar__nav a.active {
+    background: rgba(245,158,11,.18);
+    color: #fbbf24;
+    font-weight: 600;
+    box-shadow: inset 0 0 0 1px rgba(245,158,11,.25);
+}
+
+.sidebar__icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    stroke-width: 1.75;
+}
+
+.sidebar__logo-icon i {
+    width: 16px;
+    height: 16px;
+    stroke: #1c1917;
+    stroke-width: 2.5;
+}
+
+.sidebar__divider {
+    height: 1px;
+    background: rgba(255,255,255,.06);
+    margin: .4rem .25rem;
+}
+
+.sidebar__footer {
+    padding: .875rem 1rem;
+    border-top: 1px solid rgba(255,255,255,.06);
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+
+.sidebar__footer-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary-text);
+    font-size: .72rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.sidebar__footer-name {
+    font-size: .8rem;
+    color: rgba(255,255,255,.35);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main {
+    margin-left: 230px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ===== TOPBAR ===== */
+.topbar {
+    background: var(--color-white);
+    border-bottom: 1px solid var(--color-gray-200);
+    padding: .875rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.topbar__title { font-size: 1rem; font-weight: 600; color: var(--color-gray-800); }
+
+.topbar__user {
+    font-size: .85rem;
+    color: var(--color-gray-400);
+    cursor: pointer;
+}
+
+/* ===== PAGE CONTENT ===== */
+.content {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+/* ===== PAGE HEADER (titre + bouton action) ===== */
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+
+/* ===== GRILLE STATS ===== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.open {
+        transform: translateX(0);
+    }
+    .main {
+        margin-left: 0;
+    }
+    .topbar {
+        padding: .75rem 1rem;
+    }
+    .content {
+        padding: 1rem;
+    }
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

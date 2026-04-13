@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clients — Kotaflo</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/layout.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <style>
+        /* ===== LISTE CLIENTS ===== */
+        .client-list { display: flex; flex-direction: column; gap: .75rem; }
+
+        .client-card {
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .client-card:hover { box-shadow: var(--shadow-md); }
+
+        /* Ligne principale du client */
+        .client-card__main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .9rem 1.1rem;
+            gap: 1rem;
+            cursor: pointer;
+            flex-wrap: wrap;
+        }
+        .client-card__name  { font-weight: 700; font-size: 1rem; }
+        .client-card__info  { font-size: .82rem; color: var(--color-gray-500); margin-top: .15rem; display: flex; flex-wrap: wrap; gap: .5rem .9rem; }
+        .client-card__info span::before { content: '·'; margin-right: .5rem; color: var(--color-gray-300); }
+        .client-card__info span:first-child::before { display: none; }
+
+        /* Projets associés */
+        .client-card__projects {
+            border-top: 1px solid var(--color-gray-100);
+            padding: .55rem 1.1rem .65rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: .4rem;
+        }
+        .client-card__projects-label {
+            font-size: .72rem;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--color-gray-400);
+            margin-right: .25rem;
+            flex-shrink: 0;
+        }
+        .proj-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: .3rem;
+            padding: .25rem .65rem;
+            border-radius: 999px;
+            font-size: .78rem;
+            font-weight: 500;
+            text-decoration: none;
+            background: var(--color-gray-100);
+            color: var(--color-gray-700);
+            border: 1px solid var(--color-gray-200);
+            transition: background .15s;
+        }
+        .proj-pill:hover { background: var(--color-primary-lt); color: var(--color-primary-dk); border-color: var(--color-primary); }
+        .proj-pill--planned { border-left: 3px solid var(--color-gray-400); }
+        .proj-pill--ongoing  { border-left: 3px solid var(--color-primary); }
+        .proj-pill--done     { border-left: 3px solid var(--color-success, #22c55e); }
+
+        .client-card__actions {
+            flex-shrink: 0;
+            display: flex;
+            gap: .4rem;
+            align-items: center;
+        }
+
+        /* ===== ACCORDÉON COMMENTAIRES ===== */
+        .card-notes-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .45rem 1.1rem;
+            border-top: 1px solid var(--color-gray-100);
+            font-size: .78rem;
+            color: var(--color-gray-400);
+            cursor: pointer;
+            user-select: none;
+        }
+        .card-notes-toggle:hover { color: var(--color-primary); background: var(--color-gray-50); }
+        .toggle-arrow { font-size: .7rem; }
+
+        .card-notes-body {
+            display: none;
+            padding: .5rem 1.1rem .75rem;
+            font-size: .83rem;
+            color: var(--color-gray-600);
+            border-top: 1px solid var(--color-gray-100);
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+        .card-notes-body.open { display: block; }
+    </style>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <div class="sidebar__logo-icon"><i data-lucide="wrench"></i></div>
+            <span class="sidebar__logo-text">Kota<span>flo</span></span>
+        </div>
+        <nav class="sidebar__nav">
+            <a href="/dashboard"><i data-lucide="layout-dashboard" class="sidebar__icon"></i> Tableau de bord</a>
+            <a href="/clients" class="active"><i data-lucide="users" class="sidebar__icon"></i> Clients</a>
+            <a href="/tasks"><i data-lucide="check-square" class="sidebar__icon"></i> Tâches</a>
+            <div class="sidebar__divider"></div>
+            <a href="/quotes"><i data-lucide="file-text" class="sidebar__icon"></i> Devis</a>
+            <a href="/invoices"><i data-lucide="receipt" class="sidebar__icon"></i> Factures</a>
+            <div class="sidebar__divider"></div>
+            <a href="/profile"><i data-lucide="settings" class="sidebar__icon"></i> Mon compte</a>
+        </nav>
+        <div class="sidebar__footer">
+            <div class="sidebar__footer-avatar">?</div>
+            <div class="sidebar__footer-name" id="sidebar-email"></div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+
+        <header class="topbar">
+            <span class="topbar__title">Clients</span>
+            <span class="topbar__user" onclick="logout()">Déconnexion →</span>
+        </header>
+
+        <main class="content">
+
+            <!-- ===== EN-TÊTE PAGE ===== -->
+            <div class="page-header">
+                <h2>Mes clients</h2>
+                <button class="btn btn--primary" onclick="openModal()">+ Nouveau client</button>
+            </div>
+
+            <!-- ===== RECHERCHE ===== -->
+            <div style="margin-bottom:1.25rem; position:relative; max-width:380px;">
+                <i data-lucide="search" style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--color-gray-400);pointer-events:none"></i>
+                <input
+                    type="text"
+                    id="search-clients"
+                    placeholder="Rechercher un client…"
+                    oninput="filterClients(this.value)"
+                    style="width:100%;padding:.6rem .85rem .6rem 2.25rem;border:1px solid var(--color-gray-200);border-radius:var(--radius);background:#fff;font-size:.9rem;color:var(--color-gray-800);transition:border-color var(--transition),box-shadow var(--transition);"
+                    onfocus="this.style.borderColor='var(--color-primary)';this.style.boxShadow='0 0 0 3px rgba(245,158,11,.12)'"
+                    onblur="this.style.borderColor='';this.style.boxShadow=''"
+                >
+            </div>
+
+            <!-- ===== LISTE CLIENTS ===== -->
+            <div class="client-list" id="clients-list">
+                <div class="text-muted">Chargement…</div>
+            </div>
+            <div id="pagination" class="pagination"></div>
+
+        </main>
+    </div>
+</div>
+
+<!-- ===== MODAL CRÉER / MODIFIER CLIENT ===== -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3 id="modal-title">Nouveau client</h3>
+            <button class="modal__close" onclick="closeModal()">✕</button>
+        </div>
+
+        <form id="client-form" onsubmit="handleSubmit(event)">
+            <input type="hidden" id="client-id">
+
+            <div class="form-group">
+                <label>Nom *</label>
+                <input type="text" id="client-name" placeholder="Jean Dupont" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" id="client-phone" placeholder="06 00 00 00 00">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="client-email" placeholder="jean@exemple.fr">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Adresse</label>
+                <input type="text" id="client-address" placeholder="12 rue de la Paix, Paris">
+            </div>
+            <div class="form-group">
+                <label>Moyen d'acquisition</label>
+                <select id="client-acquisition">
+                    <option value="">— Sélectionner —</option>
+                    <option value="Bouche à oreille">Bouche à oreille</option>
+                    <option value="Site web">Site web</option>
+                    <option value="Google">Google</option>
+                    <option value="Réseaux sociaux">Réseaux sociaux</option>
+                    <option value="Flyer / Affichage">Flyer / Affichage</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Notes / Commentaires</label>
+                <textarea id="client-notes" rows="3" placeholder="Informations complémentaires…"></textarea>
+            </div>
+
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeModal()">Annuler</button>
+                <button type="submit" class="btn btn--primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/clients.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

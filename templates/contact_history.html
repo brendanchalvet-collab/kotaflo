@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi — Kotaflo</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/layout.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <style>
+        /* ===== KPI BAR ===== */
+        .kpi-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .kpi {
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: .9rem 1.1rem;
+            text-align: center;
+        }
+        .kpi__value { font-size: 1.4rem; font-weight: 700; color: var(--color-primary); line-height: 1.2; }
+        .kpi__label { font-size: .75rem; color: var(--color-gray-400); margin-top: .2rem; text-transform: uppercase; letter-spacing: .04em; }
+
+        /* ===== CONTACT HEADER ===== */
+        .contact-header {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 1.1rem 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+        }
+        .contact-header__name { font-size: 1.3rem; font-weight: 700; margin-bottom: .25rem; }
+        .contact-header__info { font-size: .875rem; color: var(--color-gray-600); line-height: 1.8; }
+        .contact-header__actions { display: flex; gap: .5rem; flex-shrink: 0; align-items: flex-start; }
+
+        /* ===== GRILLE PROJETS + TÂCHES ===== */
+        .top-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            align-items: start;
+        }
+        @media (max-width: 900px) { .top-grid { grid-template-columns: 1fr; } }
+
+        .section-title {
+            font-size: .8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--color-gray-400);
+        }
+
+        /* ===== PROJETS ===== */
+        .project-card {
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: .85rem 1rem;
+            margin-bottom: .75rem;
+            cursor: pointer;
+            border-left: 3px solid var(--color-gray-200);
+            transition: box-shadow .15s;
+        }
+        .project-card:hover { box-shadow: var(--shadow-md); border-left-color: var(--color-primary); }
+        .project-card__title { font-weight: 600; }
+        .project-card__meta  { font-size: .78rem; color: var(--color-gray-400); margin-top: .2rem; }
+
+        /* ===== TÂCHES ===== */
+        .task-row {
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: .7rem 1rem;
+            margin-bottom: .5rem;
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+            cursor: pointer;
+        }
+
+        /* ===== DUAL TIMELINE ===== */
+        .dual-timeline-section { margin-top: .5rem; }
+
+        /* Labels en-têtes */
+        .dual-timeline-labels {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            margin-bottom: .85rem;
+        }
+        .dual-col-label {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+        .dual-col-label--right { padding-left: 2rem; }
+
+        /* Conteneur timeline */
+        .dual-timeline {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 3rem;
+        }
+        /* Ligne centrale */
+        .dual-timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0; bottom: 0;
+            width: 2px;
+            background: var(--color-gray-200);
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+
+        /* Colonnes */
+        .dual-col { min-height: 60px; }
+
+        /* Cartes */
+        .tl-card {
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: .75rem 1rem;
+            margin-bottom: .85rem;
+            position: relative;
+            transition: box-shadow .15s;
+        }
+        .tl-card:hover { box-shadow: var(--shadow-md); }
+
+        .tl-card--artisan { border-left: 3px solid var(--color-primary); }
+        .tl-card--quote   { border-left: 3px solid #8b5cf6; }
+        .tl-card--invoice { border-left: 3px solid var(--color-success, #22c55e); }
+
+        .tl-card__title { font-weight: 600; font-size: .9rem; }
+        .tl-card__meta  { font-size: .78rem; color: var(--color-gray-400); margin-top: .2rem; }
+        .tl-card__notes { font-size: .82rem; color: var(--color-gray-600); margin-top: .3rem; white-space: pre-wrap; line-height: 1.5; }
+
+        .tl-delete {
+            position: absolute; top: .6rem; right: .6rem;
+            background: none; border: none; cursor: pointer;
+            color: var(--color-gray-300); font-size: .9rem; padding: 0; line-height: 1;
+        }
+        .tl-delete:hover { color: var(--color-danger); }
+    </style>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<div class="app">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <div class="sidebar__logo-icon"><i data-lucide="wrench"></i></div>
+            <span class="sidebar__logo-text">Kota<span>flo</span></span>
+        </div>
+        <nav class="sidebar__nav">
+            <a href="/dashboard"><i data-lucide="layout-dashboard" class="sidebar__icon"></i> Tableau de bord</a>
+            <a href="/clients" class="active"><i data-lucide="users" class="sidebar__icon"></i> Clients</a>
+            <a href="/tasks"><i data-lucide="check-square" class="sidebar__icon"></i> Tâches</a>
+            <div class="sidebar__divider"></div>
+            <a href="/quotes"><i data-lucide="file-text" class="sidebar__icon"></i> Devis</a>
+            <a href="/invoices"><i data-lucide="receipt" class="sidebar__icon"></i> Factures</a>
+            <div class="sidebar__divider"></div>
+            <a href="/profile"><i data-lucide="settings" class="sidebar__icon"></i> Mon compte</a>
+        </nav>
+        <div class="sidebar__footer">
+            <div class="sidebar__footer-avatar">?</div>
+            <div class="sidebar__footer-name" id="sidebar-email"></div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+        <header class="topbar">
+            <span class="topbar__title">
+                <a href="/clients" style="color:var(--color-gray-400);font-weight:400">← Contacts</a>
+                &nbsp;/&nbsp;<span id="topbar-name">…</span>
+            </span>
+            <span class="topbar__user" onclick="logout()">Déconnexion →</span>
+        </header>
+
+        <main class="content">
+
+            <!-- ===== EN-TÊTE CONTACT ===== -->
+            <div class="contact-header">
+                <div>
+                    <div class="contact-header__name" id="contact-name">…</div>
+                    <div class="contact-header__info" id="contact-info"></div>
+                </div>
+                <div class="contact-header__actions">
+                    <button class="btn btn--ghost btn--sm" onclick="openEditModal()">Modifier</button>
+                </div>
+            </div>
+
+            <!-- ===== KPI ===== -->
+            <div class="kpi-bar">
+                <div class="kpi">
+                    <div class="kpi__value" id="kpi-interactions">—</div>
+                    <div class="kpi__label">Interactions</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi__value" id="kpi-projects">—</div>
+                    <div class="kpi__label">Projets</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi__value" id="kpi-quotes">—</div>
+                    <div class="kpi__label">Devis</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi__value" id="kpi-ca-facture">—</div>
+                    <div class="kpi__label">CA facturé</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi__value" id="kpi-ca">—</div>
+                    <div class="kpi__label">CA encaissé</div>
+                </div>
+            </div>
+
+            <!-- ===== PROJETS + TÂCHES ===== -->
+            <div class="top-grid">
+
+                <!-- Projets -->
+                <div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+                        <div class="section-title">Projets</div>
+                        <button class="btn btn--ghost btn--sm" onclick="openProjectModal()">+ Projet</button>
+                    </div>
+                    <div id="projects-empty" class="text-muted" style="font-size:.875rem">Aucun projet.</div>
+                    <div id="projects-list"></div>
+                </div>
+
+                <!-- Tâches -->
+                <div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+                        <div class="section-title">Tâches</div>
+                        <button class="btn btn--ghost btn--sm" onclick="openTaskModal()">+ Ajouter</button>
+                    </div>
+                    <div id="tasks-empty" class="text-muted" style="font-size:.875rem">Aucune tâche.</div>
+                    <div id="tasks-list"></div>
+                </div>
+
+            </div>
+
+            <!-- ===== DUAL TIMELINE ===== -->
+            <div class="dual-timeline-section">
+
+                <!-- Labels -->
+                <div class="dual-timeline-labels">
+                    <div class="dual-col-label">
+                        <span class="section-title" style="margin:0">Artisan</span>
+                        <button class="btn btn--primary btn--sm" onclick="openInteractionModal()">+ Interaction</button>
+                    </div>
+                    <div class="dual-col-label dual-col-label--right">
+                        <span class="section-title" style="margin:0">Client</span>
+                    </div>
+                </div>
+
+                <div id="timeline-empty" class="text-muted hidden" style="font-size:.875rem;margin-bottom:.75rem">Aucune interaction.</div>
+
+                <!-- Timeline duale -->
+                <div class="dual-timeline">
+                    <div class="dual-col" id="timeline-artisan"></div>
+                    <div class="dual-col" id="timeline-client"></div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- ===== MODAL INTERACTION ===== -->
+<div class="modal-overlay hidden" id="modal-interaction" onclick="closeModal('modal-interaction', event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3>Nouvelle interaction</h3>
+            <button class="modal__close" onclick="closeModal('modal-interaction')">✕</button>
+        </div>
+        <form id="interaction-form" onsubmit="handleInteractionSubmit(event)">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="int-type">
+                        <option value="call">📞 Appel</option>
+                        <option value="sms">💬 SMS</option>
+                        <option value="whatsapp">🟢 WhatsApp</option>
+                        <option value="email">📧 Email</option>
+                        <option value="visit">🏠 Visite</option>
+                        <option value="note" selected>📝 Note</option>
+                        <option value="other">• Autre</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="datetime-local" id="int-date">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Titre</label>
+                <input type="text" id="int-title" placeholder="Sujet de l'échange">
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="int-notes" rows="3" placeholder="Détails…"></textarea>
+            </div>
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeModal('modal-interaction')">Annuler</button>
+                <button type="submit" class="btn btn--primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== MODAL PROJET ===== -->
+<div class="modal-overlay hidden" id="modal-project" onclick="closeModal('modal-project', event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3 id="project-modal-title">Nouveau projet</h3>
+            <button class="modal__close" onclick="closeModal('modal-project')">✕</button>
+        </div>
+        <form id="project-form" onsubmit="handleProjectSubmit(event)">
+            <input type="hidden" id="proj-id">
+            <div class="form-group">
+                <label>Titre *</label>
+                <input type="text" id="proj-title" placeholder="Rénovation salle de bain" required>
+            </div>
+            <div class="form-group">
+                <label>Statut</label>
+                <select id="proj-status">
+                    <option value="planned">Planifié</option>
+                    <option value="ongoing">En cours</option>
+                    <option value="done">Terminé</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date début</label>
+                    <input type="date" id="proj-start">
+                </div>
+                <div class="form-group">
+                    <label>Date fin</label>
+                    <input type="date" id="proj-end">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Adresse du chantier</label>
+                <input type="text" id="proj-address" placeholder="12 rue de la Paix, Paris">
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="proj-notes" rows="3" placeholder="Description du chantier…"></textarea>
+            </div>
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeModal('modal-project')">Annuler</button>
+                <button type="submit" class="btn btn--primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== MODAL MODIFIER CONTACT ===== -->
+<div class="modal-overlay hidden" id="modal-edit" onclick="closeModal('modal-edit', event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3>Modifier le contact</h3>
+            <button class="modal__close" onclick="closeModal('modal-edit')">✕</button>
+        </div>
+        <form id="edit-form" onsubmit="handleEditSubmit(event)">
+            <div class="form-group">
+                <label>Type</label>
+                <div style="display:flex; gap:.75rem;">
+                    <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;">
+                        <input type="radio" name="edit-type" value="client"> Client
+                    </label>
+                    <label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;">
+                        <input type="radio" name="edit-type" value="prospect"> Prospect
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Nom *</label>
+                <input type="text" id="edit-name" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" id="edit-phone">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="edit-email">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Adresse</label>
+                <input type="text" id="edit-address">
+            </div>
+            <div class="form-group">
+                <label>Moyen d'acquisition</label>
+                <select id="edit-acquisition">
+                    <option value="">— Sélectionner —</option>
+                    <option value="Bouche à oreille">Bouche à oreille</option>
+                    <option value="Site web">Site web</option>
+                    <option value="Google">Google</option>
+                    <option value="Réseaux sociaux">Réseaux sociaux</option>
+                    <option value="Flyer / Affichage">Flyer / Affichage</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="edit-notes" rows="3"></textarea>
+            </div>
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeModal('modal-edit')">Annuler</button>
+                <button type="submit" class="btn btn--primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== MODAL TÂCHE ===== -->
+<div class="modal-overlay hidden" id="modal-task" onclick="closeTaskModal(event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3 id="task-modal-title">Nouvelle tâche</h3>
+            <button class="modal__close" onclick="closeTaskModal()">✕</button>
+        </div>
+        <form id="task-form" onsubmit="handleTaskSubmit(event)">
+            <input type="hidden" id="task-id">
+            <div class="form-group">
+                <label>Titre *</label>
+                <input type="text" id="task-title" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="task-desc" rows="2"></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Priorité</label>
+                    <select id="task-priority">
+                        <option value="high">🔴 Haute</option>
+                        <option value="normal" selected>🔵 Normale</option>
+                        <option value="low">⚪ Basse</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Échéance</label>
+                    <input type="date" id="task-due">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Statut</label>
+                <select id="task-status">
+                    <option value="todo">À faire</option>
+                    <option value="in_progress">En cours</option>
+                    <option value="done">Terminée</option>
+                </select>
+            </div>
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeTaskModal()">Annuler</button>
+                <button type="button" class="btn btn--danger btn--sm" id="task-btn-delete" style="display:none" onclick="deleteTask()">Supprimer</button>
+                <button type="submit" class="btn btn--primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/contact_history.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

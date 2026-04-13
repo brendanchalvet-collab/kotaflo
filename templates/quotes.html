@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devis — Kotaflo</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/layout.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <style>
+        /* ===== LIGNES DE DEVIS ===== */
+        .lines-table { width:100%; border-collapse:collapse; margin-bottom:.75rem; }
+        .lines-table th {
+            background: var(--color-gray-100);
+            padding: .4rem .5rem;
+            font-size: .75rem;
+            text-transform: uppercase;
+            color: var(--color-gray-400);
+            text-align: left;
+            white-space: nowrap;
+        }
+        .lines-table td { padding: .35rem .4rem; vertical-align: top; }
+        .lines-table input, .lines-table select {
+            width: 100%;
+            padding: .3rem .4rem;
+            border: 1px solid var(--color-gray-200);
+            border-radius: 4px;
+            font-size: .85rem;
+        }
+        .lines-table input:focus, .lines-table select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+        .col-desig { width: 28%; }
+        .col-desc  { width: 24%; }
+        .col-tva   { width: 8%;  }
+        .col-qty   { width: 8%;  }
+        .col-pu    { width: 12%; }
+        .col-total { width: 12%; font-weight:600; padding-top:.55rem; }
+        .col-del   { width: 4%;  }
+
+        .total-summary {
+            background: var(--color-gray-50);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius);
+            padding: .75rem 1rem;
+            font-size: .9rem;
+        }
+        .total-summary .ttc {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+        /* Modal large pour le formulaire */
+        .modal--lg { max-width: 760px; }
+    </style>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <div class="sidebar__logo-icon"><i data-lucide="wrench"></i></div>
+            <span class="sidebar__logo-text">Kota<span>flo</span></span>
+        </div>
+                <nav class="sidebar__nav">
+            <a href="/dashboard"><i data-lucide="layout-dashboard" class="sidebar__icon"></i> Tableau de bord</a>
+            <a href="/clients"><i data-lucide="users" class="sidebar__icon"></i> Clients</a>
+            <a href="/tasks"><i data-lucide="check-square" class="sidebar__icon"></i> Tâches</a>
+            <div class="sidebar__divider"></div>
+            <a href="/quotes" class="active"><i data-lucide="file-text" class="sidebar__icon"></i> Devis</a>
+            <a href="/invoices"><i data-lucide="receipt" class="sidebar__icon"></i> Factures</a>
+            <div class="sidebar__divider"></div>
+            <a href="/profile"><i data-lucide="settings" class="sidebar__icon"></i> Mon compte</a>
+        </nav>
+        <div class="sidebar__footer">
+            <div class="sidebar__footer-avatar">?</div>
+            <div class="sidebar__footer-name" id="sidebar-email"></div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+
+        <header class="topbar">
+            <span class="topbar__title">Devis</span>
+            <span class="topbar__user" onclick="logout()">Déconnexion →</span>
+        </header>
+
+        <main class="content">
+
+            <div class="page-header">
+                <h2>Mes devis</h2>
+                <button class="btn btn--primary" onclick="openModal()">+ Nouveau devis</button>
+            </div>
+
+            <!-- Tableau devis -->
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Client</th>
+                            <th>Projet</th>
+                            <th>Titre</th>
+                            <th>Montant TTC</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="quotes-table">
+                        <tr><td colspan="7" class="text-muted">Chargement…</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="pagination" class="pagination"></div>
+
+        </main>
+    </div>
+</div>
+
+<!-- ===== MODAL NOUVEAU DEVIS ===== -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal modal--lg">
+        <div class="modal__header">
+            <h3>Nouveau devis</h3>
+            <button class="modal__close" onclick="closeModal()">✕</button>
+        </div>
+
+        <form id="quote-form" onsubmit="handleSubmit(event)">
+
+            <!-- Infos générales -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Client *</label>
+                    <select id="quote-client" required onchange="onClientChange('quote')">
+                        <option value="">Sélectionner un client…</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Projet *</label>
+                    <select id="quote-job" required>
+                        <option value="">— Sélectionner un client d'abord —</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Adresse du chantier</label>
+                    <input type="text" id="quote-address" placeholder="Auto-rempli depuis le projet" readonly
+                           style="background:var(--color-gray-50);color:var(--color-gray-400)">
+                </div>
+                <div class="form-group">
+                    <label>Titre du devis</label>
+                    <input type="text" id="quote-title" placeholder="Rénovation salle de bain">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Mode de paiement</label>
+                    <select id="quote-payment">
+                        <option value="Comptant">Comptant</option>
+                        <option value="30 jours">30 jours</option>
+                        <option value="60 jours">60 jours</option>
+                        <option value="Virement">Virement</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date d'expiration</label>
+                    <input type="date" id="quote-expiry">
+                </div>
+            </div>
+
+            <!-- ===== LIGNES DU DEVIS ===== -->
+            <div style="margin:.75rem 0 .5rem; font-weight:600; font-size:.9rem;">Lignes du devis</div>
+            <div style="overflow-x:auto;">
+                <table class="lines-table">
+                    <thead>
+                        <tr>
+                            <th class="col-desig">Désignation</th>
+                            <th class="col-desc">Description</th>
+                            <th class="col-tva">TVA %</th>
+                            <th class="col-qty">Qté</th>
+                            <th class="col-pu">Prix unit. HT</th>
+                            <th class="col-total">Total HT</th>
+                            <th class="col-del"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="lines-body"></tbody>
+                </table>
+            </div>
+
+            <button type="button" class="btn btn--ghost btn--sm" onclick="addLine()">+ Ajouter une ligne</button>
+
+            <!-- Totaux -->
+            <div class="total-summary" id="total-summary" style="margin-top:.75rem; display:none;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:.3rem;">
+                    <span>Total HT</span><span id="sum-ht">0,00 €</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:.3rem; color:var(--color-gray-400); font-size:.85rem;">
+                    <span id="sum-tva-label">TVA</span><span id="sum-tva">0,00 €</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; border-top:1px solid var(--color-gray-200); padding-top:.4rem;">
+                    <span class="ttc">Total TTC</span><span class="ttc" id="sum-ttc">0,00 €</span>
+                </div>
+            </div>
+
+            <!-- Notes -->
+            <div class="form-group" style="margin-top:.75rem">
+                <label>Notes / Description des travaux</label>
+                <textarea id="quote-notes" rows="2" placeholder="Reprise complète réseau EFS/ECS…"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Statut</label>
+                <select id="quote-status">
+                    <option value="draft">Brouillon</option>
+                    <option value="sent">Envoyé</option>
+                </select>
+            </div>
+
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeModal()">Annuler</button>
+                <button type="submit" class="btn btn--primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal changement statut -->
+<div class="modal-overlay hidden" id="modal-status-overlay" onclick="closeStatusModal(event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3>Changer le statut</h3>
+            <button class="modal__close" onclick="closeStatusModal()">✕</button>
+        </div>
+        <div class="form-group">
+            <label>Statut</label>
+            <select id="status-select">
+                <option value="draft">Brouillon</option>
+                <option value="sent">Envoyé</option>
+                <option value="accepted">Accepté</option>
+                <option value="refused">Refusé</option>
+            </select>
+        </div>
+        <div class="modal__footer">
+            <button class="btn btn--ghost" onclick="closeStatusModal()">Annuler</button>
+            <button class="btn btn--primary" onclick="saveStatus()">Enregistrer</button>
+            <button class="btn btn--danger btn--sm" onclick="deleteQuote()">Supprimer</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL AVENANT ===== -->
+<div class="modal-overlay hidden" id="modal-avenant" onclick="closeAvenantModal(event)">
+    <div class="modal modal--lg">
+        <div class="modal__header">
+            <h3>Nouvel avenant</h3>
+            <button class="modal__close" onclick="closeAvenantModal()">✕</button>
+        </div>
+        <form onsubmit="submitAvenant(event)">
+            <p id="avenant-quote-ref" style="font-weight:600;color:var(--color-gray-400);margin-bottom:.75rem"></p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Titre de l'avenant</label>
+                    <input type="text" id="avenant-title" placeholder="Travaux supplémentaires réseau ECS">
+                </div>
+                <div class="form-group">
+                    <label>Date d'expiration</label>
+                    <input type="date" id="avenant-expiry">
+                </div>
+            </div>
+
+            <!-- Lignes -->
+            <div style="margin:.75rem 0 .5rem;font-weight:600;font-size:.9rem;">Lignes de l'avenant</div>
+            <div style="overflow-x:auto;">
+                <table class="lines-table">
+                    <thead>
+                        <tr>
+                            <th class="col-desig">Désignation</th>
+                            <th class="col-desc">Description</th>
+                            <th class="col-tva">TVA %</th>
+                            <th class="col-qty">Qté</th>
+                            <th class="col-pu">Prix unit. HT</th>
+                            <th class="col-total">Total HT</th>
+                            <th class="col-del"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="avenant-lines-body"></tbody>
+                </table>
+            </div>
+            <button type="button" class="btn btn--ghost btn--sm" onclick="addAvenantLine()">+ Ajouter une ligne</button>
+
+            <!-- Totaux -->
+            <div class="total-summary" id="avenant-total-summary" style="margin-top:.75rem;display:none;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:.3rem;">
+                    <span>Total HT</span><span id="av-sum-ht">0,00 €</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:.3rem;color:var(--color-gray-400);font-size:.85rem;">
+                    <span>TVA</span><span id="av-sum-tva">0,00 €</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;border-top:1px solid var(--color-gray-200);padding-top:.4rem;">
+                    <span class="ttc">Total TTC</span><span class="ttc" id="av-sum-ttc">0,00 €</span>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top:.75rem">
+                <label>Notes</label>
+                <textarea id="avenant-notes" rows="2" placeholder="Description des modifications…"></textarea>
+            </div>
+
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeAvenantModal()">Annuler</button>
+                <button type="submit" class="btn btn--primary">Créer l'avenant</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== MODAL FACTURE D'ACOMPTE ===== -->
+<div class="modal-overlay hidden" id="modal-deposit" onclick="closeDepositModal(event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3>Facture d'acompte</h3>
+            <button class="modal__close" onclick="closeDepositModal()">✕</button>
+        </div>
+        <form onsubmit="submitDeposit(event)">
+            <p id="deposit-quote-ref" style="font-weight:600; margin-bottom:.25rem"></p>
+            <p id="deposit-quote-ht"  style="font-size:.82rem; color:var(--color-gray-400); margin-bottom:1rem"></p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="deposit-type" onchange="toggleDepositLabel()">
+                        <option value="percent">Pourcentage</option>
+                        <option value="amount">Montant fixe HT</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label id="deposit-value-label">Pourcentage (%)</label>
+                    <input type="number" id="deposit-value" value="30" min="1" step="0.01" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Date d'échéance</label>
+                <input type="date" id="deposit-due">
+            </div>
+            <div class="form-group">
+                <label>Résumé des travaux <span style="font-weight:400;color:var(--color-gray-400)">(optionnel)</span></label>
+                <textarea id="deposit-notes" rows="3" placeholder="Ex : fourniture et pose chaudière gaz condensation…"></textarea>
+            </div>
+
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeDepositModal()">Annuler</button>
+                <button type="submit" class="btn btn--primary">Créer la facture d'acompte</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/quotes.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

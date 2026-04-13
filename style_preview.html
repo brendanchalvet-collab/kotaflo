@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Style Preview — ArtisansPro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+/* ===== GLOBAL ===== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #f1f5f9;
+    padding: 2rem;
+}
+
+.page-title {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+}
+.page-subtitle {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 2.5rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.option-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 0.75rem;
+}
+
+/* ===== PREVIEW SHELL ===== */
+.preview {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    height: 520px;
+    display: flex;
+    position: relative;
+}
+
+/* ============================================================
+   OPTION A — Dark Sidebar Premium (Stripe / Linear)
+   ============================================================ */
+.a .sidebar {
+    width: 220px;
+    background: #0f172a;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+.a .sidebar-logo {
+    padding: 1.25rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.a .sidebar-logo .logo-icon {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+}
+.a .sidebar-nav {
+    padding: 1rem 0.75rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.a .nav-item {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.55);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.a .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+.a .nav-item.active {
+    background: rgba(59,130,246,0.15);
+    color: #93c5fd;
+    font-weight: 500;
+}
+.a .nav-icon { font-size: 1rem; width: 18px; text-align: center; }
+.a .sidebar-footer {
+    padding: 0.875rem 1.25rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; align-items: center; gap: 0.6rem;
+}
+.a .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 0.7rem; font-weight: 700;
+}
+.a .footer-name { font-size: 0.8rem; color: rgba(255,255,255,0.55); }
+
+.a .main { flex: 1; background: #f8fafc; display: flex; flex-direction: column; overflow: hidden; }
+.a .topbar {
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.875rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.a .topbar-title { font-size: 1rem; font-weight: 600; color: #0f172a; }
+.a .topbar-btn {
+    background: #3b82f6; color: #fff;
+    border: none; padding: 0.45rem 0.9rem;
+    border-radius: 8px; font-size: 0.82rem; font-weight: 500; cursor: pointer;
+}
+.a .content { padding: 1.5rem; flex: 1; overflow: hidden; }
+.a .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.875rem; margin-bottom: 1.25rem; }
+.a .stat-card {
+    background: #fff; border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    padding: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.a .stat-val { font-size: 1.4rem; font-weight: 700; color: #0f172a; }
+.a .stat-lbl { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+.a .table-card {
+    background: #fff; border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.a .table-head {
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem; font-weight: 600; color: #64748b;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 1px solid #e2e8f0;
+    display: grid; grid-template-columns: 2fr 1fr 1fr;
+}
+.a .table-row {
+    padding: 0.7rem 1rem;
+    display: grid; grid-template-columns: 2fr 1fr 1fr;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.84rem; color: #334155; align-items: center;
+}
+.a .badge {
+    display: inline-block; padding: 0.2rem 0.55rem;
+    border-radius: 999px; font-size: 0.72rem; font-weight: 500;
+}
+.a .badge-sent { background: #dbeafe; color: #1d4ed8; }
+.a .badge-ok { background: #dcfce7; color: #15803d; }
+.a .badge-draft { background: #f1f5f9; color: #64748b; }
+
+
+/* ============================================================
+   OPTION B — Light & Clean (Notion / Figma)
+   ============================================================ */
+.b .sidebar {
+    width: 220px;
+    background: #fff;
+    border-right: 1px solid #e5e7eb;
+    display: flex; flex-direction: column;
+}
+.b .sidebar-logo {
+    padding: 1.25rem 1.25rem;
+    font-size: 0.95rem; font-weight: 700; color: #111827;
+    border-bottom: 1px solid #f3f4f6;
+    display: flex; align-items: center; gap: 0.5rem;
+}
+.b .sidebar-logo .logo-icon {
+    width: 26px; height: 26px;
+    background: #4f46e5; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; color: #fff;
+}
+.b .sidebar-nav {
+    padding: 0.875rem 0.75rem; flex: 1;
+    display: flex; flex-direction: column; gap: 1px;
+}
+.b .nav-section {
+    font-size: 0.68rem; font-weight: 600; color: #9ca3af;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    padding: 0.75rem 0.5rem 0.3rem;
+}
+.b .nav-item {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.5rem 0.6rem; border-radius: 6px;
+    color: #6b7280; font-size: 0.875rem; cursor: pointer;
+}
+.b .nav-item:hover { background: #f9fafb; color: #111827; }
+.b .nav-item.active { background: #eef2ff; color: #4f46e5; font-weight: 500; }
+.b .nav-icon { font-size: 0.95rem; width: 18px; text-align: center; }
+.b .sidebar-footer {
+    padding: 0.875rem; border-top: 1px solid #f3f4f6;
+    display: flex; align-items: center; gap: 0.6rem;
+}
+.b .avatar {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: #4f46e5;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 0.7rem; font-weight: 700;
+}
+.b .footer-name { font-size: 0.8rem; color: #6b7280; }
+
+.b .main { flex: 1; background: #fafafa; display: flex; flex-direction: column; overflow: hidden; }
+.b .topbar {
+    background: #fff; border-bottom: 1px solid #f3f4f6;
+    padding: 0.875rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.b .topbar-title { font-size: 0.95rem; font-weight: 600; color: #111827; }
+.b .topbar-btn {
+    background: #4f46e5; color: #fff; border: none;
+    padding: 0.45rem 1rem; border-radius: 999px;
+    font-size: 0.82rem; font-weight: 500; cursor: pointer;
+}
+.b .content { padding: 1.5rem; flex: 1; overflow: hidden; }
+.b .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.875rem; margin-bottom: 1.25rem; }
+.b .stat-card {
+    background: #fff; border-radius: 8px;
+    border: 1px solid #e5e7eb; padding: 1rem;
+}
+.b .stat-val { font-size: 1.4rem; font-weight: 700; color: #111827; }
+.b .stat-lbl { font-size: 0.72rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+.b .table-card {
+    background: #fff; border-radius: 8px;
+    border: 1px solid #e5e7eb; overflow: hidden;
+}
+.b .table-head {
+    padding: 0.65rem 1rem; font-size: 0.72rem; font-weight: 600;
+    color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 1px solid #e5e7eb;
+    display: grid; grid-template-columns: 2fr 1fr 1fr;
+}
+.b .table-row {
+    padding: 0.65rem 1rem; display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    border-bottom: 1px solid #f3f4f6;
+    font-size: 0.84rem; color: #374151; align-items: center;
+}
+.b .badge {
+    display: inline-block; padding: 0.18rem 0.55rem;
+    border-radius: 999px; font-size: 0.72rem; font-weight: 500;
+}
+.b .badge-sent { background: #e0e7ff; color: #4338ca; }
+.b .badge-ok { background: #dcfce7; color: #15803d; }
+.b .badge-draft { background: #f9fafb; color: #6b7280; border: 1px solid #e5e7eb; }
+
+
+/* ============================================================
+   OPTION C — Dark Mode Pro (Vercel / Raycast)
+   ============================================================ */
+.c .sidebar {
+    width: 220px;
+    background: #111827;
+    display: flex; flex-direction: column;
+}
+.c .sidebar-logo {
+    padding: 1.25rem;
+    font-size: 1rem; font-weight: 700; color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex; align-items: center; gap: 0.5rem;
+}
+.c .sidebar-logo .logo-icon {
+    width: 28px; height: 28px;
+    background: #22d3ee; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; color: #0f172a;
+}
+.c .sidebar-nav {
+    padding: 1rem 0.75rem; flex: 1;
+    display: flex; flex-direction: column; gap: 2px;
+}
+.c .nav-item {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.5rem 0.75rem; border-radius: 8px;
+    color: #6b7280; font-size: 0.875rem; cursor: pointer;
+}
+.c .nav-item:hover { background: rgba(255,255,255,0.04); color: #d1d5db; }
+.c .nav-item.active {
+    background: rgba(34,211,238,0.1);
+    color: #22d3ee; font-weight: 500;
+}
+.c .nav-icon { font-size: 0.95rem; width: 18px; text-align: center; }
+.c .sidebar-footer {
+    padding: 0.875rem; border-top: 1px solid rgba(255,255,255,0.05);
+    display: flex; align-items: center; gap: 0.6rem;
+}
+.c .avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #22d3ee;
+    display: flex; align-items: center; justify-content: center;
+    color: #0f172a; font-size: 0.7rem; font-weight: 700;
+}
+.c .footer-name { font-size: 0.8rem; color: #4b5563; }
+
+.c .main { flex: 1; background: #0f172a; display: flex; flex-direction: column; overflow: hidden; }
+.c .topbar {
+    background: #111827; border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 0.875rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.c .topbar-title { font-size: 1rem; font-weight: 600; color: #f9fafb; }
+.c .topbar-btn {
+    background: #22d3ee; color: #0f172a; border: none;
+    padding: 0.45rem 0.9rem; border-radius: 8px;
+    font-size: 0.82rem; font-weight: 600; cursor: pointer;
+}
+.c .content { padding: 1.5rem; flex: 1; overflow: hidden; }
+.c .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.875rem; margin-bottom: 1.25rem; }
+.c .stat-card {
+    background: #1e293b; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.06); padding: 1rem;
+}
+.c .stat-val { font-size: 1.4rem; font-weight: 700; color: #f1f5f9; }
+.c .stat-lbl { font-size: 0.72rem; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+.c .table-card {
+    background: #1e293b; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.06); overflow: hidden;
+}
+.c .table-head {
+    padding: 0.7rem 1rem; font-size: 0.72rem; font-weight: 600;
+    color: #475569; text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: grid; grid-template-columns: 2fr 1fr 1fr;
+}
+.c .table-row {
+    padding: 0.7rem 1rem; display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 0.84rem; color: #cbd5e1; align-items: center;
+}
+.c .badge {
+    display: inline-block; padding: 0.2rem 0.55rem;
+    border-radius: 999px; font-size: 0.72rem; font-weight: 500;
+}
+.c .badge-sent { background: rgba(34,211,238,0.1); color: #22d3ee; }
+.c .badge-ok { background: rgba(74,222,128,0.1); color: #4ade80; }
+.c .badge-draft { background: rgba(255,255,255,0.05); color: #475569; }
+
+
+/* ============================================================
+   OPTION D — Warm Professional (Craft / Bear)
+   ============================================================ */
+.d .sidebar {
+    width: 220px;
+    background: #1c1917;
+    display: flex; flex-direction: column;
+}
+.d .sidebar-logo {
+    padding: 1.25rem;
+    font-size: 1rem; font-weight: 700; color: #fafaf9;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex; align-items: center; gap: 0.5rem;
+}
+.d .sidebar-logo .logo-icon {
+    width: 28px; height: 28px;
+    background: #f59e0b; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; color: #1c1917;
+}
+.d .sidebar-nav {
+    padding: 1rem 0.75rem; flex: 1;
+    display: flex; flex-direction: column; gap: 2px;
+}
+.d .nav-item {
+    display: flex; align-items: center; gap: 0.6rem;
+    padding: 0.55rem 0.75rem; border-radius: 8px;
+    color: rgba(255,255,255,0.4); font-size: 0.875rem; cursor: pointer;
+}
+.d .nav-item:hover { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); }
+.d .nav-item.active {
+    background: rgba(245,158,11,0.15);
+    color: #fbbf24; font-weight: 500;
+}
+.d .nav-icon { font-size: 0.95rem; width: 18px; text-align: center; }
+.d .sidebar-footer {
+    padding: 0.875rem; border-top: 1px solid rgba(255,255,255,0.05);
+    display: flex; align-items: center; gap: 0.6rem;
+}
+.d .avatar {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: #f59e0b;
+    display: flex; align-items: center; justify-content: center;
+    color: #1c1917; font-size: 0.7rem; font-weight: 700;
+}
+.d .footer-name { font-size: 0.8rem; color: rgba(255,255,255,0.3); }
+
+.d .main { flex: 1; background: #fffbf5; display: flex; flex-direction: column; overflow: hidden; }
+.d .topbar {
+    background: #fff; border-bottom: 1px solid #f0ebe3;
+    padding: 0.875rem 1.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.d .topbar-title { font-size: 1rem; font-weight: 600; color: #1c1917; }
+.d .topbar-btn {
+    background: #f59e0b; color: #1c1917; border: none;
+    padding: 0.45rem 0.9rem; border-radius: 8px;
+    font-size: 0.82rem; font-weight: 600; cursor: pointer;
+}
+.d .content { padding: 1.5rem; flex: 1; overflow: hidden; }
+.d .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.875rem; margin-bottom: 1.25rem; }
+.d .stat-card {
+    background: #fff; border-radius: 10px;
+    border: 1px solid #f0ebe3; padding: 1rem;
+    box-shadow: 0 1px 4px rgba(28,25,23,0.06);
+}
+.d .stat-val { font-size: 1.4rem; font-weight: 700; color: #1c1917; }
+.d .stat-lbl { font-size: 0.72rem; color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+.d .table-card {
+    background: #fff; border-radius: 10px;
+    border: 1px solid #f0ebe3; overflow: hidden;
+    box-shadow: 0 1px 4px rgba(28,25,23,0.06);
+}
+.d .table-head {
+    padding: 0.7rem 1rem; font-size: 0.72rem; font-weight: 600;
+    color: #a8a29e; text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 1px solid #f0ebe3;
+    display: grid; grid-template-columns: 2fr 1fr 1fr;
+}
+.d .table-row {
+    padding: 0.7rem 1rem; display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    border-bottom: 1px solid #faf6f0;
+    font-size: 0.84rem; color: #44403c; align-items: center;
+}
+.d .badge {
+    display: inline-block; padding: 0.2rem 0.55rem;
+    border-radius: 999px; font-size: 0.72rem; font-weight: 500;
+}
+.d .badge-sent { background: #fef3c7; color: #b45309; }
+.d .badge-ok { background: #dcfce7; color: #15803d; }
+.d .badge-draft { background: #faf6f0; color: #a8a29e; border: 1px solid #f0ebe3; }
+
+</style>
+</head>
+<body>
+
+<p class="page-title">Style Preview — ArtisansPro</p>
+<p class="page-subtitle">Ouvre ce fichier dans ton navigateur puis dis-moi quelle option tu préfères</p>
+
+<div class="grid">
+
+  <!-- OPTION A -->
+  <div>
+    <p class="option-label">A — Dark Sidebar Premium · Stripe / Linear</p>
+    <div class="preview a">
+      <div class="sidebar">
+        <div class="sidebar-logo">
+          <div class="logo-icon">🔨</div>
+          ArtisansPro
+        </div>
+        <div class="sidebar-nav">
+          <div class="nav-item active"><span class="nav-icon">📊</span> Dashboard</div>
+          <div class="nav-item"><span class="nav-icon">👥</span> Clients</div>
+          <div class="nav-item"><span class="nav-icon">🏗️</span> Projets</div>
+          <div class="nav-item"><span class="nav-icon">📄</span> Devis</div>
+          <div class="nav-item"><span class="nav-icon">💰</span> Factures</div>
+          <div class="nav-item"><span class="nav-icon">✅</span> Tâches</div>
+        </div>
+        <div class="sidebar-footer">
+          <div class="avatar">BC</div>
+          <div class="footer-name">Brendan C.</div>
+        </div>
+      </div>
+      <div class="main">
+        <div class="topbar">
+          <div class="topbar-title">Dashboard</div>
+          <button class="topbar-btn">+ Nouveau</button>
+        </div>
+        <div class="content">
+          <div class="stats">
+            <div class="stat-card">
+              <div class="stat-val">24</div>
+              <div class="stat-lbl">Clients</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val">8</div>
+              <div class="stat-lbl">Devis en cours</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val">3 400 €</div>
+              <div class="stat-lbl">Ce mois</div>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="table-head">
+              <span>Client</span><span>Montant</span><span>Statut</span>
+            </div>
+            <div class="table-row">
+              <span>Martin Dubois</span><span>1 200 €</span>
+              <span><span class="badge badge-sent">Envoyé</span></span>
+            </div>
+            <div class="table-row">
+              <span>Sophie Laurent</span><span>3 400 €</span>
+              <span><span class="badge badge-ok">Accepté</span></span>
+            </div>
+            <div class="table-row">
+              <span>Pierre Moreau</span><span>850 €</span>
+              <span><span class="badge badge-draft">Brouillon</span></span>
+            </div>
+            <div class="table-row">
+              <span>Claire Bernard</span><span>2 100 €</span>
+              <span><span class="badge badge-sent">Envoyé</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION B -->
+  <div>
+    <p class="option-label">B — Light &amp; Clean · Notion / Figma</p>
+    <div class="preview b">
+      <div class="sidebar">
+        <div class="sidebar-logo">
+          <div class="logo-icon">🔨</div>
+          ArtisansPro
+        </div>
+        <div class="sidebar-nav">
+          <div class="nav-section">Menu</div>
+          <div class="nav-item active"><span class="nav-icon">📊</span> Dashboard</div>
+          <div class="nav-item"><span class="nav-icon">👥</span> Clients</div>
+          <div class="nav-item"><span class="nav-icon">🏗️</span> Projets</div>
+          <div class="nav-section">Documents</div>
+          <div class="nav-item"><span class="nav-icon">📄</span> Devis</div>
+          <div class="nav-item"><span class="nav-icon">💰</span> Factures</div>
+          <div class="nav-item"><span class="nav-icon">✅</span> Tâches</div>
+        </div>
+        <div class="sidebar-footer">
+          <div class="avatar">BC</div>
+          <div class="footer-name">Brendan C.</div>
+        </div>
+      </div>
+      <div class="main">
+        <div class="topbar">
+          <div class="topbar-title">Dashboard</div>
+          <button class="topbar-btn">+ Nouveau</button>
+        </div>
+        <div class="content">
+          <div class="stats">
+            <div class="stat-card">
+              <div class="stat-val">24</div>
+              <div class="stat-lbl">Clients</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val">8</div>
+              <div class="stat-lbl">Devis en cours</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val">3 400 €</div>
+              <div class="stat-lbl">Ce mois</div>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="table-head">
+              <span>Client</span><span>Montant</span><span>Statut</span>
+            </div>
+            <div class="table-row">
+              <span>Martin Dubois</span><span>1 200 €</span>
+              <span><span class="badge badge-sent">Envoyé</span></span>
+            </div>
+            <div class="table-row">
+              <span>Sophie Laurent</span><span>3 400 €</span>
+              <span><span class="badge badge-ok">Accepté</span></span>
+            </div>
+            <div class="table-row">
+              <span>Pierre Moreau</span><span>850 €</span>
+              <span><span class="badge badge-draft">Brouillon</span></span>
+            </div>
+            <div class="table-row">
+              <span>Claire Bernard</span><span>2 100 €</span>
+              <span><span class="badge badge-sent">Envoyé</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION C -->
+  <div>
+    <p class="option-label">C — Dark Mode Pro · Vercel / Raycast</p>
+    <div class="preview c">
+      <div class="sidebar">
+        <div class="sidebar-logo">
+          <div class="logo-icon">🔨</div>
+          ArtisansPro
+        </div>
+        <div class="sidebar-nav">
+          <div class="nav-item active"><span class="nav-icon">📊</span> Dashboard</div>
+          <div class="nav-item"><span class="nav-icon">👥</span> Clients</div>
+          <div class="nav-item"><span class="nav-icon">🏗️</span> Projets</div>
+          <div class="nav-item"><span class="nav-icon">📄</span> Devis</div>
+          <div class="nav-item"><span class="nav-icon">💰</span> Factures</div>
+          <div class="nav-item"><span class="nav-icon">✅</span> Tâches</div>
+        </div>
+        <div class="sidebar-footer">
+          <div class="avatar">BC</div>
+          <div class="footer-name">Brendan C.</div>
+        </div>
+      </div>
+      <div class="main">
+        <div class="topbar">
+          <div class="topbar-title">Dashboard</div>
+          <button class="topbar-btn">+ Nouveau</button>
+        </div>
+        <div class="content">
+          <div class="stats">
+            <div class="stat-card">
+              <div class="stat-val">24</div>
+              <div class="stat-lbl">Clients</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val">8</div>
+              <div class="stat-lbl">Devis en cours</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val">3 400 €</div>
+              <div class="stat-lbl">Ce mois</div>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="table-head">
+              <span>Client</span><span>Montant</span><span>Statut</span>
+            </div>
+            <div class="table-row">
+              <span>Martin Dubois</span><span>1 200 €</span>
+              <span><span class="badge badge-sent">Envoyé</span></span>
+            </div>
+            <div class="table-row">
+              <span>Sophie Laurent</span><span>3 400 €</span>
+              <span><span class="badge badge-ok">Accepté</span></span>
+            </div>
+            <div class="table-row">
+              <span>Pierre Moreau</span><span>850 €</span>
+              <span><span class="badge badge-draft">Brouillon</span></span>
+            </div>
+            <div class="table-row">
+              <span>Claire Bernard</span><span>2 100 €</span>
+              <span><span class="badge badge-sent">Envoyé</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION D -->
+  <div>
+    <p class="option-label">D — Warm Professional · Craft / Bear</p>
+    <div class="preview d">
+      <div class="sidebar">
+        <div class="sidebar-logo">
+          <div class="logo-icon">🔨</div>
+          ArtisansPro
+        </div>
+        <div class="sidebar-nav">
+          <div class="nav-item active"><span class="nav-icon">📊</span> Dashboard</div>
+          <div class="nav-item"><span class="nav-icon">👥</span> Clients</div>
+          <div class="nav-item"><span class="nav-icon">🏗️</span> Projets</div>
+          <div class="nav-item"><span class="nav-icon">📄</span> Devis</div>
+          <div class="nav-item"><span class="nav-icon">💰</span> Factures</div>
+          <div class="nav-item"><span class="nav-icon">✅</span> Tâches</div>
+        </div>
+        <div class="sidebar-footer">
+          <div class="avatar">BC</div>
+          <div class="footer-name">Brendan C.</div>
+        </div>
+      </div>
+      <div class="main">
+        <div class="topbar">
+          <div class="topbar-title">Dashboard</div>
+          <button class="topbar-btn">+ Nouveau</button>
+        </div>
+        <div class="content">
+          <div class="stats">
+            <div class="stat-card">
+              <div class="stat-val">24</div>
+              <div class="stat-lbl">Clients</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val">8</div>
+              <div class="stat-lbl">Devis en cours</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-val">3 400 €</div>
+              <div class="stat-lbl">Ce mois</div>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="table-head">
+              <span>Client</span><span>Montant</span><span>Statut</span>
+            </div>
+            <div class="table-row">
+              <span>Martin Dubois</span><span>1 200 €</span>
+              <span><span class="badge badge-sent">Envoyé</span></span>
+            </div>
+            <div class="table-row">
+              <span>Sophie Laurent</span><span>3 400 €</span>
+              <span><span class="badge badge-ok">Accepté</span></span>
+            </div>
+            <div class="table-row">
+              <span>Pierre Moreau</span><span>850 €</span>
+              <span><span class="badge badge-draft">Brouillon</span></span>
+            </div>
+            <div class="table-row">
+              <span>Claire Bernard</span><span>2 100 €</span>
+              <span><span class="badge badge-sent">Envoyé</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

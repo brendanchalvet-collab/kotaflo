@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prospects — Kotaflo</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/layout.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <div class="sidebar__logo-icon"><i data-lucide="wrench"></i></div>
+            <span class="sidebar__logo-text">Kota<span>flo</span></span>
+        </div>
+                <nav class="sidebar__nav">
+            <a href="/dashboard"><i data-lucide="layout-dashboard" class="sidebar__icon"></i> Tableau de bord</a>
+            <a href="/clients" class="active"><i data-lucide="users" class="sidebar__icon"></i> Clients</a>
+            <a href="/tasks"><i data-lucide="check-square" class="sidebar__icon"></i> Tâches</a>
+            <div class="sidebar__divider"></div>
+            <a href="/quotes"><i data-lucide="file-text" class="sidebar__icon"></i> Devis</a>
+            <a href="/invoices"><i data-lucide="receipt" class="sidebar__icon"></i> Factures</a>
+            <div class="sidebar__divider"></div>
+            <a href="/profile"><i data-lucide="settings" class="sidebar__icon"></i> Mon compte</a>
+        </nav>
+        <div class="sidebar__footer">
+            <div class="sidebar__footer-avatar">?</div>
+            <div class="sidebar__footer-name" id="sidebar-email"></div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+
+        <header class="topbar">
+            <span class="topbar__title">Prospects</span>
+            <span class="topbar__user" onclick="logout()">Déconnexion →</span>
+        </header>
+
+        <main class="content">
+
+            <!-- En-tête page -->
+            <div class="page-header">
+                <h2>Pipeline prospects</h2>
+                <button class="btn btn--primary" onclick="openModal()">+ Nouveau prospect</button>
+            </div>
+
+            <!-- ===== PIPELINE KANBAN ===== -->
+            <div class="pipeline" id="pipeline">
+                <div class="pipeline__col" id="col-new">
+                    <div class="pipeline__col-title">🆕 Nouveau</div>
+                </div>
+                <div class="pipeline__col" id="col-contacted">
+                    <div class="pipeline__col-title">📞 Contacté</div>
+                </div>
+                <div class="pipeline__col" id="col-quoted">
+                    <div class="pipeline__col-title">📄 Devisé</div>
+                </div>
+                <div class="pipeline__col" id="col-won">
+                    <div class="pipeline__col-title">✅ Gagné</div>
+                </div>
+                <div class="pipeline__col" id="col-lost">
+                    <div class="pipeline__col-title">❌ Perdu</div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- ===== MODAL NOUVEAU / MODIFIER PROSPECT ===== -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3 id="lead-modal-title">Nouveau prospect</h3>
+            <button class="modal__close" onclick="closeModal()">✕</button>
+        </div>
+
+        <form id="lead-form" onsubmit="handleSubmit(event)">
+            <input type="hidden" id="lead-id">
+
+            <div class="form-group">
+                <label>Nom *</label>
+                <input type="text" id="lead-name" placeholder="Jean Dupont" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Téléphone</label>
+                    <input type="tel" id="lead-phone" placeholder="06 00 00 00 00">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="lead-email" placeholder="jean@exemple.fr">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Adresse</label>
+                <input type="text" id="lead-address" placeholder="12 rue de la Paix, Paris">
+            </div>
+            <div class="form-group">
+                <label>Moyen d'acquisition</label>
+                <select id="lead-acquisition">
+                    <option value="">— Sélectionner —</option>
+                    <option value="Bouche à oreille">Bouche à oreille</option>
+                    <option value="Site web">Site web</option>
+                    <option value="Google">Google</option>
+                    <option value="Réseaux sociaux">Réseaux sociaux</option>
+                    <option value="Flyer / Affichage">Flyer / Affichage</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Notes / Commentaires</label>
+                <textarea id="lead-notes" rows="3" placeholder="Détails du prospect…"></textarea>
+            </div>
+
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeModal()">Annuler</button>
+                <button type="submit" class="btn btn--primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal détail lead (changement de statut / actions) -->
+<div class="modal-overlay hidden" id="modal-detail-overlay" onclick="closeDetailModal(event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3 id="detail-name">Prospect</h3>
+            <button class="modal__close" onclick="closeDetailModal()">✕</button>
+        </div>
+        <div id="detail-info" style="margin-bottom:1rem; font-size:.9rem; color:var(--color-gray-600); line-height:1.6"></div>
+        <div class="form-group">
+            <label>Statut</label>
+            <select id="detail-status">
+                <option value="new">Nouveau</option>
+                <option value="contacted">Contacté</option>
+                <option value="quoted">Devisé</option>
+                <option value="won">Gagné</option>
+                <option value="lost">Perdu</option>
+            </select>
+        </div>
+        <div class="modal__footer">
+            <button class="btn btn--ghost" onclick="closeDetailModal()">Annuler</button>
+            <button class="btn btn--ghost btn--sm" onclick="editCurrentLead()">Modifier</button>
+            <button class="btn btn--primary" onclick="saveStatus()">Enregistrer</button>
+            <button class="btn btn--danger btn--sm" onclick="deleteLead()">Supprimer</button>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/leads.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

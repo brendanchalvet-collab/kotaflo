@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon compte — Kotaflo</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/layout.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <div class="sidebar__logo-icon"><i data-lucide="wrench"></i></div>
+            <span class="sidebar__logo-text">Kota<span>flo</span></span>
+        </div>
+                <nav class="sidebar__nav">
+            <a href="/dashboard"><i data-lucide="layout-dashboard" class="sidebar__icon"></i> Tableau de bord</a>
+            <a href="/clients"><i data-lucide="users" class="sidebar__icon"></i> Clients</a>
+            <a href="/tasks"><i data-lucide="check-square" class="sidebar__icon"></i> Tâches</a>
+            <div class="sidebar__divider"></div>
+            <a href="/quotes"><i data-lucide="file-text" class="sidebar__icon"></i> Devis</a>
+            <a href="/invoices"><i data-lucide="receipt" class="sidebar__icon"></i> Factures</a>
+            <div class="sidebar__divider"></div>
+            <a href="/profile" class="active"><i data-lucide="settings" class="sidebar__icon"></i> Mon compte</a>
+        </nav>
+        <div class="sidebar__footer">
+            <div class="sidebar__footer-avatar">?</div>
+            <div class="sidebar__footer-name" id="sidebar-email"></div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+
+        <header class="topbar">
+            <span class="topbar__title">Mon compte</span>
+            <span class="topbar__user" onclick="logout()">Déconnexion →</span>
+        </header>
+
+        <main class="content">
+
+            <form id="profile-form" onsubmit="handleSubmit(event)">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; align-items:start;">
+
+                <!-- ===== COLONNE GAUCHE ===== -->
+                <div>
+
+                    <!-- Informations entreprise -->
+                    <div class="card" style="margin-bottom:1.25rem">
+                        <h3 style="margin-bottom:1rem">Informations entreprise</h3>
+
+                        <div class="form-group">
+                            <label>Nom de l'entreprise</label>
+                            <input type="text" id="company_name" placeholder="Ex : Martin Électricité">
+                        </div>
+                        <div class="form-group">
+                            <label>Adresse</label>
+                            <input type="text" id="address" placeholder="Ex : 12 rue de la République">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Code postal</label>
+                                <input type="text" id="zip_code" placeholder="Ex : 75001">
+                            </div>
+                            <div class="form-group">
+                                <label>Ville</label>
+                                <input type="text" id="city" placeholder="Ex : Paris">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Téléphone</label>
+                                <input type="tel" id="phone" placeholder="Ex : 06 00 00 00 00">
+                            </div>
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="email" placeholder="Ex : contact@monentreprise.fr">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Site web</label>
+                            <input type="text" id="website" placeholder="Ex : www.monentreprise.fr">
+                        </div>
+                    </div>
+
+                    <!-- Informations légales -->
+                    <div class="card">
+                        <h3 style="margin-bottom:1rem">Informations légales</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>SIRET</label>
+                                <input type="text" id="siret" placeholder="Ex : 000 000 000 00000">
+                            </div>
+                            <div class="form-group">
+                                <label>N° TVA Intracommunautaire</label>
+                                <input type="text" id="tva_number" placeholder="Ex : FR00000000000">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Qualification RGE (optionnel)</label>
+                            <input type="text" id="rge_number" placeholder="Ex : QUALIBAT-RGE 7141">
+                        </div>
+                        <div class="form-group">
+                            <label>Assurance décennale (optionnel)</label>
+                            <input type="text" id="insurance_info" placeholder="Ex : Allianz n° 00000000">
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- ===== COLONNE DROITE ===== -->
+                <div>
+
+                    <!-- Coordonnées bancaires -->
+                    <div class="card" style="margin-bottom:1.25rem">
+                        <h3 style="margin-bottom:1rem">Coordonnées bancaires</h3>
+                        <p style="font-size:.82rem; color:var(--color-gray-400); margin-bottom:.75rem">
+                            Apparaissent sur les devis PDF pour faciliter le paiement.
+                        </p>
+
+                        <div class="form-group">
+                            <label>IBAN</label>
+                            <input type="text" id="iban" placeholder="Ex : FR76 0000 0000 0000 0000 0000 000">
+                        </div>
+                        <div class="form-group">
+                            <label>BIC</label>
+                            <input type="text" id="bic" placeholder="Ex : XXXXXXXX">
+                        </div>
+                    </div>
+
+                    <!-- Connexion Gmail -->
+                    <div class="card" style="margin-bottom:1.25rem">
+                        <h3 style="margin-bottom:.5rem">Connexion Gmail</h3>
+                        <p style="font-size:.82rem;color:var(--color-gray-400);margin-bottom:.85rem">
+                            Permet de créer un brouillon avec le devis PDF déjà joint dès qu'un devis est marqué "Envoyé".
+                        </p>
+                        <div id="gmail-status" style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+                            <span id="gmail-badge" style="font-size:.82rem;color:var(--color-gray-400)">Vérification…</span>
+                            <button id="gmail-btn" class="btn btn--primary btn--sm" onclick="connectGmail()" style="display:none">
+                                Connecter Gmail
+                            </button>
+                            <button id="gmail-disconnect-btn" class="btn btn--ghost btn--sm" onclick="disconnectGmail()" style="display:none">
+                                Déconnecter
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Aperçu PDF -->
+                    <div class="card">
+                        <h3 style="margin-bottom:.75rem">Aperçu sur les devis PDF</h3>
+                        <div id="pdf-preview" style="
+                            background: var(--color-gray-50);
+                            border: 1px solid var(--color-gray-200);
+                            border-radius: var(--radius);
+                            padding: 1rem;
+                            font-size: .85rem;
+                            line-height: 1.7;
+                            color: var(--color-gray-600);
+                        ">
+                            <div id="prev-name"    style="font-weight:700; color:var(--color-primary); font-size:1rem">—</div>
+                            <div id="prev-address"></div>
+                            <div id="prev-city"></div>
+                            <div id="prev-contact"></div>
+                            <div id="prev-siret"   style="font-size:.75rem; color:var(--color-gray-400); margin-top:.5rem"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Bouton sauvegarde -->
+            <div style="margin-top:1.5rem; display:flex; justify-content:flex-end;">
+                <button type="submit" class="btn btn--primary" id="btn-save">
+                    Enregistrer les modifications
+                </button>
+            </div>
+
+            </form>
+
+        </main>
+    </div>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/profile.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

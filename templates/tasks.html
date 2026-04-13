@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tâches — Kotaflo</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/layout.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <style>
+        /* ===== FILTRES ===== */
+        .filter-bar { display:flex; gap:.5rem; margin-bottom:1.25rem; flex-wrap:wrap; align-items:center; }
+        .filter-bar .btn.active { background:var(--color-primary); color:#fff; border-color:var(--color-primary); }
+
+        /* ===== COLONNES KANBAN ===== */
+        .tasks-kanban {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            align-items: start;
+        }
+        @media (max-width: 800px) { .tasks-kanban { grid-template-columns: 1fr; } }
+
+        .task-col {
+            background: var(--color-gray-50);
+            border-radius: var(--radius-lg);
+            padding: .75rem;
+            min-height: 100px;
+        }
+        .task-col__title {
+            font-size: .78rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: .06em;
+            color: var(--color-gray-400); margin-bottom: .75rem; padding: 0 .25rem;
+        }
+
+        /* ===== CARTE TÂCHE ===== */
+        .task-card {
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: .8rem 1rem;
+            margin-bottom: .6rem;
+            border-left: 3px solid var(--color-gray-200);
+            cursor: pointer;
+        }
+        .task-card:hover { box-shadow: var(--shadow-md); }
+        .task-card.priority-high   { border-left-color: var(--color-danger); }
+        .task-card.priority-normal { border-left-color: var(--color-primary); }
+        .task-card.priority-low    { border-left-color: var(--color-gray-300); }
+
+        .task-card__title  { font-weight: 600; font-size: .9rem; }
+        .task-card__desc   { font-size: .8rem; color: var(--color-gray-600); margin-top: .2rem; }
+        .task-card__meta   { font-size: .75rem; color: var(--color-gray-400); margin-top: .4rem; display:flex; gap:.6rem; flex-wrap:wrap; }
+        .task-card__due.overdue { color: var(--color-danger); font-weight: 600; }
+    </style>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<div class="app">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <div class="sidebar__logo-icon"><i data-lucide="wrench"></i></div>
+            <span class="sidebar__logo-text">Kota<span>flo</span></span>
+        </div>
+                <nav class="sidebar__nav">
+            <a href="/dashboard"><i data-lucide="layout-dashboard" class="sidebar__icon"></i> Tableau de bord</a>
+            <a href="/clients"><i data-lucide="users" class="sidebar__icon"></i> Clients</a>
+            <a href="/tasks" class="active"><i data-lucide="check-square" class="sidebar__icon"></i> Tâches</a>
+            <div class="sidebar__divider"></div>
+            <a href="/quotes"><i data-lucide="file-text" class="sidebar__icon"></i> Devis</a>
+            <a href="/invoices"><i data-lucide="receipt" class="sidebar__icon"></i> Factures</a>
+            <div class="sidebar__divider"></div>
+            <a href="/profile"><i data-lucide="settings" class="sidebar__icon"></i> Mon compte</a>
+        </nav>
+        <div class="sidebar__footer">
+            <div class="sidebar__footer-avatar">?</div>
+            <div class="sidebar__footer-name" id="sidebar-email"></div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+        <header class="topbar">
+            <span class="topbar__title">Tâches</span>
+            <span class="topbar__user" onclick="logout()">Déconnexion →</span>
+        </header>
+
+        <main class="content">
+
+            <div class="page-header">
+                <h2>Mes tâches</h2>
+                <button class="btn btn--primary" onclick="openModal()">+ Nouvelle tâche</button>
+            </div>
+
+            <!-- Filtres priorité -->
+            <div class="filter-bar">
+                <span style="font-size:.82rem;color:var(--color-gray-400)">Priorité :</span>
+                <button class="btn btn--ghost btn--sm active" onclick="setFilter('all', this)">Toutes</button>
+                <button class="btn btn--ghost btn--sm" onclick="setFilter('high', this)">🔴 Haute</button>
+                <button class="btn btn--ghost btn--sm" onclick="setFilter('normal', this)">🔵 Normale</button>
+                <button class="btn btn--ghost btn--sm" onclick="setFilter('low', this)">⚪ Basse</button>
+            </div>
+
+            <!-- Kanban statut -->
+            <div class="tasks-kanban">
+                <div class="task-col">
+                    <div class="task-col__title">📋 À faire <span id="count-todo" style="font-weight:400"></span></div>
+                    <div id="col-todo"></div>
+                    <div id="empty-todo" class="text-muted" style="font-size:.82rem;padding:.25rem">Aucune tâche</div>
+                </div>
+                <div class="task-col">
+                    <div class="task-col__title">⚙️ En cours <span id="count-in_progress" style="font-weight:400"></span></div>
+                    <div id="col-in_progress"></div>
+                    <div id="empty-in_progress" class="text-muted" style="font-size:.82rem;padding:.25rem">Aucune tâche</div>
+                </div>
+                <div class="task-col">
+                    <div class="task-col__title">✅ Terminées <span id="count-done" style="font-weight:400"></span></div>
+                    <div id="col-done"></div>
+                    <div id="empty-done" class="text-muted" style="font-size:.82rem;padding:.25rem">Aucune tâche</div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- ===== MODAL TÂCHE ===== -->
+<div class="modal-overlay hidden" id="modal-overlay" onclick="closeModal(event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3 id="modal-title">Nouvelle tâche</h3>
+            <button class="modal__close" onclick="closeModal()">✕</button>
+        </div>
+        <form id="task-form" onsubmit="handleSubmit(event)">
+            <input type="hidden" id="task-id">
+
+            <div class="form-group">
+                <label>Titre *</label>
+                <input type="text" id="task-title" placeholder="Rappeler le client" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="task-desc" rows="2" placeholder="Détails…"></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Priorité</label>
+                    <select id="task-priority">
+                        <option value="high">🔴 Haute</option>
+                        <option value="normal" selected>🔵 Normale</option>
+                        <option value="low">⚪ Basse</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date d'échéance</label>
+                    <input type="date" id="task-due">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Contact lié</label>
+                    <select id="task-client">
+                        <option value="">— Aucun —</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Projet lié</label>
+                    <select id="task-job">
+                        <option value="">— Aucun —</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Statut</label>
+                <select id="task-status">
+                    <option value="todo">À faire</option>
+                    <option value="in_progress">En cours</option>
+                    <option value="done">Terminée</option>
+                </select>
+            </div>
+
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeModal()">Annuler</button>
+                <button type="button" class="btn btn--danger btn--sm" id="btn-delete" style="display:none" onclick="deleteTask()">Supprimer</button>
+                <button type="submit" class="btn btn--primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/tasks.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

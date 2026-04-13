@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projet — Kotaflo</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/layout.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <style>
+        /* ===== KPI BAR ===== */
+        .kpi-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .kpi {
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: .9rem 1.1rem;
+            text-align: center;
+        }
+        .kpi__value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            line-height: 1.2;
+        }
+        .kpi__label {
+            font-size: .75rem;
+            color: var(--color-gray-400);
+            margin-top: .2rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+        }
+
+        /* ===== PROJET HEADER ===== */
+        .project-header {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 1.1rem 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+        }
+        .project-header__name { font-size: 1.3rem; font-weight: 700; margin-bottom: .25rem; }
+        .project-header__info { font-size: .875rem; color: var(--color-gray-600); line-height: 1.8; }
+        .project-header__actions { display: flex; gap: .5rem; flex-shrink: 0; align-items: flex-start; }
+
+        .section-title {
+            font-size: .8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--color-gray-400);
+            margin-bottom: 0;
+        }
+
+        /* ===== PIPELINE BAR ===== */
+        .pipeline-wrap {
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            padding: .25rem 0;
+        }
+        .pipeline-inner {
+            display: flex;
+            align-items: flex-start;
+            min-width: max-content;
+        }
+        .pipeline-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+            width: 72px;
+        }
+        .pipeline-step__dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--color-gray-200);
+            margin-bottom: .35rem;
+            flex-shrink: 0;
+        }
+        .pipeline-step--done   .pipeline-step__dot { background: var(--color-primary); }
+        .pipeline-step--active .pipeline-step__dot { background: var(--color-primary); box-shadow: 0 0 0 3px rgba(245,158,11,.25); }
+        .pipeline-step__label {
+            font-size: .6rem;
+            color: var(--color-gray-300);
+            text-align: center;
+            line-height: 1.3;
+        }
+        .pipeline-step--done   .pipeline-step__label { color: var(--color-gray-400); }
+        .pipeline-step--active .pipeline-step__label { color: var(--color-primary-dk); font-weight: 600; }
+        .pipeline-line {
+            flex: 1;
+            height: 1px;
+            background: var(--color-gray-200);
+            margin-top: 3px;
+            min-width: 8px;
+        }
+        .pipeline-line--done { background: var(--color-primary); }
+
+        /* ===== METRIC CIRCLES ===== */
+        .metrics-row {
+            display: flex;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .metric-card {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 1.1rem 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            flex: 1;
+            min-width: 240px;
+        }
+        .metric-donut { position: relative; width: 96px; height: 96px; flex-shrink: 0; }
+        .metric-donut svg { display: block; }
+        .metric-donut__label {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+        }
+        .metric-donut__pct  { font-size: .85rem; font-weight: 700; color: var(--color-gray-800); line-height: 1.2; }
+        .metric-donut__sub  { font-size: .65rem; color: var(--color-gray-400); }
+        .metric-legend { font-size: .8rem; }
+        .metric-legend__row { display: flex; align-items: center; gap: .45rem; margin-bottom: .3rem; }
+        .metric-legend__dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+        .metric-legend__val { font-weight: 600; }
+        .metric-title { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--color-gray-400); margin-bottom: .6rem; }
+
+        /* ===== STAGGERED DUAL TIMELINE ===== */
+        .tl-labels {
+            display: grid;
+            grid-template-columns: 1fr 28px 1fr;
+            gap: 0 .75rem;
+            margin-bottom: 1rem;
+        }
+        .tl-label {
+            display: flex;
+            align-items: center;
+            gap: .75rem;
+        }
+        .tl-label--right { justify-content: flex-end; }
+
+        #tl-container {
+            position: relative;
+        }
+        #tl-container::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0; bottom: 0;
+            width: 2px;
+            background: var(--color-gray-200);
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+
+        .tl-event {
+            display: grid;
+            grid-template-columns: 1fr 28px 1fr;
+            gap: 0 .75rem;
+            margin-bottom: 1rem;
+            align-items: start;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tl-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            background: var(--color-primary);
+            justify-self: center;
+            margin-top: .9rem;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 0 0 3px rgba(245,158,11,.15);
+            flex-shrink: 0;
+        }
+
+        .tl-date {
+            font-size: .75rem;
+            color: var(--color-gray-400);
+            padding-top: .95rem;
+            line-height: 1.4;
+        }
+        .tl-event--left  .tl-date { text-align: right; }
+        .tl-event--right .tl-date { text-align: left;  }
+
+        /* Cartes artisan */
+        .tl-card {
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: .75rem 1rem;
+            transition: box-shadow .15s;
+        }
+        .tl-card:hover { box-shadow: var(--shadow-md); }
+        .tl-card--artisan { border-left: 3px solid var(--color-primary); }
+        .tl-card--quote   { border-left: 3px solid #8b5cf6; }
+        .tl-card--invoice { border-left: 3px solid var(--color-success, #22c55e); }
+        .tl-card__title { font-weight: 600; font-size: .9rem; }
+        .tl-card__meta  { font-size: .78rem; color: var(--color-gray-400); margin-top: .2rem; }
+        .tl-card__notes { font-size: .82rem; color: var(--color-gray-600); margin-top: .3rem; white-space: pre-wrap; line-height: 1.5; }
+        .tl-card__actions { display: flex; gap: .3rem; flex-wrap: wrap; margin-top: .5rem; }
+
+        /* ===== CARDS DEVIS / FACTURES ===== */
+        .doc-card {
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: .8rem 1rem;
+            margin-bottom: .65rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: .75rem;
+        }
+        .doc-card:hover { box-shadow: var(--shadow-md); }
+        .doc-card__ref   { font-size: .78rem; color: var(--color-gray-400); }
+        .doc-card__title { font-weight: 600; font-size: .9rem; }
+        .doc-card__meta  { font-size: .78rem; color: var(--color-gray-400); margin-top: .15rem; }
+        .doc-card__actions { display:flex; gap:.3rem; flex-wrap:wrap; justify-content:flex-end; margin-top:.35rem; }
+
+        /* ===== TIMELINE ===== */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: .6rem; top: 0; bottom: 0;
+            width: 2px;
+            background: var(--color-gray-200);
+        }
+        .timeline__event { position: relative; margin-bottom: 1rem; }
+        .timeline__dot {
+            position: absolute;
+            left: -1.68rem; top: .9rem;
+            width: .75rem; height: .75rem;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            background: var(--color-primary);
+        }
+        .timeline__card {
+            background: var(--color-white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: .7rem 1rem;
+        }
+        .timeline__card:hover { box-shadow: var(--shadow-md); }
+        .timeline__meta  { font-size: .78rem; color: var(--color-gray-400); margin-top: .2rem; }
+        .timeline__notes { font-size: .82rem; color: var(--color-gray-600); margin-top: .3rem; white-space: pre-wrap; }
+
+        /* ===== LIGNES DE DEVIS ===== */
+        .lines-table { width:100%; border-collapse:collapse; margin-bottom:.75rem; }
+        .lines-table th {
+            background: var(--color-gray-100);
+            padding: .4rem .5rem;
+            font-size: .75rem;
+            text-transform: uppercase;
+            color: var(--color-gray-400);
+            text-align: left;
+            white-space: nowrap;
+        }
+        .lines-table td { padding: .35rem .4rem; vertical-align: top; }
+        .lines-table input, .lines-table select {
+            width: 100%;
+            padding: .3rem .4rem;
+            border: 1px solid var(--color-gray-200);
+            border-radius: 4px;
+            font-size: .85rem;
+        }
+        .lines-table input:focus, .lines-table select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+        .col-desig { width: 28%; }
+        .col-desc  { width: 24%; }
+        .col-tva   { width: 8%;  }
+        .col-qty   { width: 8%;  }
+        .col-pu    { width: 12%; }
+        .col-total { width: 12%; font-weight:600; padding-top:.55rem; }
+        .col-del   { width: 4%;  }
+
+        .total-summary {
+            background: var(--color-gray-50);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius);
+            padding: .75rem 1rem;
+            font-size: .9rem;
+        }
+        .total-summary .ttc {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+        .modal--lg { max-width: 760px; }
+    </style>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+<div class="app">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <div class="sidebar__logo-icon"><i data-lucide="wrench"></i></div>
+            <span class="sidebar__logo-text">Kota<span>flo</span></span>
+        </div>
+                <nav class="sidebar__nav">
+            <a href="/dashboard"><i data-lucide="layout-dashboard" class="sidebar__icon"></i> Tableau de bord</a>
+            <a href="/clients"><i data-lucide="users" class="sidebar__icon"></i> Clients</a>
+            <a href="/tasks"><i data-lucide="check-square" class="sidebar__icon"></i> Tâches</a>
+            <div class="sidebar__divider"></div>
+            <a href="/quotes"><i data-lucide="file-text" class="sidebar__icon"></i> Devis</a>
+            <a href="/invoices"><i data-lucide="receipt" class="sidebar__icon"></i> Factures</a>
+            <div class="sidebar__divider"></div>
+            <a href="/profile"><i data-lucide="settings" class="sidebar__icon"></i> Mon compte</a>
+        </nav>
+        <div class="sidebar__footer">
+            <div class="sidebar__footer-avatar">?</div>
+            <div class="sidebar__footer-name" id="sidebar-email"></div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+        <header class="topbar">
+            <span class="topbar__title">
+                <a href="/dashboard" style="color:var(--color-gray-400);font-weight:400">← Tableau de bord</a>
+                &nbsp;/&nbsp;<span id="topbar-name">…</span>
+            </span>
+            <span class="topbar__user" onclick="logout()">Déconnexion →</span>
+        </header>
+
+        <main class="content">
+
+            <!-- ===== EN-TÊTE PROJET ===== -->
+            <div class="project-header">
+                <div>
+                    <div class="project-header__name" id="project-name">…</div>
+                    <div class="project-header__info" id="project-info"></div>
+                </div>
+                <div class="project-header__actions">
+                    <button class="btn btn--ghost btn--sm" onclick="openEditModal()">Modifier</button>
+                </div>
+            </div>
+
+            <!-- ===== DESCRIPTION ===== -->
+            <div id="project-notes-card" class="card" style="margin-bottom:1.25rem;font-size:.875rem;color:var(--color-gray-600);white-space:pre-wrap;line-height:1.7;display:none"></div>
+
+            <!-- ===== KPI ===== -->
+            <div class="kpi-bar">
+                <div class="kpi">
+                    <div class="kpi__value" id="kpi-quotes">—</div>
+                    <div class="kpi__label">Devis</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi__value" id="kpi-invoices">—</div>
+                    <div class="kpi__label">Factures</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi__value" id="kpi-ca-facture">—</div>
+                    <div class="kpi__label">CA facturé</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi__value" id="kpi-ca-encaisse">—</div>
+                    <div class="kpi__label">CA encaissé</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi__value" id="kpi-interactions">—</div>
+                    <div class="kpi__label">Interactions</div>
+                </div>
+            </div>
+
+            <!-- ===== PIPELINE BAR ===== -->
+            <div class="pipeline-wrap">
+                <div class="pipeline-inner" id="pipeline-inner"></div>
+            </div>
+
+            <!-- ===== METRICS ===== -->
+            <div class="metrics-row">
+                <!-- Cercle 1 : CA -->
+                <div class="metric-card">
+                    <div class="metric-donut">
+                        <svg width="96" height="96" viewBox="0 0 96 96">
+                            <circle cx="48" cy="48" r="40" fill="none" stroke="var(--color-gray-100)" stroke-width="11"/>
+                            <circle cx="48" cy="48" r="40" fill="none" stroke="var(--color-success,#22c55e)" stroke-width="11"
+                                    stroke-linecap="round" stroke-dasharray="0 251.33"
+                                    transform="rotate(-90 48 48)" id="arc-ca"/>
+                        </svg>
+                        <div class="metric-donut__label">
+                            <div class="metric-donut__pct" id="pct-ca">—</div>
+                            <div class="metric-donut__sub">encaissé</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="metric-title">CA Projet</div>
+                        <div class="metric-legend">
+                            <div class="metric-legend__row">
+                                <div class="metric-legend__dot" style="background:var(--color-gray-200)"></div>
+                                <span>Facturé&nbsp;<span class="metric-legend__val" id="leg-ca-facture">—</span></span>
+                            </div>
+                            <div class="metric-legend__row">
+                                <div class="metric-legend__dot" style="background:var(--color-success,#22c55e)"></div>
+                                <span>Encaissé&nbsp;<span class="metric-legend__val" id="leg-ca-encaisse">—</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cercle 2 : HT / TTC -->
+                <div class="metric-card">
+                    <div class="metric-donut">
+                        <svg width="96" height="96" viewBox="0 0 96 96">
+                            <circle cx="48" cy="48" r="40" fill="none" stroke="var(--color-primary)" stroke-width="11" opacity=".18"/>
+                            <circle cx="48" cy="48" r="40" fill="none" stroke="var(--color-primary)" stroke-width="11"
+                                    stroke-linecap="round" stroke-dasharray="0 251.33"
+                                    transform="rotate(-90 48 48)" id="arc-ht"/>
+                        </svg>
+                        <div class="metric-donut__label">
+                            <div class="metric-donut__pct" id="pct-tva">—</div>
+                            <div class="metric-donut__sub">TVA</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="metric-title">Devis acceptés</div>
+                        <div class="metric-legend">
+                            <div class="metric-legend__row">
+                                <div class="metric-legend__dot" style="background:var(--color-primary)"></div>
+                                <span>HT&nbsp;<span class="metric-legend__val" id="leg-ht">—</span></span>
+                            </div>
+                            <div class="metric-legend__row">
+                                <div class="metric-legend__dot" style="background:var(--color-primary);opacity:.35"></div>
+                                <span>TTC&nbsp;<span class="metric-legend__val" id="leg-ttc">—</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TÂCHES ===== -->
+            <div style="margin-bottom:1.5rem">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+                    <div class="section-title">✅ Tâches</div>
+                    <button class="btn btn--ghost btn--sm" onclick="openTaskModal()">+ Ajouter</button>
+                </div>
+                <div id="tasks-empty" class="text-muted" style="font-size:.875rem">Aucune tâche.</div>
+                <div id="tasks-list"></div>
+            </div>
+
+            <!-- ===== STAGGERED DUAL TIMELINE ===== -->
+
+            <!-- Labels -->
+            <div class="tl-labels">
+                <div class="tl-label">
+                    <span class="section-title">Artisan</span>
+                    <button class="btn btn--ghost btn--sm" onclick="openQuoteModal()">+ Devis</button>
+                </div>
+                <div></div>
+                <div class="tl-label tl-label--right">
+                    <span class="section-title">Client</span>
+                    <button class="btn btn--primary btn--sm" onclick="openInteractionModal()">+ Interaction</button>
+                </div>
+            </div>
+
+            <div id="timeline-empty" class="text-muted" style="font-size:.875rem;margin-bottom:.5rem">Aucun événement.</div>
+            <div id="tl-container"></div>
+
+        </main>
+    </div>
+</div>
+
+<!-- ===== MODAL MODIFIER PROJET ===== -->
+<div class="modal-overlay hidden" id="modal-edit" onclick="closeEditModal(event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3>Modifier le projet</h3>
+            <button class="modal__close" onclick="closeEditModal()">✕</button>
+        </div>
+        <form id="edit-form" onsubmit="handleEditSubmit(event)">
+            <div class="form-group">
+                <label>Titre *</label>
+                <input type="text" id="edit-title" required>
+            </div>
+            <div class="form-group">
+                <label>Statut</label>
+                <select id="edit-status">
+                    <option value="planned">Planifié</option>
+                    <option value="ongoing">En cours</option>
+                    <option value="done">Terminé</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date début</label>
+                    <input type="date" id="edit-start">
+                </div>
+                <div class="form-group">
+                    <label>Date fin</label>
+                    <input type="date" id="edit-end">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Adresse du chantier</label>
+                <input type="text" id="edit-address">
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="edit-notes" rows="3"></textarea>
+            </div>
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeEditModal()">Annuler</button>
+                <button type="submit" class="btn btn--primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== MODAL TÂCHE ===== -->
+<div class="modal-overlay hidden" id="modal-task" onclick="closeTaskModal(event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3 id="task-modal-title">Nouvelle tâche</h3>
+            <button class="modal__close" onclick="closeTaskModal()">✕</button>
+        </div>
+        <form id="task-form" onsubmit="handleTaskSubmit(event)">
+            <input type="hidden" id="task-id">
+            <div class="form-group">
+                <label>Titre *</label>
+                <input type="text" id="task-title" required>
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea id="task-desc" rows="2"></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Priorité</label>
+                    <select id="task-priority">
+                        <option value="high">🔴 Haute</option>
+                        <option value="normal" selected>🔵 Normale</option>
+                        <option value="low">⚪ Basse</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Échéance</label>
+                    <input type="date" id="task-due">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Statut</label>
+                <select id="task-status">
+                    <option value="todo">À faire</option>
+                    <option value="in_progress">En cours</option>
+                    <option value="done">Terminée</option>
+                </select>
+            </div>
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeTaskModal()">Annuler</button>
+                <button type="button" class="btn btn--danger btn--sm" id="task-btn-delete" style="display:none" onclick="deleteTask()">Supprimer</button>
+                <button type="submit" class="btn btn--primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== MODAL NOUVEAU DEVIS ===== -->
+<div class="modal-overlay hidden" id="modal-quote" onclick="closeQuoteModal(event)">
+    <div class="modal modal--lg">
+        <div class="modal__header">
+            <h3>Nouveau devis</h3>
+            <button class="modal__close" onclick="closeQuoteModal()">✕</button>
+        </div>
+        <form id="quote-form" onsubmit="handleQuoteSubmit(event)">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Titre du devis</label>
+                    <input type="text" id="pj-quote-title" placeholder="Rénovation salle de bain">
+                </div>
+                <div class="form-group">
+                    <label>Statut</label>
+                    <select id="pj-quote-status">
+                        <option value="draft">Brouillon</option>
+                        <option value="sent">Envoyé</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Mode de paiement</label>
+                    <select id="pj-quote-payment">
+                        <option value="Comptant">Comptant</option>
+                        <option value="30 jours">30 jours</option>
+                        <option value="60 jours">60 jours</option>
+                        <option value="Virement">Virement</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date d'expiration</label>
+                    <input type="date" id="pj-quote-expiry">
+                </div>
+            </div>
+
+            <!-- Lignes du devis -->
+            <div style="margin:.75rem 0 .5rem;font-weight:600;font-size:.9rem;">Lignes du devis</div>
+            <div style="overflow-x:auto;">
+                <table class="lines-table">
+                    <thead>
+                        <tr>
+                            <th class="col-desig">Désignation</th>
+                            <th class="col-desc">Description</th>
+                            <th class="col-tva">TVA %</th>
+                            <th class="col-qty">Qté</th>
+                            <th class="col-pu">Prix unit. HT</th>
+                            <th class="col-total">Total HT</th>
+                            <th class="col-del"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="pj-lines-body"></tbody>
+                </table>
+            </div>
+            <button type="button" class="btn btn--ghost btn--sm" onclick="pjAddLine()">+ Ajouter une ligne</button>
+
+            <!-- Totaux -->
+            <div class="total-summary" id="pj-total-summary" style="margin-top:.75rem;display:none;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:.3rem;">
+                    <span>Total HT</span><span id="pj-sum-ht">0,00 €</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:.3rem;color:var(--color-gray-400);font-size:.85rem;">
+                    <span>TVA</span><span id="pj-sum-tva">0,00 €</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;border-top:1px solid var(--color-gray-200);padding-top:.4rem;">
+                    <span class="ttc">Total TTC</span><span class="ttc" id="pj-sum-ttc">0,00 €</span>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top:.75rem">
+                <label>Notes / Description des travaux</label>
+                <textarea id="pj-quote-notes" rows="2" placeholder="Reprise complète réseau EFS/ECS…"></textarea>
+            </div>
+
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeQuoteModal()">Annuler</button>
+                <button type="submit" class="btn btn--primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== MODAL STATUT DEVIS ===== -->
+<div class="modal-overlay hidden" id="modal-quote-status" onclick="closeQuoteStatusModal(event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3>Changer le statut</h3>
+            <button class="modal__close" onclick="closeQuoteStatusModal()">✕</button>
+        </div>
+        <div class="form-group">
+            <label>Statut</label>
+            <select id="pj-status-select">
+                <option value="draft">Brouillon</option>
+                <option value="sent">Envoyé</option>
+                <option value="accepted">Accepté</option>
+                <option value="refused">Refusé</option>
+            </select>
+        </div>
+        <div class="modal__footer">
+            <button class="btn btn--ghost" onclick="closeQuoteStatusModal()">Annuler</button>
+            <button class="btn btn--primary" onclick="saveQuoteStatus()">Enregistrer</button>
+            <button class="btn btn--danger btn--sm" onclick="deleteQuote()">Supprimer</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL FACTURE D'ACOMPTE ===== -->
+<div class="modal-overlay hidden" id="modal-deposit" onclick="closeDepositModal(event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3>Facture d'acompte</h3>
+            <button class="modal__close" onclick="closeDepositModal()">✕</button>
+        </div>
+        <form onsubmit="submitDeposit(event)">
+            <p id="deposit-quote-ref" style="font-weight:600;margin-bottom:.25rem"></p>
+            <p id="deposit-quote-ht"  style="font-size:.82rem;color:var(--color-gray-400);margin-bottom:1rem"></p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="deposit-type" onchange="toggleDepositLabel()">
+                        <option value="percent">Pourcentage</option>
+                        <option value="amount">Montant fixe HT</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label id="deposit-value-label">Pourcentage (%)</label>
+                    <input type="number" id="deposit-value" value="30" min="1" step="0.01" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Date d'échéance</label>
+                <input type="date" id="deposit-due">
+            </div>
+            <div class="form-group">
+                <label>Résumé des travaux <span style="font-weight:400;color:var(--color-gray-400)">(optionnel)</span></label>
+                <textarea id="deposit-notes" rows="3" placeholder="Ex : fourniture et pose chaudière gaz condensation…"></textarea>
+            </div>
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeDepositModal()">Annuler</button>
+                <button type="submit" class="btn btn--primary">Créer la facture d'acompte</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== MODAL STATUT FACTURE ===== -->
+<div class="modal-overlay hidden" id="modal-invoice-status" onclick="closeInvoiceStatusModal(event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3>Statut de la facture</h3>
+            <button class="modal__close" onclick="closeInvoiceStatusModal()">✕</button>
+        </div>
+        <div class="form-group">
+            <label>Statut</label>
+            <select id="pj-invoice-status-select">
+                <option value="pending">En attente</option>
+                <option value="paid">Payée</option>
+                <option value="late">En retard</option>
+            </select>
+        </div>
+        <div class="modal__footer">
+            <button class="btn btn--ghost" onclick="closeInvoiceStatusModal()">Annuler</button>
+            <button class="btn btn--primary" onclick="saveInvoiceStatus()">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL AVENANT ===== -->
+<div class="modal-overlay hidden" id="modal-avenant" onclick="closeAvenantModal(event)">
+    <div class="modal modal--lg">
+        <div class="modal__header">
+            <h3>Nouvel avenant</h3>
+            <button class="modal__close" onclick="closeAvenantModal()">✕</button>
+        </div>
+        <form id="avenant-form" onsubmit="handleAvenantSubmit(event)">
+            <p id="avenant-quote-ref" style="font-size:.85rem;color:var(--color-gray-400);margin-bottom:1rem"></p>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Titre de l'avenant</label>
+                    <input type="text" id="avenant-title" placeholder="Travaux supplémentaires…">
+                </div>
+                <div class="form-group">
+                    <label>Date d'expiration</label>
+                    <input type="date" id="avenant-expiry">
+                </div>
+            </div>
+
+            <!-- Lignes de l'avenant -->
+            <div style="margin:.75rem 0 .5rem;font-weight:600;font-size:.9rem;">Lignes</div>
+            <div style="overflow-x:auto;">
+                <table class="lines-table">
+                    <thead>
+                        <tr>
+                            <th class="col-desig">Désignation</th>
+                            <th class="col-desc">Description</th>
+                            <th class="col-tva">TVA %</th>
+                            <th class="col-qty">Qté</th>
+                            <th class="col-pu">Prix unit. HT</th>
+                            <th class="col-total">Total HT</th>
+                            <th class="col-del"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="avenant-lines-body"></tbody>
+                </table>
+            </div>
+            <button type="button" class="btn btn--ghost btn--sm" onclick="avenantAddLine()">+ Ajouter une ligne</button>
+
+            <!-- Totaux -->
+            <div class="total-summary" id="avenant-total-summary" style="margin-top:.75rem;display:none;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:.3rem;">
+                    <span>Total HT</span><span id="av-sum-ht">0,00 €</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:.3rem;color:var(--color-gray-400);font-size:.85rem;">
+                    <span>TVA</span><span id="av-sum-tva">0,00 €</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;border-top:1px solid var(--color-gray-200);padding-top:.4rem;">
+                    <span class="ttc">Total TTC</span><span class="ttc" id="av-sum-ttc">0,00 €</span>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top:.75rem">
+                <label>Notes</label>
+                <textarea id="avenant-notes" rows="2" placeholder="Détails des travaux supplémentaires…"></textarea>
+            </div>
+
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeAvenantModal()">Annuler</button>
+                <button type="submit" class="btn btn--primary">Créer l'avenant</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== MODAL INTERACTION ===== -->
+<div class="modal-overlay hidden" id="modal-interaction" onclick="closeInteractionModal(event)">
+    <div class="modal">
+        <div class="modal__header">
+            <h3>Nouvelle interaction</h3>
+            <button class="modal__close" onclick="closeInteractionModal()">✕</button>
+        </div>
+        <form id="interaction-form" onsubmit="handleInteractionSubmit(event)">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Type</label>
+                    <select id="int-type">
+                        <option value="call">📞 Appel</option>
+                        <option value="sms">💬 SMS</option>
+                        <option value="whatsapp">🟢 WhatsApp</option>
+                        <option value="email">📧 Email</option>
+                        <option value="visit">🏠 Visite</option>
+                        <option value="note" selected>📝 Note</option>
+                        <option value="other">• Autre</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="datetime-local" id="int-date">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Titre</label>
+                <input type="text" id="int-title" placeholder="Sujet de l'échange">
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea id="int-notes" rows="3" placeholder="Détails…"></textarea>
+            </div>
+            <div class="modal__footer">
+                <button type="button" class="btn btn--ghost" onclick="closeInteractionModal()">Annuler</button>
+                <button type="submit" class="btn btn--primary">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/static/js/api.js"></script>
+<script src="/static/js/project_detail.js"></script>
+<script src="/static/js/project_detail_quotes.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>

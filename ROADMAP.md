@@ -82,11 +82,16 @@ Phase 5 — Lancement & Scale (Semaines 11+)
 ### 💰 Business Model & Pricing
 **Responsable : Adrien**
 
-- [ ] **Étude de la concurrence**
+- [x] **Étude de la concurrence** ✅ TERMINÉE
   - Analyser Tolteck, Obat, Henrri et autres acteurs
   - Documenter : prix, fonctionnalités, limites
   - Identifier notre positionnement (niche, avantage concurrentiel)
-  - **Deliverable** : Tableau comparatif concurrentiel
+  - **Deliverable** : Tableau comparatif concurrentiel (`veille_concurrentielle/`)
+  
+  **💡 Insights Clés issus de l'étude :**
+  - **Modèle de tokens** : Aucun concurrent ne propose de paiement à l'usage pur → opportunité de différenciation totale
+  - **Mode hors-ligne robuste** : Talon d'Achille de Costructor, Obat → kritikal pour Kotaflo
+  - **Premier devis en < 2 minutes** : Tolteck = 30 min d'onboarding → objectif Kotaflo : radical simplicity
 
 - [ ] **Définition des plans d'abonnement**
   - **Free**
@@ -539,21 +544,23 @@ Phase 5 — Lancement & Scale (Semaines 11+)
 
 ## 👥 Répartition des Rôles
 
-### Adrien — Business & Produit
+### Adrien — Business, Produit & UX/UI
 - Stratégie de pricing et business model
 - Marketing et acquisition
-- Design et UX
+- Design et UX/UI (templates HTML/CSS)
+- Intégration APIs d'IA (Vibe Coding)
 - Tests utilisateurs
 - Support client
 - Contenu et communication
 
-### Brendan — Technique
+### Brendan — Architecture Technique & Backend
 - Backend Flask et API
-- Base de données et architecture
+- Architecture base de données (SQLite → PostgreSQL)
+- Système de paiement et modèle de tokens (backend)
 - Sécurité et performances
 - Déploiement et infrastructure
 - Tests et QA
-- Intégrations
+- Intégrations techniques
 
 ### Collaboration
 - **Daily** : Sync rapide (15 min) sur les avancements
@@ -567,7 +574,7 @@ Phase 5 — Lancement & Scale (Semaines 11+)
 **Phase en cours** : **Phase 1 — Fondations**
 
 **Prochains livrables attendus** :
-1. Adrien : Tableau comparatif concurrentiel (S1)
+1. ~~Adrien : Tableau comparatif concurrentiel (S1)~~ ✅ FAIT
 2. Adrien : Charte graphique + Logo (S1-2)
 3. Brendan : Stabilisation auth + audit multi-tenant (S1-2)
 4. Adrien : Matrice des features par plan (S2)

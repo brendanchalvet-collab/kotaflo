@@ -133,11 +133,12 @@ kotaflo/
 
 ## 🎯 PRIORITÉS ACTUELLES (Phase 1 — Semaines 1-2)
 
-1. **Charte graphique** — Définir couleurs et typographies
-2. **Logo & Assets** — Créer l'identité visuelle
-3. **Pricing** — Finaliser les plans Free/Pro/Enterprise
-4. **Étude concurrence** — Analyser Tolteck, Obat, Henrri
-5. **Stabilisation auth** (Brendan) — Laisser Brendan finir l'auth
+1. **Définition des plans** — Free/Pro/Enterprise + matrice des features (Adrien) ✅ EN COURS
+2. **Période d'essai** — Workflow et durée (Adrien)
+3. **Modèle de tokens** — Logique de pricing à l'usage (Adrien)
+4. **Charte graphique** — Couleurs et typographies (Adrien) — *après plans*
+5. **Logo & Assets** — Identité visuelle (Adrien) — *après charte*
+6. **Stabilisation auth** (Brendan) — Laisser Brendan finir l'auth
 
 Voir `ROADMAP.md` pour le planning complet et les mises à jour.
 

@@ -13,11 +13,11 @@ gantt
     axisFormat  %d/%m
     
     section Adrien (Business)
-    Étude Concurrence           :active, a1, 2026-04-14, 3d
-    Définition des Plans        :a2, after a1, 4d
-    Modèle de Tokens            :a3, after a2, 2d
-    Période d'Essai             :a4, after a2, 2d
-    Charte Graphique            :a5, after a1, 5d
+    Étude Concurrence           :done, a1, 2026-04-14, 3d
+    Définition des Plans        :active, a2, after a1, 4d
+    Période d'Essai             :a3, after a2, 2d
+    Modèle de Tokens            :a4, after a2, 2d
+    Charte Graphique            :a5, after a3, 5d
     Logo & Assets               :a6, after a5, 3d
     Landing Page Contenu        :a7, 2026-04-28, 5d
     Plan Réseaux Sociaux        :a8, after a7, 4d
@@ -81,19 +81,20 @@ Phase 5 — Lancement & Scale (Semaines 11+)
 
 ### 💰 Business Model & Pricing
 **Responsable : Adrien**
+**Priorité : HAUTE — à faire en premier**
 
 - [x] **Étude de la concurrence** ✅ TERMINÉE
   - Analyser Tolteck, Obat, Henrri et autres acteurs
   - Documenter : prix, fonctionnalités, limites
   - Identifier notre positionnement (niche, avantage concurrentiel)
   - **Deliverable** : Tableau comparatif concurrentiel (`veille_concurrentielle/`)
-  
+
   **💡 Insights Clés issus de l'étude :**
   - **Modèle de tokens** : Aucun concurrent ne propose de paiement à l'usage pur → opportunité de différenciation totale
   - **Mode hors-ligne robuste** : Talon d'Achille de Costructor, Obat → kritikal pour Kotaflo
   - **Premier devis en < 2 minutes** : Tolteck = 30 min d'onboarding → objectif Kotaflo : radical simplicity
 
-- [ ] **Définition des plans d'abonnement**
+- [ ] **Définition des plans d'abonnement** 🔲 EN COURS
   - **Free**
     - Limite de clients (ex: 20)
     - Limite de devis/mois (ex: 5)
@@ -113,22 +114,23 @@ Phase 5 — Lancement & Scale (Semaines 11+)
     - Custom branding
   - **Deliverable** : Matrice des features par plan
 
-- [ ] **Modèle de Tokens pour les devis**
-  - Option A : 1 devis envoyé = 1 token (pakets de 10, 50, 100)
-  - Option B : Abonnement avec quota mensuel (ex: 30 devis/mois en Pro)
-  - Option C : Illimité dans les plans payants
-  - **Recommandation** : Option B pour contrôler les coûts SMTP/PDF
-  - **Deliverable** : Documentation de la logique de tokens
-
-- [ ] **Période d'essai**
+- [ ] **Période d'essai** 🔲 À faire juste après les plans
   - Durée recommandée : **14 jours**
   - Sans CB pour réduire la friction
   - Accès complet à toutes les features Pro
   - Email de rappel à J-3 et J-1 avant fin
   - **Deliverable** : Spécifications du workflow d'essai
 
+- [ ] **Modèle de Tokens pour les devis**
+  - Option A : 1 devis envoyé = 1 token (packets de 10, 50, 100)
+  - Option B : Abonnement avec quota mensuel (ex: 30 devis/mois en Pro)
+  - Option C : Illimité dans les plans payants
+  - **Recommandation** : Option B pour contrôler les coûts SMTP/PDF
+  - **Deliverable** : Documentation de la logique de tokens
+
 ### 🎨 Identité Visuelle
 **Responsable : Adrien**
+**Note : Démarrage après la définition des plans et de la période d'essai**
 
 - [ ] **Charte Graphique**
   - Palette principale :
@@ -573,11 +575,14 @@ Phase 5 — Lancement & Scale (Semaines 11+)
 
 **Phase en cours** : **Phase 1 — Fondations**
 
+**Priorité actuelle** : Définition des plans + période d'essai (Adrien)
+
 **Prochains livrables attendus** :
 1. ~~Adrien : Tableau comparatif concurrentiel (S1)~~ ✅ FAIT
-2. Adrien : Charte graphique + Logo (S1-2)
+2. Adrien : Définition des plans d'abonnement + période d'essai (EN COURS)
 3. Brendan : Stabilisation auth + audit multi-tenant (S1-2)
-4. Adrien : Matrice des features par plan (S2)
+4. Adrien : Modèle de tokens (après les plans)
+5. Adrien : Charte graphique + Logo (après la période d'essai)
 
 ---
 

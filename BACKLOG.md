@@ -306,9 +306,12 @@
 
 ### Sprint 1-2 (Phase 1 — En cours)
 - [x] Étude de concurrence ✅
+- [ ] **Définition des plans d'abonnement** (Adrien) 🔲 EN COURS
+- [ ] **Période d'essai** (Adrien)
+- [ ] **Modèle de tokens** (Adrien)
 - [ ] Stabilisation auth (Brendan)
 - [ ] Audit multi-tenant (Brendan)
-- [ ] Charte graphique + Logo (Adrien)
+- [ ] Charte graphique + Logo (Adrien) — *après plans + essai*
 
 ### Sprint 3-5 (Phase 2 — Core MUST)
 - [ ] Système de tokens backend (Brendan) 🔴

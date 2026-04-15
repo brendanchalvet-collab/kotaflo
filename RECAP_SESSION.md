@@ -51,9 +51,10 @@
 
 **Prochaines étapes** :
 1. ✅ Étude de concurrence — TERMINÉE
-2. Charte graphique + Logo (Adrien)
-3. Stabilisation auth + audit multi-tenant (Brendan)
-4. Matrice des features par plan (Adrien)
+2. **Définition des plans** + période d'essai (Adrien) — 🔲 EN COURS
+3. Modèle de tokens (Adrien)
+4. Charte graphique + Logo (Adrien) — *après plans + essai*
+5. Stabilisation auth + audit multi-tenant (Brendan)
 
 ---
 

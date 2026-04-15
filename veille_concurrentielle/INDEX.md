@@ -13,7 +13,7 @@
 | 03 | [Avantage du Modèle de Tokens](03-avantage-model-tokens.md) | Analyse du positionnement unique de Kotaflo avec le paiement à l'usage vs abonnements fixes |
 | 04 | [Recommandations Simplification Mobile](04-recommandations-simplification.md) | Comment Kotaflo peut devenir l'outil le plus simple sur smartphone (features à supprimer/simplifier) |
 | 05 | [Comparatif Stratégique Complet](05-comparatif-strategique-complet.md) | Analyse concurrentielle complète par concurrent avec axes de différenciation pour Kotaflo |
-| 06 | [Stratégie Tarifaire](06%20-%20Strat%C3%A9gei%20Tarifaire.md) | Stratégie tarifaire complète : local-first (0 token), modèle de tokens, plans Free/Pack/Pro/Enterprise, argumentaire |
+| 06 | [Stratégie Tarifaire](06%20-%20Strat%C3%A9gie%20Tarifaire.md) | Stratégie tarifaire complète : local-first (0 token), IA cloud pour génération de devis (1 token), plans Free/Pack/Pro/Enterprise, argumentaire |
 
 ---
 

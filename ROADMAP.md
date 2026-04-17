@@ -90,9 +90,10 @@ Phase 5 — Lancement & Scale (Semaines 11+)
   - **Deliverable** : Tableau comparatif concurrentiel (`veille_concurrentielle/`)
 
   **💡 Insights Clés issus de l'étude :**
-  - **Modèle de tokens** : Aucun concurrent ne propose de paiement à l'usage pur → opportunité de différenciation totale
-  - **Mode hors-ligne robuste** : Talon d'Achille de Costructor, Obat → kritikal pour Kotaflo
-  - **Premier devis en < 2 minutes** : Tolteck = 30 min d'onboarding → objectif Kotaflo : radical simplicity
+  - **Modèle de tokens** : Aucun concurrent ne propose de paiement à l'usage pur → opportunité de différenciation totale.
+  - **Mode hors-ligne robuste** : Talon d'Achille de Costructor, Obat → **"Local-First, Cloud-Smart"** est notre mantra.
+  - **Premier devis en < 2 minutes** : Tolteck = 30 min d'onboarding → Kotaflo : **radical simplicity**.
+  - **Zéro Engagement** : Les gros acteurs (TrustUp, Houzz) imposent 12-24 mois → Kotaflo sera **100% libre**.
 
 - [ ] **Définition des plans d'abonnement** 🔲 EN COURS
   - **Free**
@@ -112,6 +113,7 @@ Phase 5 — Lancement & Scale (Semaines 11+)
     - Support dédié
     - Formation onboarding
     - Custom branding
+  - **Engagement** : **AUCUN** (différenciateur majeur vs TrustUp/Houzz Pro).
   - **Deliverable** : Matrice des features par plan
 
 - [ ] **Période d'essai** 🔲 À faire juste après les plans
@@ -122,11 +124,10 @@ Phase 5 — Lancement & Scale (Semaines 11+)
   - **Deliverable** : Spécifications du workflow d'essai
 
 - [ ] **Modèle de Tokens pour les devis**
-  - Option A : 1 devis envoyé = 1 token (packets de 10, 50, 100)
-  - Option B : Abonnement avec quota mensuel (ex: 30 devis/mois en Pro)
-  - Option C : Illimité dans les plans payants
-  - **Recommandation** : Option B pour contrôler les coûts SMTP/PDF
-  - **Deliverable** : Documentation de la logique de tokens
+  - **Principe** : **1 Devis Complet = 1 Token** (évite les micro-paiements toxiques).
+  - **Option A** : Pack de Crédits (10, 50, 100 tokens) — *Recommandé pour la trésorerie*.
+  - **Option B** : Seuil Freemium (5 devis gratuits / mois, puis passage aux packs).
+  - **Deliverable** : Documentation de la logique de tokens (`06-strategie-tarifaire.md`)
 
 ### 🎨 Identité Visuelle
 **Responsable : Adrien**
@@ -156,9 +157,9 @@ Phase 5 — Lancement & Scale (Semaines 11+)
   - **Deliverable** : Auth flow 100% fonctionnel
 
 - [ ] **Architecture Multi-tenant**
-  - Valider l'isolation des données par `tenant_id`
-  - Tester les requêtes croisées (pas de fuite de données)
-  - **Deliverable** : Audit de sécurité multi-tenant
+  - Valider l'isolation des données par `tenant_id`.
+  - Implémenter le principe **"Local-First"** : stockage SQLite local prioritaire.
+  - **Deliverable** : Audit de sécurité + Preuve de concept Offline.
 
 ---
 
@@ -300,8 +301,8 @@ Phase 5 — Lancement & Scale (Semaines 11+)
     - Labels clairs
     - Messages d'erreur explicites
     - Validation en temps réel
-  - Responsive design (mobile-first)
-  - **Deliverable** : UI moderne et cohérente sur toutes les pages
+  - Responsive design (**PWA - Progressive Web App**).
+  - **Deliverable** : UI moderne et installation sur écran d'accueil (Mobile-first).
 
 - [ ] **Captures d'écran pour Documentation**
   - Réaliser des screenshots propres de chaque page
@@ -586,5 +587,5 @@ Phase 5 — Lancement & Scale (Semaines 11+)
 
 ---
 
-*Dernière mise à jour : Avril 2026*
+*Dernière mise à jour : 17 Avril 2026 à 15:15*
 *Document vivant — à mettre à jour à chaque sprint*

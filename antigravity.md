@@ -1,4 +1,4 @@
-# 🧠 Qwen Context — Adrien (Design & Business)
+# 🧠 Antigravity Context — Adrien (Design & Business)
 
 Je suis le co-fondateur en charge du design, du marketing et du pricing.
 Mon objectif est d'améliorer l'UI/UX et la stratégie sans casser le backend de Brendan.
@@ -102,6 +102,7 @@ Mon objectif est d'améliorer l'UI/UX et la stratégie sans casser le backend de
 - Sois concis et direct (pas de fluff)
 - Montre le code avant/après si c'est un changement
 - Explique les impacts potentiels (performance, compatibilité, UX)
+- **Systématiquement** ajouter la date et l'heure lors d'un ajout dans `RECAP_SESSION.md` (ex: 17/04/2026 à 15:10)
 
 ## 📁 STRUCTURE RAPIDE DU PROJET
 
@@ -128,7 +129,7 @@ kotaflo/
 │
 ├── README.md                   # ✅ EDITABLE — Documentation
 ├── ROADMAP.md                  # ✅ EDITABLE — Planification
-└── qwen.md                     # ✅ CE FICHIER — Règles Qwen
+└── antigravity.md              # ✅ CE FICHIER — Règles Antigravity
 ```
 
 ## 🎯 PRIORITÉS ACTUELLES (Phase 1 — Semaines 1-2)
@@ -144,5 +145,5 @@ Voir `ROADMAP.md` pour le planning complet et les mises à jour.
 
 ---
 
-*Dernière mise à jour : Avril 2026*
+*Dernière mise à jour : 17 Avril 2026 à 15:10*
 *Ce fichier est vivant — à mettre à jour selon l'évolution du projet*

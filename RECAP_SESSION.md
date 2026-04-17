@@ -1,7 +1,7 @@
 # 📝 Session Kotaflo — Récapitulatif
 
-> **Date** : 14/04/2026  
-> **Objectif** : Structurer la documentation après l'étude de concurrence sur NotebookLM
+> **Date** : 17/04/2026 à 15:10  
+> **Objectif** : Transition de Qwen vers Antigravity et mise à jour des protocoles
 
 ---
 
@@ -23,7 +23,7 @@
 | `README.md` | Documentation complète du projet (features, architecture, API, setup, DB) | +663 |
 | `ROADMAP.md` | Roadmap 5 phases + Gantt chart Mermaid (23 tâches Adrien + 19 Brendan) | +586 |
 | `BACKLOG.md` | Backlog priorisé MoSCoW (7 MUST, 5 SHOULD, 5 COULD, 5 WON'T) | +350 |
-| `qwen.md` | Règles Qwen Code (security, permissions, workflow) | +147 |
+| `antigravity.md` | Règles Antigravity Code (security, permissions, workflow) | +147 |
 | `veille_concurrentielle/INDEX.md` | Index de la veille concurrentielle | +43 |
 | `05-comparatif-strategique-complet.md` | Analyse complète par concurrent avec axes de différenciation | +180 |
 
@@ -73,7 +73,7 @@ git commit -m "docs: documentation complète + étude concurrence + roadmap + ba
 - README.md: documentation projet complète
 - ROADMAP.md: roadmap 5 phases + Gantt mermaid
 - BACKLOG.md: backlog priorisé MoSCoW
-- qwen.md: règles Qwen Code
+- antigravity.md: règles Antigravity Code
 - veille_concurrentielle/: 5 docs restructurés + index
 - Insights: tokens, offline, devis < 2 min"
 
@@ -83,5 +83,13 @@ git push
 
 ---
 
-**Total** : ~2 400 lignes de documentation produites  
-**Statut** : Prêt pour commit/push
+## 🚀 Session du 17/04/2026 à 15:10
+
+### Actions réalisées :
+- **Transition Assistant** : Migration de `qwen.md` vers `antigravity.md`.
+- **Mise à jour Protocoles** : Intégration de la règle de datation systématique pour les récapitulatifs de session.
+- **Nettoyage** : Suppression de l'ancien fichier de contexte `qwen.md`.
+- **Veille Concurrentielle** : Formatage Markdown et renommage du fichier `06-strategie-tarifaire.md`.
+- **Roadmap** : Mise à jour de `ROADMAP.md` avec les insights stratégiques (Local-First, Zéro Engagement, Token=Devis, PWA).
+
+**Statut** : Assistant Antigravity configuré et prêt.

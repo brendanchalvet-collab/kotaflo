@@ -306,12 +306,14 @@
 
 ### Sprint 1-2 (Phase 1 — En cours)
 - [x] Étude de concurrence ✅
-- [ ] **Définition des plans d'abonnement** (Adrien) 🔲 EN COURS
-- [ ] **Période d'essai** (Adrien)
+- [ ] **Définition des plans d'abonnement** (Adrien) — EN COURS
+  - Option A: Packs tokens (10/50/100) — 1 Devis = 1 Token
+  - Option B: Seuil Freemium (5 devis gratuits/mois) puis bascule vers Packs
+- [ ] **Période d'essai** (Adrien) — *14 jours sans CB*
 - [ ] **Modèle de tokens** (Adrien)
 - [ ] Stabilisation auth (Brendan)
 - [ ] Audit multi-tenant (Brendan)
-- [ ] Charte graphique + Logo (Adrien) — *après plans + essai*
+- [ ] Charte graphique + Logo (Adrien)
 
 ### Sprint 3-5 (Phase 2 — Core MUST)
 - [ ] Système de tokens backend (Brendan) 🔴

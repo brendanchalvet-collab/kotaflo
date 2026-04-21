@@ -8,48 +8,15 @@
     <link rel="stylesheet" href="/static/css/layout.css">
     <link rel="stylesheet" href="/static/css/components.css">
     <style>
-        /* ===== KPI PROJETS ===== */
-        .kpi-row {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-        .kpi-inline {
-            display: flex;
-            align-items: center;
-            background: var(--color-white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: .55rem 1rem;
-        }
-
-        /* ===== KANBAN PROJETS ===== */
         .projects-kanban {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
-            align-items: start;
+            margin-bottom: 1.5rem;
         }
         @media (max-width: 800px) { .projects-kanban { grid-template-columns: 1fr; } }
 
-        .proj-col {
-            background: var(--color-gray-50, #f8fafc);
-            border-radius: var(--radius-lg);
-            padding: .75rem;
-            min-height: 100px;
-        }
-        .proj-col__title {
-            font-size: .78rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .06em;
-            color: var(--color-gray-400);
-            margin-bottom: .75rem;
-            padding: 0 .25rem;
-        }
-
-        /* ===== CARTE PROJET ===== */
+        /* Carte projet (dans kanban) */
         .proj-card {
             background: var(--color-white);
             border-radius: var(--radius);
@@ -63,7 +30,6 @@
         .proj-card__client { font-size: .78rem; color: var(--color-primary); margin-top: .2rem; }
         .proj-card__dates  { font-size: .75rem; color: var(--color-gray-400); margin-top: .3rem; }
 
-        /* Accordéon notes projet */
         .proj-card__notes-toggle {
             display: flex;
             align-items: center;
@@ -87,121 +53,182 @@
             line-height: 1.6;
         }
         .proj-card__notes-body.open { display: block; }
+
+        .kpi-row { display: flex; gap: .75rem; flex-wrap: wrap; }
+        .kpi-inline {
+            display: flex;
+            align-items: center;
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius);
+            padding: .35rem .85rem;
+            font-size: .82rem;
+            gap: .4rem;
+        }
     </style>
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body>
 
-<!-- ===== APP SHELL ===== -->
 <div class="app">
 
     <!-- ===== SIDEBAR ===== -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar__logo">
-            <div class="sidebar__logo-icon"><i data-lucide="wrench"></i></div>
+            <div class="sidebar__logo-icon"><i data-lucide="zap"></i></div>
             <span class="sidebar__logo-text">Kota<span>flo</span></span>
         </div>
         <nav class="sidebar__nav">
             <a href="/dashboard" class="active"><i data-lucide="layout-dashboard" class="sidebar__icon"></i> Tableau de bord</a>
             <a href="/clients"><i data-lucide="users" class="sidebar__icon"></i> Clients</a>
+            <a href="/projects"><i data-lucide="hard-hat" class="sidebar__icon"></i> Chantiers</a>
             <a href="/tasks"><i data-lucide="check-square" class="sidebar__icon"></i> Tâches</a>
             <div class="sidebar__divider"></div>
+            <div class="sidebar__section-label">Facturation</div>
             <a href="/quotes"><i data-lucide="file-text" class="sidebar__icon"></i> Devis</a>
             <a href="/invoices"><i data-lucide="receipt" class="sidebar__icon"></i> Factures</a>
+            <a href="/leads"><i data-lucide="bell" class="sidebar__icon"></i> Relances</a>
+            <div class="sidebar__tokens">
+                <div class="sidebar__tokens-header">
+                    <b>Jetons devis</b>
+                    <span class="sidebar__tokens-count" id="tokens-count">— / —</span>
+                </div>
+                <div class="sidebar__tokens-bar">
+                    <div class="sidebar__tokens-fill" id="tokens-fill"></div>
+                </div>
+                <span class="sidebar__tokens-label">Forfait Pro · recharge auto</span>
+            </div>
             <div class="sidebar__divider"></div>
-            <a href="/profile"><i data-lucide="settings" class="sidebar__icon"></i> Mon compte</a>
+            <a href="/profile"><i data-lucide="settings" class="sidebar__icon"></i> Compte</a>
         </nav>
         <div class="sidebar__footer">
-            <div class="sidebar__footer-avatar">?</div>
-            <div class="sidebar__footer-name" id="sidebar-email"></div>
+            <div class="sidebar__footer-avatar" id="sidebar-avatar">?</div>
+            <div class="sidebar__footer-info">
+                <span class="sidebar__footer-name" id="sidebar-name">—</span>
+                <span class="sidebar__footer-meta" id="sidebar-meta">Artisan</span>
+            </div>
         </div>
     </aside>
 
     <!-- ===== MAIN ===== -->
     <div class="main">
 
-        <!-- Topbar -->
         <header class="topbar">
-            <span class="topbar__title">Tableau de bord</span>
-            <span class="topbar__user" onclick="logout()">Déconnexion →</span>
+            <div>
+                <div class="topbar__title">Tableau de bord</div>
+                <div class="topbar__subtitle" id="topbar-subtitle">Bonjour —</div>
+            </div>
+            <div class="topbar__actions">
+                <button class="btn--icon" title="Notifications"><i data-lucide="bell" style="width:16px;height:16px"></i></button>
+                <button class="btn btn--dark" onclick="openProjectModal()">
+                    <i data-lucide="plus" style="width:16px;height:16px"></i> Ajouter
+                </button>
+                <a href="/quotes" class="btn btn--primary">
+                    <i data-lucide="file-plus" style="width:16px;height:16px"></i> Nouveau devis
+                </a>
+            </div>
         </header>
 
-        <!-- ===== CONTENU ===== -->
         <main class="content">
 
-            <!-- ===== STATS ===== -->
+            <!-- Stats -->
             <div class="stats-grid" id="stats-grid">
                 <div class="card card--stat">
-                    <span class="stat-label">Clients</span>
+                    <div class="stat-icon stat-icon--orange"><i data-lucide="users"></i></div>
+                    <span class="stat-label">Clients actifs</span>
                     <span class="stat-value" id="stat-clients">—</span>
                 </div>
                 <div class="card card--stat">
+                    <div class="stat-icon stat-icon--steel"><i data-lucide="target"></i></div>
                     <span class="stat-label">Prospects</span>
                     <span class="stat-value" id="stat-leads">—</span>
                 </div>
                 <div class="card card--stat">
+                    <div class="stat-icon stat-icon--green"><i data-lucide="file-text"></i></div>
                     <span class="stat-label">Devis en cours</span>
                     <span class="stat-value" id="stat-quotes">—</span>
                 </div>
                 <div class="card card--stat">
+                    <div class="stat-icon stat-icon--danger"><i data-lucide="alert-triangle"></i></div>
                     <span class="stat-label">Factures impayées</span>
                     <span class="stat-value" id="stat-invoices">—</span>
                 </div>
             </div>
 
-            <!-- ===== ACTIONS RAPIDES ===== -->
+            <!-- Actions rapides -->
             <div class="card" style="margin-bottom:1.25rem">
                 <h3 style="margin-bottom:1rem">Actions rapides</h3>
                 <div style="display:flex; gap:.75rem; flex-wrap:wrap;">
-                    <a href="/clients" class="btn btn--primary">+ Nouveau client</a>
-                    <a href="/quotes"  class="btn btn--ghost">+ Nouveau devis</a>
-                    <a href="/leads"   class="btn btn--ghost">+ Nouveau prospect</a>
-                    <button class="btn btn--ghost" onclick="openProjectModal()">+ Nouveau projet</button>
+                    <a href="/clients" class="btn btn--primary">
+                        <i data-lucide="user-plus" style="width:16px;height:16px"></i> Nouveau client
+                    </a>
+                    <a href="/quotes" class="btn btn--dark">
+                        <i data-lucide="file-plus" style="width:16px;height:16px"></i> Nouveau devis
+                    </a>
+                    <button class="btn btn--ghost" onclick="openProjectModal()">
+                        <i data-lucide="calendar-plus" style="width:16px;height:16px"></i> Planifier un chantier
+                    </button>
+                    <a href="/invoices" class="btn btn--ghost">
+                        <i data-lucide="credit-card" style="width:16px;height:16px"></i> Enregistrer un paiement
+                    </a>
                 </div>
             </div>
 
-            <!-- ===== PROJETS ===== -->
+            <!-- Chantiers kanban -->
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
-                <h3 style="margin:0">Projets</h3>
-                <div class="kpi-row" style="margin-bottom:0">
+                <h2 style="margin:0">Chantiers à venir</h2>
+                <div class="kpi-row">
                     <div class="kpi-inline" id="kpi-planned"></div>
                     <div class="kpi-inline" id="kpi-ongoing"></div>
                     <div class="kpi-inline" id="kpi-done"></div>
                 </div>
             </div>
 
-            <div class="projects-kanban" style="margin-bottom:1.5rem">
-                <div class="proj-col">
-                    <div class="proj-col__title">📅 Planifiés</div>
+            <div class="projects-kanban">
+                <div class="kcol kcol--planned">
+                    <div class="kcol__head">
+                        <span style="display:flex;align-items:center;gap:.4rem"><i data-lucide="calendar" style="width:14px;height:14px"></i> Planifiés</span>
+                        <span class="kcol__count" id="count-planned">0</span>
+                    </div>
                     <div id="col-planned"></div>
                     <div id="empty-planned" class="text-muted" style="font-size:.82rem;padding:.25rem">Aucun</div>
                 </div>
-                <div class="proj-col">
-                    <div class="proj-col__title">⚙️ En cours</div>
+                <div class="kcol kcol--active">
+                    <div class="kcol__head">
+                        <span style="display:flex;align-items:center;gap:.4rem"><i data-lucide="zap" style="width:14px;height:14px"></i> En cours</span>
+                        <span class="kcol__count" id="count-ongoing">0</span>
+                    </div>
                     <div id="col-ongoing"></div>
                     <div id="empty-ongoing" class="text-muted" style="font-size:.82rem;padding:.25rem">Aucun</div>
                 </div>
-                <div class="proj-col">
-                    <div class="proj-col__title">✅ Terminés</div>
+                <div class="kcol kcol--done">
+                    <div class="kcol__head">
+                        <span style="display:flex;align-items:center;gap:.4rem"><i data-lucide="check" style="width:14px;height:14px"></i> Terminés</span>
+                        <span class="kcol__count" id="count-done">0</span>
+                    </div>
                     <div id="col-done"></div>
                     <div id="empty-done" class="text-muted" style="font-size:.82rem;padding:.25rem">Aucun</div>
                 </div>
             </div>
 
-            <!-- ===== DERNIERS CLIENTS ===== -->
+            <!-- Derniers clients -->
             <div class="card">
-                <h3 style="margin-bottom:1rem">Derniers clients</h3>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+                    <h3 style="margin:0">Derniers clients</h3>
+                    <a href="/clients" class="btn btn--ghost btn--sm">Tous les clients →</a>
+                </div>
                 <div class="table-wrap" style="box-shadow:none">
                     <table>
                         <thead>
                             <tr>
-                                <th>Nom</th>
+                                <th>Client</th>
                                 <th>Téléphone</th>
                                 <th>Email</th>
+                                <th>Statut</th>
                             </tr>
                         </thead>
                         <tbody id="recent-clients">
-                            <tr><td colspan="3" class="text-muted">Chargement…</td></tr>
+                            <tr><td colspan="4" class="text-muted">Chargement…</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -211,16 +238,15 @@
     </div>
 </div>
 
-<!-- ===== MODAL PROJET ===== -->
+<!-- Modal Projet -->
 <div class="modal-overlay hidden" id="modal-overlay" onclick="closeModal(event)">
     <div class="modal">
         <div class="modal__header">
-            <h3 id="modal-title">Nouveau projet</h3>
+            <h3 id="modal-title">Nouveau chantier</h3>
             <button class="modal__close" onclick="closeModal()">✕</button>
         </div>
         <form id="project-form" onsubmit="handleSubmit(event)">
             <input type="hidden" id="proj-id">
-
             <div class="form-group">
                 <label>Titre *</label>
                 <input type="text" id="proj-title" placeholder="Rénovation salle de bain" required>
@@ -257,7 +283,6 @@
                 <label>Notes</label>
                 <textarea id="proj-notes" rows="3" placeholder="Description du chantier…"></textarea>
             </div>
-
             <div class="modal__footer">
                 <button type="button" class="btn btn--ghost" onclick="closeModal()">Annuler</button>
                 <button type="button" class="btn btn--danger btn--sm" id="btn-delete" style="display:none" onclick="deleteProject()">Supprimer</button>

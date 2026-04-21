@@ -32,9 +32,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        const el = document.getElementById('sidebar-email');
+        const el = document.getElementById('sidebar-name');
         if (el) el.textContent = payload.sub || '';
-        const av = document.querySelector('.sidebar__footer-avatar');
+        const av = document.getElementById('sidebar-avatar');
         if (av && payload.sub) av.textContent = payload.sub[0].toUpperCase();
     } catch (_) {}
 });

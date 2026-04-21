@@ -34,10 +34,13 @@ function logout() {
 function setUserEmail() {
     try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        const el = document.getElementById('sidebar-email');
-        if (el) el.textContent = payload.sub || '';
-        const av = document.querySelector('.sidebar__footer-avatar');
-        if (av && payload.sub) av.textContent = payload.sub[0].toUpperCase();
+        const email = payload.sub || '';
+        const nameEl = document.getElementById('sidebar-name');
+        if (nameEl) nameEl.textContent = email;
+        const av = document.getElementById('sidebar-avatar');
+        if (av && email) av.textContent = email[0].toUpperCase();
+        const subtitle = document.getElementById('topbar-subtitle');
+        if (subtitle) subtitle.textContent = `Bonjour, ${email.split('@')[0]} !`;
     } catch (_) {}
 }
 
@@ -75,10 +78,11 @@ async function loadRecentClients() {
         }
 
         tbody.innerHTML = clients.slice(0, 5).map(c => `
-            <tr>
-                <td><a href="/contacts/${c.id}">${c.name}</a></td>
-                <td>${c.phone || '—'}</td>
-                <td>${c.email || '—'}</td>
+            <tr onclick="window.location='/contacts/${c.id}'">
+                <td><b>${c.name}</b></td>
+                <td class="font-mono" style="font-size:.85rem">${c.phone || '—'}</td>
+                <td style="font-size:.85rem">${c.email || '—'}</td>
+                <td><span class="badge badge--active">Actif</span></td>
             </tr>
         `).join('');
 
@@ -169,6 +173,8 @@ function renderKanban(projects) {
 
     ['planned', 'ongoing', 'done'].forEach(s => {
         document.getElementById(`empty-${s}`).style.display = counts[s] ? 'none' : '';
+        const countEl = document.getElementById(`count-${s}`);
+        if (countEl) countEl.textContent = counts[s] || 0;
     });
 }
 

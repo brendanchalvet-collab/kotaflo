@@ -16,22 +16,33 @@
     <!-- ===== SIDEBAR ===== -->
     <aside class="sidebar">
         <div class="sidebar__logo">
-            <div class="sidebar__logo-icon"><i data-lucide="wrench"></i></div>
+            <div class="sidebar__logo-icon"><i data-lucide="zap"></i></div>
             <span class="sidebar__logo-text">Kota<span>flo</span></span>
         </div>
-                <nav class="sidebar__nav">
+        <nav class="sidebar__nav">
             <a href="/dashboard"><i data-lucide="layout-dashboard" class="sidebar__icon"></i> Tableau de bord</a>
             <a href="/clients"><i data-lucide="users" class="sidebar__icon"></i> Clients</a>
+            <a href="/projects"><i data-lucide="hard-hat" class="sidebar__icon"></i> Chantiers</a>
             <a href="/tasks"><i data-lucide="check-square" class="sidebar__icon"></i> Tâches</a>
             <div class="sidebar__divider"></div>
+            <div class="sidebar__section-label">Facturation</div>
             <a href="/quotes"><i data-lucide="file-text" class="sidebar__icon"></i> Devis</a>
             <a href="/invoices"><i data-lucide="receipt" class="sidebar__icon"></i> Factures</a>
+            <a href="/leads"><i data-lucide="bell" class="sidebar__icon"></i> Relances</a>
+            <div class="sidebar__tokens">
+                <div class="sidebar__tokens-header"><b>Jetons devis</b><span class="sidebar__tokens-count">— / —</span></div>
+                <div class="sidebar__tokens-bar"><div class="sidebar__tokens-fill"></div></div>
+                <span class="sidebar__tokens-label">Forfait Pro · recharge auto</span>
+            </div>
             <div class="sidebar__divider"></div>
-            <a href="/profile" class="active"><i data-lucide="settings" class="sidebar__icon"></i> Mon compte</a>
+            <a href="/profile" class="active"><i data-lucide="settings" class="sidebar__icon"></i> Compte</a>
         </nav>
         <div class="sidebar__footer">
-            <div class="sidebar__footer-avatar">?</div>
-            <div class="sidebar__footer-name" id="sidebar-email"></div>
+            <div class="sidebar__footer-avatar" id="sidebar-avatar">?</div>
+            <div class="sidebar__footer-info">
+                <span class="sidebar__footer-name" id="sidebar-name"></span>
+                <span class="sidebar__footer-meta">Artisan</span>
+            </div>
         </div>
     </aside>
 

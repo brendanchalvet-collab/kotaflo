@@ -6,3 +6,4 @@ python-dotenv==1.0.1
 fpdf2==2.7.9
 google-auth-oauthlib==1.2.0
 google-api-python-client==2.131.0
+firebase-admin==6.5.0

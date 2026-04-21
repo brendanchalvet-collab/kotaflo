@@ -365,94 +365,90 @@
             <!-- ===== DESCRIPTION ===== -->
             <div id="project-notes-card" class="card" style="margin-bottom:1.25rem;font-size:.875rem;color:var(--color-gray-600);white-space:pre-wrap;line-height:1.7;display:none"></div>
 
-            <!-- ===== KPI ===== -->
-            <div class="kpi-bar">
-                <div class="kpi">
-                    <div class="kpi__value" id="kpi-quotes">—</div>
-                    <div class="kpi__label">Devis</div>
-                </div>
-                <div class="kpi">
-                    <div class="kpi__value" id="kpi-invoices">—</div>
-                    <div class="kpi__label">Factures</div>
-                </div>
-                <div class="kpi">
-                    <div class="kpi__value" id="kpi-ca-facture">—</div>
-                    <div class="kpi__label">CA facturé</div>
-                </div>
-                <div class="kpi">
-                    <div class="kpi__value" id="kpi-ca-encaisse">—</div>
-                    <div class="kpi__label">CA encaissé</div>
-                </div>
-                <div class="kpi">
-                    <div class="kpi__value" id="kpi-interactions">—</div>
-                    <div class="kpi__label">Interactions</div>
-                </div>
-            </div>
-
             <!-- ===== PIPELINE BAR ===== -->
             <div class="pipeline-wrap">
                 <div class="pipeline-inner" id="pipeline-inner"></div>
             </div>
 
-            <!-- ===== METRICS ===== -->
+            <!-- ===== KPI : cercle unique multi-anneaux ===== -->
             <div class="metrics-row">
-                <!-- Cercle 1 : CA -->
                 <div class="metric-card">
-                    <div class="metric-donut">
-                        <svg width="96" height="96" viewBox="0 0 96 96">
-                            <circle cx="48" cy="48" r="40" fill="none" stroke="var(--color-gray-100)" stroke-width="11"/>
-                            <circle cx="48" cy="48" r="40" fill="none" stroke="var(--color-success,#22c55e)" stroke-width="11"
+                    <!-- 3 anneaux concentriques : r=68 / 54 / 40 -->
+                    <div class="metric-donut" style="width:160px;height:160px">
+                        <svg width="160" height="160" viewBox="0 0 160 160">
+                            <!-- Anneau 1 : CA payé (r=68, vert) -->
+                            <circle cx="80" cy="80" r="68" fill="none" stroke="#22c55e" stroke-width="10" opacity=".2"/>
+                            <circle cx="80" cy="80" r="68" fill="none" stroke="#22c55e" stroke-width="10"
+                                    stroke-linecap="round" stroke-dasharray="0 427.26"
+                                    transform="rotate(-90 80 80)" id="arc-kpi-paye"/>
+                            <!-- Anneau 2 : CA facturé (r=54, orange) -->
+                            <circle cx="80" cy="80" r="54" fill="none" stroke="#f59e0b" stroke-width="10" opacity=".2"/>
+                            <circle cx="80" cy="80" r="54" fill="none" stroke="#f59e0b" stroke-width="10"
+                                    stroke-linecap="round" stroke-dasharray="0 339.29"
+                                    transform="rotate(-90 80 80)" id="arc-kpi-facture"/>
+                            <!-- Anneau 3 : CA devis signé (r=40, bleu) -->
+                            <circle cx="80" cy="80" r="40" fill="none" stroke="#3b82f6" stroke-width="10" opacity=".2"/>
+                            <circle cx="80" cy="80" r="40" fill="none" stroke="#3b82f6" stroke-width="10"
                                     stroke-linecap="round" stroke-dasharray="0 251.33"
-                                    transform="rotate(-90 48 48)" id="arc-ca"/>
+                                    transform="rotate(-90 80 80)" id="arc-kpi-devise-accepte"/>
                         </svg>
-                        <div class="metric-donut__label">
-                            <div class="metric-donut__pct" id="pct-ca">—</div>
-                            <div class="metric-donut__sub">encaissé</div>
-                        </div>
                     </div>
                     <div>
-                        <div class="metric-title">CA Projet</div>
+                        <div class="metric-title">CA Projet (HT)</div>
                         <div class="metric-legend">
                             <div class="metric-legend__row">
-                                <div class="metric-legend__dot" style="background:var(--color-gray-200)"></div>
-                                <span>Facturé&nbsp;<span class="metric-legend__val" id="leg-ca-facture">—</span></span>
+                                <div class="metric-legend__dot" style="background:#93c5fd;border:1px solid #3b82f6"></div>
+                                <span>CA devisé&nbsp;<span class="metric-legend__val" id="kpi-ca-devise">—</span></span>
                             </div>
                             <div class="metric-legend__row">
-                                <div class="metric-legend__dot" style="background:var(--color-success,#22c55e)"></div>
-                                <span>Encaissé&nbsp;<span class="metric-legend__val" id="leg-ca-encaisse">—</span></span>
+                                <div class="metric-legend__dot" style="background:#3b82f6"></div>
+                                <span>Devis signé&nbsp;<span class="metric-legend__val" id="kpi-ca-devise-accepte">—</span></span>
+                            </div>
+                            <div class="metric-legend__row">
+                                <div class="metric-legend__dot" style="background:#f59e0b"></div>
+                                <span>Facturé&nbsp;<span class="metric-legend__val" id="kpi-ca-facture">—</span></span>
+                            </div>
+                            <div class="metric-legend__row">
+                                <div class="metric-legend__dot" style="background:#22c55e"></div>
+                                <span>Payé&nbsp;<span class="metric-legend__val" id="kpi-ca-paye">—</span></span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Cercle 2 : HT / TTC -->
+                <!-- TVA sur devis acceptés -->
                 <div class="metric-card">
                     <div class="metric-donut">
                         <svg width="96" height="96" viewBox="0 0 96 96">
-                            <circle cx="48" cy="48" r="40" fill="none" stroke="var(--color-primary)" stroke-width="11" opacity=".18"/>
+                            <circle cx="48" cy="48" r="40" fill="none" stroke="var(--color-primary)" stroke-width="11" opacity=".15"/>
                             <circle cx="48" cy="48" r="40" fill="none" stroke="var(--color-primary)" stroke-width="11"
                                     stroke-linecap="round" stroke-dasharray="0 251.33"
-                                    transform="rotate(-90 48 48)" id="arc-ht"/>
+                                    transform="rotate(-90 48 48)" id="arc-kpi-tva"/>
                         </svg>
                         <div class="metric-donut__label">
-                            <div class="metric-donut__pct" id="pct-tva">—</div>
+                            <div class="metric-donut__pct" id="pct-kpi-tva">—</div>
                             <div class="metric-donut__sub">TVA</div>
                         </div>
                     </div>
                     <div>
-                        <div class="metric-title">Devis acceptés</div>
+                        <div class="metric-title">Part TVA</div>
                         <div class="metric-legend">
                             <div class="metric-legend__row">
-                                <div class="metric-legend__dot" style="background:var(--color-primary)"></div>
-                                <span>HT&nbsp;<span class="metric-legend__val" id="leg-ht">—</span></span>
+                                <div class="metric-legend__dot" style="background:var(--color-primary);opacity:.35"></div>
+                                <span>HT&nbsp;<span class="metric-legend__val" id="kpi-tva-ht">—</span></span>
                             </div>
                             <div class="metric-legend__row">
-                                <div class="metric-legend__dot" style="background:var(--color-primary);opacity:.35"></div>
-                                <span>TTC&nbsp;<span class="metric-legend__val" id="leg-ttc">—</span></span>
+                                <div class="metric-legend__dot" style="background:var(--color-primary)"></div>
+                                <span>TVA&nbsp;<span class="metric-legend__val" id="kpi-tva-montant">—</span></span>
+                            </div>
+                            <div class="metric-legend__row">
+                                <div class="metric-legend__dot" style="background:var(--color-gray-300)"></div>
+                                <span>TTC&nbsp;<span class="metric-legend__val" id="kpi-tva-ttc">—</span></span>
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
 
             <!-- ===== TÂCHES ===== -->

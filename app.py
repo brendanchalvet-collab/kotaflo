@@ -4,6 +4,7 @@ from flask_cors import CORS
 
 from config import Config
 from init_db import migrate
+from backend.utils.firebase_utils import init_firebase
 from backend.routes.auth import auth_bp
 from backend.routes.clients import clients_bp
 from backend.routes.leads import leads_bp
@@ -17,6 +18,9 @@ from backend.routes.quote_access import quote_access_bp
 
 # ===== MIGRATIONS =====
 migrate()
+
+# ===== FIREBASE =====
+init_firebase()
 
 # ===== INIT APP =====
 app = Flask(__name__, template_folder="templates", static_folder="static")

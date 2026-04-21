@@ -316,6 +316,11 @@
     <div class="progress__line" id="pline-2"></div>
     <div class="progress__step">
         <div class="progress__dot" id="pdot-3">3</div>
+        <div class="progress__label">Approbation</div>
+    </div>
+    <div class="progress__line" id="pline-3"></div>
+    <div class="progress__step">
+        <div class="progress__dot" id="pdot-4">4</div>
         <div class="progress__label">Signature</div>
     </div>
 </div>
@@ -388,11 +393,57 @@
             </div>
         </div>
 
-        <button class="btn btn--success" id="btn-sign-start" onclick="requestSignCode()">
+        <button class="btn btn--success" id="btn-sign-start" onclick="goToMention()">
             <span class="spinner"></span>
             <span class="btn-text">✍️ Signer ce devis</span>
         </button>
         <div class="msg-error" id="err-view"></div>
+    </div>
+
+    <!-- ===== ÉTAPE 2b : mention + nom (avant code OTP) ===== -->
+    <div class="step" id="step-mention">
+        <div class="card__title">Votre approbation</div>
+        <div class="card__sub">
+            Avant de signer, veuillez compléter les informations ci-dessous.
+        </div>
+
+        <!-- Champ nom -->
+        <div style="margin-bottom:1rem">
+            <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;color:#374151">
+                Prénom et Nom *
+            </label>
+            <input type="text" id="signer-name"
+                   placeholder="Ex : Jean Dupont"
+                   oninput="checkMentionForm()"
+                   style="width:100%;padding:.6rem .8rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.95rem;outline:none;transition:border-color .15s">
+        </div>
+
+        <!-- Champ mention -->
+        <div style="margin-bottom:.5rem">
+            <label style="display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;color:#374151">
+                Mention obligatoire *
+            </label>
+            <p style="font-size:.8rem;color:#6b7280;margin-bottom:.5rem">
+                Tapez exactement la phrase suivante :
+            </p>
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:.5rem .75rem;font-size:.9rem;font-weight:600;color:#1f2937;margin-bottom:.5rem;user-select:none">
+                Lu et approuvé, bon pour accord
+            </div>
+            <input type="text" id="mention-input"
+                   placeholder="Tapez la mention ci-dessus…"
+                   oninput="checkMentionForm()"
+                   autocomplete="off"
+                   style="width:100%;padding:.6rem .8rem;border:1.5px solid #d1d5db;border-radius:8px;font-size:.95rem;outline:none;transition:border-color .15s">
+            <div id="mention-hint" style="font-size:.78rem;color:#ef4444;margin-top:.35rem;display:none">
+                La mention ne correspond pas exactement.
+            </div>
+        </div>
+
+        <button class="btn btn--success" id="btn-mention-next" onclick="proceedToSign()" disabled>
+            <span class="spinner"></span>
+            <span class="btn-text">Continuer vers la signature →</span>
+        </button>
+        <div class="msg-error" id="err-mention"></div>
     </div>
 
     <!-- ===== ÉTAPE 3 : saisie code signature ===== -->
@@ -473,9 +524,10 @@ const STEP_PROGRESS = {
     'step-request':       1,
     'step-verify':        1,
     'step-view':          2,
-    'step-sign':          3,
-    'step-done':          3,
-    'step-already-signed':3,
+    'step-mention':       3,
+    'step-sign':          4,
+    'step-done':          4,
+    'step-already-signed':4,
     'step-invalid':       1,
 };
 
@@ -486,19 +538,19 @@ function showStep(id) {
 }
 
 function updateProgress(activeStep, allDone = false) {
-    [1, 2, 3].forEach(n => {
+    [1, 2, 3, 4].forEach(n => {
         const dot  = document.getElementById(`pdot-${n}`);
         const line = document.getElementById(`pline-${n}`);
+        if (!dot) return;
         dot.className  = 'progress__dot';
         if (allDone || n < activeStep) dot.classList.add('done');
         else if (n === activeStep)     dot.classList.add('active');
         if (line) line.className = `progress__line${(allDone || n < activeStep) ? ' done' : ''}`;
     });
-    // Icône ✓ sur les étapes terminées
-    [1, 2, 3].forEach(n => {
+    [1, 2, 3, 4].forEach(n => {
         const dot = document.getElementById(`pdot-${n}`);
-        if (dot.classList.contains('done')) dot.textContent = '✓';
-        else dot.textContent = n;
+        if (!dot) return;
+        dot.textContent = dot.classList.contains('done') ? '✓' : n;
     });
 }
 
@@ -701,6 +753,46 @@ function loadPDF() {
     document.getElementById('pdf-dl-link').href = pdfUrl;
 }
 
+// ───── Étape 2b : mention + nom ─────
+const MENTION_EXPECTED = "lu et approuvé, bon pour accord";
+
+function goToMention() {
+    document.getElementById('signer-name').value  = '';
+    document.getElementById('mention-input').value = '';
+    document.getElementById('mention-hint').style.display = 'none';
+    document.getElementById('btn-mention-next').disabled  = true;
+    clearError('err-mention');
+    showStep('step-mention');
+    setTimeout(() => document.getElementById('signer-name').focus(), 100);
+}
+
+function checkMentionForm() {
+    const name    = document.getElementById('signer-name').value.trim();
+    const mention = document.getElementById('mention-input').value.trim().toLowerCase();
+    const ok      = mention === MENTION_EXPECTED;
+
+    const hint = document.getElementById('mention-hint');
+    const input = document.getElementById('mention-input');
+    if (mention.length > 0 && !ok) {
+        hint.style.display  = '';
+        input.style.borderColor = '#ef4444';
+    } else {
+        hint.style.display  = 'none';
+        input.style.borderColor = ok ? '#16a34a' : '#d1d5db';
+    }
+
+    document.getElementById('btn-mention-next').disabled = !(name && ok);
+}
+
+async function proceedToSign() {
+    const name = document.getElementById('signer-name').value.trim();
+    if (!name) { showError('err-mention', 'Veuillez entrer votre prénom et nom.'); return; }
+    const mention = document.getElementById('mention-input').value.trim().toLowerCase();
+    if (mention !== MENTION_EXPECTED) { showError('err-mention', 'La mention ne correspond pas.'); return; }
+    clearError('err-mention');
+    await requestSignCode();
+}
+
 // ───── Étape 3a : demande code signature ─────
 async function requestSignCode() {
     clearError('err-view');
@@ -737,10 +829,11 @@ async function signQuote() {
     const btn = document.getElementById('btn-sign');
     setLoading(btn, true);
 
+    const signerName = document.getElementById('signer-name')?.value?.trim() || '';
     const res  = await fetch(`${API}/sign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ code, signer_name: signerName }),
     });
     const data = await res.json();
     setLoading(btn, false);

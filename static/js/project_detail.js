@@ -62,9 +62,8 @@ async function loadSummary() {
 
     jobData = data.job;
     renderHeader(data.job);
-    renderKPIs(data.quotes, data.invoices, data.interactions);
+    renderKPIs(data.quotes, data.invoices);
     renderPipeline(data.job, data.quotes, data.invoices);
-    renderMetrics(data.quotes, data.invoices);
     renderDualTimeline(data.quotes, data.invoices, data.interactions);
     loadTasks();
 }
@@ -95,18 +94,6 @@ function renderHeader(job) {
     } else {
         notesCard.style.display = 'none';
     }
-}
-
-// ===== KPI =====
-function renderKPIs(quotes, invoices, interactions) {
-    const caFacture  = invoices.reduce((s, i) => s + (i.amount || 0), 0);
-    const caEncaisse = invoices.filter(i => i.status === 'paid').reduce((s, i) => s + (i.amount || 0), 0);
-
-    document.getElementById('kpi-quotes').textContent       = quotes.length;
-    document.getElementById('kpi-invoices').textContent     = invoices.length;
-    document.getElementById('kpi-ca-facture').textContent   = formatAmount(caFacture);
-    document.getElementById('kpi-ca-encaisse').textContent  = formatAmount(caEncaisse);
-    document.getElementById('kpi-interactions').textContent = interactions.length;
 }
 
 // ===== PIPELINE BAR =====
@@ -160,9 +147,19 @@ function renderPipeline(job, quotes, invoices) {
     });
 }
 
-// ===== METRIC CIRCLES =====
-const CIRC = 2 * Math.PI * 40; // circumférence r=40 ≈ 251.33
+// ===== KPI MULTI-ANNEAUX =====
+// Chaque anneau a sa propre circonférence (2π*r)
+const KPI_CIRCS = { devise: 427.26, deviseAccepte: 339.29, facture: 251.33 };
 
+function setArcKpi(id, ratio, circ) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const filled = Math.max(0, Math.min(1, ratio || 0)) * circ;
+    el.setAttribute('stroke-dasharray', `${filled.toFixed(2)} ${circ.toFixed(2)}`);
+}
+
+// Arc helper pour le cercle TVA (r=40, circ≈251.33)
+const CIRC = 2 * Math.PI * 40;
 function setArc(id, ratio) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -170,28 +167,36 @@ function setArc(id, ratio) {
     el.setAttribute('stroke-dasharray', `${filled.toFixed(2)} ${CIRC.toFixed(2)}`);
 }
 
-function renderMetrics(quotes, invoices) {
-    // ── Cercle 1 : CA Facturé / Encaissé (montants HT) ──
-    const caFacture  = invoices.reduce((s, i) => s + (i.amount || 0), 0);
-    const caEncaisse = invoices.filter(i => i.status === 'paid').reduce((s, i) => s + (i.amount || 0), 0);
-    const ratioCa    = caFacture > 0 ? caEncaisse / caFacture : 0;
+function renderKPIs(quotes, invoices) {
+    const caDevise        = quotes.reduce((s, q) => s + (q.amount || 0), 0);
+    const caDeviseAccepte = quotes.filter(q => q.status === 'accepted')
+                                  .reduce((s, q) => s + (q.amount || 0), 0);
+    const caFacture       = invoices.reduce((s, i) => s + (i.amount || 0), 0);
+    const caPaye          = invoices.filter(i => i.status === 'paid').reduce((s, i) => s + (i.amount || 0), 0);
 
-    setArc('arc-ca', ratioCa);
-    document.getElementById('pct-ca').textContent      = caFacture > 0 ? Math.round(ratioCa * 100) + '%' : '—';
-    document.getElementById('leg-ca-facture').textContent  = formatAmount(caFacture);
-    document.getElementById('leg-ca-encaisse').textContent = formatAmount(caEncaisse);
+    const base = caDevise || 1;
 
-    // ── Cercle 2 : HT / TTC sur devis acceptés ──
-    const accepted = quotes.filter(q => q.status === 'accepted');
-    const totalHT  = accepted.reduce((s, q) => s + (q.amount     || 0), 0);
-    const totalTTC = accepted.reduce((s, q) => s + (q.amount_ttc || q.amount || 0), 0);
-    const tva      = totalTTC - totalHT;
-    const ratioHT  = totalTTC > 0 ? totalHT / totalTTC : 0;
+    document.getElementById('kpi-ca-devise').textContent         = formatAmount(caDevise);
+    document.getElementById('kpi-ca-devise-accepte').textContent = formatAmount(caDeviseAccepte);
+    document.getElementById('kpi-ca-facture').textContent        = formatAmount(caFacture);
+    document.getElementById('kpi-ca-paye').textContent           = formatAmount(caPaye);
 
-    setArc('arc-ht', ratioHT);
-    document.getElementById('pct-tva').textContent = totalTTC > 0 ? formatAmount(tva) : '—';
-    document.getElementById('leg-ht').textContent  = formatAmount(totalHT);
-    document.getElementById('leg-ttc').textContent = formatAmount(totalTTC);
+    setArcKpi('arc-kpi-paye',           caPaye / base,         KPI_CIRCS.devise);
+    setArcKpi('arc-kpi-facture',        caFacture / base,      KPI_CIRCS.deviseAccepte);
+    setArcKpi('arc-kpi-devise-accepte', caDeviseAccepte / base, KPI_CIRCS.facture);
+
+    // Part TVA sur devis signés
+    const accepted   = quotes.filter(q => q.status === 'accepted');
+    const tvaHT      = accepted.reduce((s, q) => s + (q.amount || 0), 0);
+    const tvaTTC     = accepted.reduce((s, q) => s + (q.amount_ttc || q.amount || 0), 0);
+    const tvaMontant = tvaTTC - tvaHT;
+    const ratioTva   = tvaTTC > 0 ? tvaMontant / tvaTTC : 0;
+
+    setArc('arc-kpi-tva', ratioTva);
+    document.getElementById('pct-kpi-tva').textContent    = tvaTTC > 0 ? (ratioTva * 100).toFixed(2) + '%' : '—';
+    document.getElementById('kpi-tva-ht').textContent      = formatAmount(tvaHT);
+    document.getElementById('kpi-tva-montant').textContent = formatAmount(tvaMontant);
+    document.getElementById('kpi-tva-ttc').textContent     = formatAmount(tvaTTC);
 }
 
 // ===== STAGGERED DUAL TIMELINE =====

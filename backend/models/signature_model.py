@@ -26,10 +26,14 @@ def log_event(
     quote_id: int,
     token_id: int,
     event_type: str,
+    ip: str | None = None,
+    ua: str | None = None,
     ip_address: str | None = None,
     user_agent: str | None = None,
     details: str | None = None,
 ) -> None:
+    ip_address = ip or ip_address
+    user_agent = ua or user_agent
     """Enregistre un événement dans l'historique de signature."""
     conn = get_client_conn()
     conn.execute(

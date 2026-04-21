@@ -22,3 +22,13 @@ def login():
     if error:
         return jsonify({"error": error}), 401
     return jsonify(result), 200
+
+
+# ===== POST /api/auth/firebase-login =====
+@auth_bp.route("/firebase-login", methods=["POST"])
+def firebase_login():
+    data = request.get_json()
+    result, error = auth_service.firebase_login(data.get("id_token"))
+    if error:
+        return jsonify({"error": error}), 401
+    return jsonify(result), 200

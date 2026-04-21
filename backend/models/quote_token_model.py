@@ -49,6 +49,14 @@ def create_or_get(tenant_id: int, quote_id: int) -> dict:
     return row(r)
 
 
+def save_signer_name(token_id: int, signer_name: str) -> None:
+    """Enregistre le nom du signataire dans le token."""
+    conn = get_client_conn()
+    conn.execute("UPDATE quote_tokens SET signer_name=? WHERE id=?", (signer_name, token_id))
+    conn.commit()
+    conn.close()
+
+
 def get_by_token(access_token: str) -> dict | None:
     conn = get_client_conn()
     r = conn.execute(
@@ -164,4 +172,4 @@ def verify_sign_code(token_id: int, code: str) -> tuple[bool, str | None]:
     conn.execute("UPDATE quote_tokens SET signed_at=? WHERE id=?", (signed_at, token_id))
     conn.commit()
     conn.close()
-    return True, None
+    return True, signed_at

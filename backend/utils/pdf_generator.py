@@ -12,15 +12,27 @@ GRAY      = (107, 114, 128)
 GRAY_LITE = (229, 231, 235)
 WHITE     = (255, 255, 255)
 
-# Largeurs colonnes tableau
-COL_W = [82, 14, 14, 38, 38]   # total = 186 mm (marge gauche 10, droite 14)
+# Largeurs colonnes tableau devis normal : Désignation, TVA, Qté+Unité, Prix HT, Montant HT
+COL_W = [82, 14, 22, 34, 34]       # total = 186 mm
 COL_X = [10]
 for _w in COL_W[:-1]:
     COL_X.append(COL_X[-1] + _w)
 
+# Largeurs colonnes tableau avenant (+ colonne Différence)
+COL_W_AV = [66, 12, 18, 28, 28, 34]   # total = 186 mm
+COL_X_AV = [10]
+for _w in COL_W_AV[:-1]:
+    COL_X_AV.append(COL_X_AV[-1] + _w)
+
+
+_CHAR_MAP = {"—": "-", "–": "-", "\u2019": "'", "\u2018": "'", "\u201c": '"', "\u201d": '"'}
 
 def _s(v):
-    return str(v) if v is not None else ""
+    """Convertit en str et remplace les caractères hors latin-1 non supportés par Helvetica."""
+    s = str(v) if v is not None else ""
+    for src, dst in _CHAR_MAP.items():
+        s = s.replace(src, dst)
+    return s
 
 
 def _date(s):
@@ -39,15 +51,82 @@ def _eur(n):
         return "0.00 EUR"
 
 
+def _quote_ref(quote, parent_quote_number=None):
+    """Construit la référence structurée d'un devis ou avenant."""
+    try:
+        year = datetime.fromisoformat(str(quote.get("created_at", ""))).year
+    except Exception:
+        year = datetime.utcnow().year
+    t  = quote.get("tenant_id", "")
+    cl = quote.get("client_id", "")
+    j  = quote.get("job_id", "")
+
+    if quote.get("parent_quote_id"):
+        pnum = parent_quote_number or quote.get("parent_quote_id", "")
+        anum = quote.get("avenant_number", 1)
+        return f"AV-{year}-{t}-{cl}-{j}-{pnum}-{anum}"
+    else:
+        qnum = quote.get("quote_number") or quote.get("id", "")
+        return f"DEV-{year}-{t}-{cl}-{j}-{qnum}"
+
+
+def _invoice_ref(invoice):
+    """Construit la référence structurée d'une facture."""
+    try:
+        year = datetime.fromisoformat(str(invoice.get("created_at", ""))).year
+    except Exception:
+        year = datetime.utcnow().year
+    cl   = invoice.get("client_id", "")
+    j    = invoice.get("job_id", "")
+    num  = invoice.get("invoice_number") or invoice.get("id", "")
+    pfx  = "AC" if invoice.get("invoice_type") == "deposit" else "FI"
+    return f"{pfx}-{year}-{cl}-{j}-{num}"
+
+
+def _merge_avenant_lines(lines):
+    """Fusionne les paires Suppression/Modification pour l'affichage PDF.
+    La ligne Suppression est absorbée dans la ligne Modification correspondante
+    via l'attribut _old_ht. Les suppressions sans modification restent telles quelles."""
+    supp_map = {}   # suffix → old_ht (valeur absolue)
+    for l in lines:
+        d = str(l.get("designation") or "")
+        if d.startswith("Suppression - "):
+            suffix  = d[len("Suppression - "):]
+            old_ht  = abs(float(l.get("quantity", 1)) * float(l.get("unit_price", 0)))
+            supp_map[suffix] = old_ht
+
+    result = []
+    for l in lines:
+        d = str(l.get("designation") or "")
+        if d.startswith("Suppression - "):
+            suffix = d[len("Suppression - "):]
+            # On ne garde la suppression que si elle n'a PAS de modification associée
+            if f"Modification - {suffix}" not in [str(x.get("designation") or "") for x in lines]:
+                result.append(l)
+        elif d.startswith("Modification - "):
+            suffix = d[len("Modification - "):]
+            merged = dict(l)
+            if suffix in supp_map:
+                merged["_old_ht"] = supp_map[suffix]
+            result.append(merged)
+        else:
+            result.append(l)
+    return result
+
+
 class QuotePDF(FPDF):
 
-    def __init__(self, company, client, quote, lines, job=None):
+    def __init__(self, company, client, quote, lines, job=None,
+                 signer_name=None, signed_at=None, parent_amount=None):
         super().__init__(orientation="P", unit="mm", format="A4")
-        self.company = company
-        self.client  = client
-        self.quote   = quote
-        self.lines   = lines
-        self.job     = job or {}
+        self.company        = company
+        self.client         = client
+        self.quote          = quote
+        self.lines          = lines
+        self.job            = job or {}
+        self.signer_name    = signer_name or ""
+        self.signed_at      = signed_at or ""
+        self.parent_amount  = parent_amount  # montant HT du devis parent (pour avenants)
         self.set_margins(10, 10, 10)
         self.set_auto_page_break(auto=True, margin=18)
         self.add_page()
@@ -116,17 +195,22 @@ class QuotePDF(FPDF):
 
         # Infos devis (droite)
         is_avenant = bool(self.quote.get("parent_quote_id"))
-        prefix = "AVN" if is_avenant else "DEV"
-        num    = f"N {prefix}-{self.quote.get('tenant_id','')}-{self.quote.get('id','')}"
+        ref        = _quote_ref(self.quote, self.quote.get("parent_quote_number"))
         items_r = [
-            ("", num),
+            ("", ref),
             ("Date :", _date(self.quote.get("created_at"))),
             ("Expire le :", _date(self.quote.get("expiry_date"))),
             ("Paiement :", _s(self.quote.get("payment_terms")) or "Comptant"),
         ]
         if is_avenant:
-            parent_ref = f"DEV-{self.quote.get('tenant_id','')}-{self.quote.get('parent_quote_id','')}"
-            items_r.append(("Réf. devis :", parent_ref))
+            # Référence du devis parent
+            parent_num = self.quote.get("parent_quote_number") or self.quote.get("parent_quote_id", "")
+            try:
+                year = datetime.fromisoformat(str(self.quote.get("created_at", ""))).year
+            except Exception:
+                year = datetime.utcnow().year
+            parent_ref = f"DEV-{year}-{self.quote.get('tenant_id','')}-{self.quote.get('client_id','')}-{self.quote.get('job_id','')}-{parent_num}"
+            items_r.append(("Ref. devis :", parent_ref))
         y_right = 20
         for label, val in items_r:
             if not val:
@@ -208,59 +292,81 @@ class QuotePDF(FPDF):
 
     # ===== TABLEAU =====
     def _table_block(self):
-        HEADERS = ["Designation", "TVA", "Qte.", "Prix unit. HT", "Montant HT"]
+        is_avenant    = bool(self.quote.get("parent_quote_id"))
+        display_lines = _merge_avenant_lines(self.lines) if is_avenant else list(self.lines)
 
-        # En-tête : texte gras, trait bas uniquement
+        # Colonnes : 6 pour avenant (avec Différence), 5 pour devis normal
+        if is_avenant:
+            headers = ["Designation", "TVA", "Qte.", "Prix unit. HT", "Montant HT", "Difference"]
+            cw, cx  = COL_W_AV, COL_X_AV
+        else:
+            headers = ["Designation", "TVA", "Qte.", "Prix unit. HT", "Montant HT"]
+            cw, cx  = COL_W, COL_X
+
+        # En-tête
         self.set_font("Helvetica", "B", 8)
         self.set_text_color(*DARK)
         y = self.get_y()
-        for i, h in enumerate(HEADERS):
-            self.set_xy(COL_X[i], y)
-            self.cell(COL_W[i], 6, h, align="L" if i == 0 else "R")
+        for i, h in enumerate(headers):
+            self.set_xy(cx[i], y)
+            self.cell(cw[i], 6, h, align="L" if i == 0 else "R")
         self.set_y(y + 6)
-        # Trait sous l'en-tête
         self.set_draw_color(*DARK)
         self.set_line_width(0.4)
         self.line(10, self.get_y(), 196, self.get_y())
         self.ln(1)
 
         # Lignes
-        for line in self.lines:
+        for line in display_lines:
             desig      = _s(line.get("designation"))
             desc       = _s(line.get("description"))
             tva_rate   = float(line.get("tva_rate", 10))
             qty        = float(line.get("quantity", 1))
+            unit       = _s(line.get("unit") or "U")
             unit_price = float(line.get("unit_price", 0))
             total_ht   = qty * unit_price
             qty_str    = str(int(qty)) if qty == int(qty) else f"{qty:.2f}"
+            old_ht     = line.get("_old_ht")   # présent sur les lignes modification fusionnées
 
             y = self.get_y()
 
             # Désignation bold
-            self.set_xy(COL_X[0], y)
+            self.set_xy(cx[0], y)
             self.set_font("Helvetica", "B", 8.5)
             self.set_text_color(*DARK)
-            self.cell(COL_W[0], 6, desig)
+            self.cell(cw[0], 6, desig)
 
-            # Colonnes numériques
+            # Colonnes numériques communes
             self.set_font("Helvetica", "", 8.5)
-            for i, (val, col) in enumerate([
+            qty_unit_str = f"{qty_str} {unit}".strip() if unit and unit != "U" else qty_str
+            for val, col in [
                 (f"{tva_rate:.1f}%", 1),
-                (qty_str,            2),
+                (qty_unit_str,       2),
                 (_eur(unit_price),   3),
                 (_eur(total_ht),     4),
-            ]):
-                self.set_xy(COL_X[col], y)
-                self.cell(COL_W[col], 6, val, align="R")
+            ]:
+                self.set_xy(cx[col], y)
+                self.cell(cw[col], 6, val, align="R")
+
+            # Colonne Différence (avenant uniquement)
+            if is_avenant and old_ht is not None:
+                delta = total_ht - old_ht
+                sign  = "+" if delta >= 0 else ""
+                diff_str = f"{sign}{_eur(delta)}"
+                self.set_font("Helvetica", "B", 8.5)
+                self.set_text_color(*(BLUE if delta >= 0 else (220, 38, 38)))
+                self.set_xy(cx[5], y)
+                self.cell(cw[5], 6, diff_str, align="R")
+                self.set_text_color(*DARK)
 
             self.set_y(y + 6)
 
             # Description en italique gris
             if desc.strip():
-                self.set_xy(COL_X[0] + 2, self.get_y())
+                self.set_xy(cx[0] + 2, self.get_y())
                 self.set_font("Helvetica", "I", 7.5)
                 self.set_text_color(*GRAY)
-                self.multi_cell(COL_W[0] - 2, 4, desc, border=0)
+                self.multi_cell(cw[0] - 2, 4, desc, border=0)
                 self.set_text_color(*DARK)
 
             # Trait séparateur gris
@@ -315,6 +421,28 @@ class QuotePDF(FPDF):
         self.cell(w_l, 7, "Total TTC")
         self.cell(w_v, 7, _eur(total_ttc), align="R", ln=True)
 
+        # Nouveau total devis (avenant uniquement)
+        if self.parent_amount is not None:
+            new_total_ht = float(self.parent_amount) + total_ht
+            self.ln(3)
+            self.set_x(x_l)
+            self.set_font("Helvetica", "", 8.5)
+            self.set_text_color(*GRAY)
+            self.cell(w_l, 5, "Montant devis initial HT")
+            self.cell(w_v, 5, _eur(self.parent_amount), align="R", ln=True)
+            self.set_x(x_l)
+            self.cell(w_l, 5, "Delta avenant HT")
+            self.cell(w_v, 5, (("+" if total_ht >= 0 else "") + _eur(total_ht)), align="R", ln=True)
+            y2 = self.get_y() + 1
+            self.set_draw_color(*BLUE)
+            self.line(x_l, y2, 196, y2)
+            self.set_y(y2 + 2)
+            self.set_x(x_l)
+            self.set_font("Helvetica", "B", 10)
+            self.set_text_color(*BLUE)
+            self.cell(w_l, 6, "Nouveau total devis HT")
+            self.cell(w_v, 6, _eur(new_total_ht), align="R", ln=True)
+
         self.ln(6)
 
     # ===== PAIEMENT =====
@@ -354,12 +482,57 @@ class QuotePDF(FPDF):
             self.set_text_color(*GRAY)
             self.multi_cell(0, 4.5, _s(self.quote.get("notes")))
 
-        # Mention signature
-        self.ln(3)
-        self.set_font("Helvetica", "I", 8)
+        # Mention signature (uniquement si pas encore signé)
+        if not self.signer_name:
+            self.ln(3)
+            self.set_font("Helvetica", "I", 8)
+            self.set_text_color(*GRAY)
+            self.multi_cell(0, 4.5,
+                'A renvoyer signe avec la mention : "Lu et approuve, bon pour accord"')
+
+    # ===== BLOC SIGNATURE ÉLECTRONIQUE =====
+    def _signature_block(self):
+        """Affiché uniquement sur le PDF signé."""
+        if not self.signer_name:
+            return
+
+        GREEN      = (22, 163, 74)
+        GREEN_LITE = (240, 253, 244)
+        GREEN_BORD = (187, 247, 208)
+
+        try:
+            from datetime import datetime
+            dt = datetime.fromisoformat(str(self.signed_at).replace("Z", ""))
+            signed_date = dt.strftime("%d/%m/%Y \u00e0 %H:%M")
+        except Exception:
+            signed_date = str(self.signed_at)
+
+        self.ln(6)
+
+        # Boîte verte
+        x, y, w, h = 10, self.get_y(), 186, 26
+        self.set_fill_color(*GREEN_LITE)
+        self.set_draw_color(*GREEN_BORD)
+        self.set_line_width(0.4)
+        self.rect(x, y, w, h, style="FD")
+
+        # Titre
+        self.set_xy(x + 4, y + 3)
+        self.set_font("Helvetica", "B", 9)
+        self.set_text_color(*GREEN)
+        self.cell(0, 5, "Signature electronique")
+
+        # Mention
+        self.set_xy(x + 4, y + 9)
+        self.set_font("Helvetica", "I", 8.5)
+        self.set_text_color(31, 41, 55)
+        self.cell(0, 5, "Lu et approuve, bon pour accord")
+
+        # Signataire + date
+        self.set_xy(x + 4, y + 15)
+        self.set_font("Helvetica", "", 8)
         self.set_text_color(*GRAY)
-        self.multi_cell(0, 4.5,
-            'A renvoyer signe avec la mention : "Lu et approuve, bon pour accord"')
+        self.cell(0, 5, f"Signe par : {self.signer_name}   |   Date : {signed_date}")
 
     # ===== BUILD =====
     def _build(self):
@@ -368,10 +541,14 @@ class QuotePDF(FPDF):
         self._table_block()
         self._totals_block()
         self._payment_block()
+        self._signature_block()
 
 
-def generate_quote_pdf(company, client, quote, lines, job=None):
-    pdf = QuotePDF(company, client, quote, lines, job=job or {})
+def generate_quote_pdf(company, client, quote, lines, job=None,
+                       signer_name=None, signed_at=None, parent_amount=None):
+    pdf = QuotePDF(company, client, quote, lines, job=job or {},
+                   signer_name=signer_name, signed_at=signed_at,
+                   parent_amount=parent_amount)
     return bytes(pdf.output())
 
 

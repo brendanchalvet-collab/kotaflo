@@ -103,8 +103,12 @@ def request_sign_code(access_token):
 # Vérifie le code de signature, finalise (statut accepté + PDF stocké)
 @quote_access_bp.route("/<access_token>/sign", methods=["POST"])
 def sign_quote(access_token):
-    code = str(request.get_json(force=True).get("code", ""))
-    body, status = signature_service.finalize_signature(access_token, code, ip=_ip(), ua=_ua())
+    payload     = request.get_json(force=True)
+    code        = str(payload.get("code", ""))
+    signer_name = str(payload.get("signer_name", "")).strip()
+    body, status = signature_service.finalize_signature(
+        access_token, code, signer_name=signer_name, ip=_ip(), ua=_ua()
+    )
     return jsonify(body), status
 
 

@@ -16,7 +16,7 @@ import os
 from backend.models import quote_token_model, quote_model, signature_model
 from backend.models import client_model, job_model
 from backend.models.tenant_model import get_by_id as get_tenant
-from backend.utils.email_utils import send_otp_email
+from backend.utils.email_utils import send_otp_email, send_signed_quote_email
 from backend.utils.pdf_generator import generate_quote_pdf
 
 log = logging.getLogger(__name__)
@@ -199,6 +199,7 @@ def request_sign_code(
 def finalize_signature(
     access_token: str,
     code: str,
+    signer_name: str = "",
     ip: str | None = None,
     ua: str | None = None,
 ) -> tuple[dict, int]:
@@ -217,38 +218,55 @@ def finalize_signature(
     if token["signed_at"]:
         return {"message": "Devis déjà signé"}, 200
 
-    ok, msg = quote_token_model.verify_sign_code(token["id"], code)
+    ok, signed_at_val = quote_token_model.verify_sign_code(token["id"], code)
 
     if not ok:
         signature_model.log_event(
             token["tenant_id"], token["quote_id"], token["id"],
-            signature_model.SIGN_FAILED, ip=ip, ua=ua, details=msg,
+            signature_model.SIGN_FAILED, ip=ip, ua=ua, details=signed_at_val,
         )
-        return {"error": msg}, 400
+        return {"error": signed_at_val}, 400
 
     tid      = token["tenant_id"]
     quote_id = token["quote_id"]
+
+    # ── Enregistrer le nom du signataire ──
+    if signer_name:
+        quote_token_model.save_signer_name(token["id"], signer_name)
 
     # ── Mettre le devis en "accepté" ──
     quote_model.update_status(tid, quote_id, "accepted")
 
     # ── Générer et stocker le PDF signé ──
-    pdf_path = _generate_and_store_signed_pdf(tid, quote_id, token["id"])
+    pdf_path, pdf_bytes = _generate_and_store_signed_pdf(
+        tid, quote_id, token["id"],
+        signer_name=signer_name, signed_at=signed_at_val,
+    )
+
+    # ── Envoyer le PDF aux deux parties ──
+    if pdf_bytes:
+        q       = quote_model.get_by_id(tid, quote_id)
+        company = get_tenant(tid) or {}
+        client  = client_model.get_by_id(tid, q.get("client_id")) or {}
+        send_signed_quote_email(company, client, q, pdf_bytes, signer_name, signed_at_val)
 
     # ── Journal ──
     signature_model.log_event(
         tid, quote_id, token["id"],
         signature_model.SIGNED,
         ip=ip, ua=ua,
-        details=f"pdf_path={pdf_path}",
+        details=f"signer={signer_name} pdf_path={pdf_path}",
     )
 
-    log.info("Devis %s-%s signé par %s", tid, quote_id, ip)
+    log.info("Devis %s-%s signé par %s (%s)", tid, quote_id, signer_name, ip)
     return {"message": "Devis signé et accepté — merci !", "pdf_path": pdf_path}, 200
 
 
-def _generate_and_store_signed_pdf(tid: int, quote_id: int, token_id: int) -> str | None:
-    """Génère le PDF du devis signé et le stocke sur disque."""
+def _generate_and_store_signed_pdf(
+    tid: int, quote_id: int, token_id: int,
+    signer_name: str = "", signed_at: str = "",
+) -> tuple[str | None, bytes | None]:
+    """Génère le PDF du devis signé avec bloc de signature et le stocke sur disque."""
     try:
         q       = quote_model.get_by_id(tid, quote_id)
         lines   = quote_model.get_lines(quote_id)
@@ -256,14 +274,17 @@ def _generate_and_store_signed_pdf(tid: int, quote_id: int, token_id: int) -> st
         client  = client_model.get_by_id(tid, q.get("client_id")) or {}
         job     = job_model.get_by_id(tid, q.get("job_id")) if q.get("job_id") else {}
 
-        pdf_bytes = generate_quote_pdf(company, client, q, lines, job=job or {})
+        pdf_bytes = generate_quote_pdf(
+            company, client, q, lines, job=job or {},
+            signer_name=signer_name, signed_at=signed_at,
+        )
         pdf_path  = signature_model.save_signed_pdf(tid, quote_id, pdf_bytes)
         signature_model.link_pdf_to_token(token_id, pdf_path)
-        return pdf_path
+        return pdf_path, pdf_bytes
 
     except Exception as exc:
         log.error("Erreur génération PDF signé %s-%s : %s", tid, quote_id, exc)
-        return None
+        return None, None
 
 
 # ═══════════════════════════════════════════════════════

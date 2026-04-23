@@ -92,6 +92,88 @@ def send_quote_email(company, client, quote, pdf_bytes, sign_link=None):
         return False, str(exc)
 
 
+def send_signed_quote_email(
+    company: dict,
+    client: dict,
+    quote: dict,
+    pdf_bytes: bytes,
+    signer_name: str,
+    signed_at: str,
+) -> tuple:
+    """
+    Envoie le devis signé en PDF aux deux parties (artisan + client) dans le même email.
+    Retourne (True, None) ou (False, raison).
+    """
+    if not _smtp_configured():
+        return False, "SMTP non configuré"
+
+    client_email  = (client or {}).get("email", "")
+    artisan_email = Config.SMTP_FROM or Config.SMTP_USER
+    recipients    = list(filter(None, [client_email, artisan_email]))
+    if not recipients:
+        return False, "Aucun destinataire"
+
+    company_name = str(company.get("company_name") or company.get("name") or "Votre artisan")
+    client_name  = str(client.get("name") or signer_name or "")
+    tenant_id    = quote.get("tenant_id", "")
+    quote_id     = quote.get("id", "")
+    quote_ref    = f"DEV-{tenant_id}-{quote_id}"
+    quote_title  = quote.get("title") or ""
+
+    # Formater la date de signature
+    try:
+        from datetime import datetime
+        dt = datetime.fromisoformat(str(signed_at).replace("Z", ""))
+        signed_date = dt.strftime("%d/%m/%Y à %H:%M")
+    except Exception:
+        signed_date = str(signed_at or "")
+
+    html = f"""
+    <html><body style="font-family:Arial,sans-serif;color:#1f2937;font-size:14px;line-height:1.6">
+      <p>Bonjour,</p>
+      <p>
+        Le devis <strong>{quote_ref}</strong>
+        {('&mdash; ' + quote_title) if quote_title else ''}
+        a été signé électroniquement par <strong>{signer_name or client_name}</strong>
+        le {signed_date}.
+      </p>
+      <div style="margin:20px 0;padding:14px 16px;background:#f0fdf4;border-left:4px solid #16a34a;border-radius:4px">
+        <p style="margin:0 0 4px;font-weight:bold;color:#15803d">Signature enregistrée</p>
+        <p style="margin:0;font-size:13px">
+          Signataire : <strong>{signer_name or client_name}</strong><br>
+          Mention : <em>Lu et approuvé, bon pour accord</em><br>
+          Date : {signed_date}
+        </p>
+      </div>
+      <p>Le devis signé est joint en pièce attachée.</p>
+      <p>Cordialement,<br><strong>{company_name}</strong></p>
+    </body></html>
+    """
+
+    msg = MIMEMultipart()
+    msg["From"]    = artisan_email
+    msg["To"]      = ", ".join(recipients)
+    msg["Subject"] = f"Devis signé {quote_ref} — {company_name}"
+    msg.attach(MIMEText(html, "html", "utf-8"))
+
+    part = MIMEBase("application", "octet-stream")
+    part.set_payload(pdf_bytes)
+    encoders.encode_base64(part)
+    part.add_header("Content-Disposition", f'attachment; filename="{quote_ref}-signe.pdf"')
+    msg.attach(part)
+
+    try:
+        with smtplib.SMTP(Config.SMTP_HOST, Config.SMTP_PORT, timeout=10) as server:
+            server.ehlo()
+            server.starttls()
+            server.login(Config.SMTP_USER, Config.SMTP_PASSWORD)
+            server.sendmail(artisan_email, recipients, msg.as_string())
+        return True, None
+    except Exception as exc:
+        log.error("Erreur envoi email devis signé %s : %s", quote_ref, exc)
+        return False, str(exc)
+
+
 def send_otp_email(to_email: str, code: str, purpose: str = "accès") -> tuple:
     """
     Envoie un code OTP 5 chiffres par email.

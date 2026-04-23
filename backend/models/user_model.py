@@ -43,6 +43,48 @@ def create(email, password_hash):
         conn.close()
 
 
+def get_or_create_firebase_user(email, firebase_uid):
+    """Récupère ou crée un utilisateur authentifié via Firebase (sans mot de passe local)."""
+    conn = get_saas_conn()
+    try:
+        # Cherche un utilisateur existant par email
+        cur = conn.execute("SELECT * FROM users WHERE email = ?", (email,))
+        existing = row(cur.fetchone())
+        if existing:
+            tenant_id = conn.execute(
+                "SELECT tenant_id FROM user_tenants WHERE user_id = ? LIMIT 1",
+                (existing["id"],)
+            ).fetchone()["tenant_id"]
+            conn.close()
+            return existing, tenant_id
+
+        # Crée le tenant
+        cur = conn.execute("INSERT INTO tenants (name) VALUES (?)", (email.split("@")[0],))
+        tenant_id = cur.lastrowid
+
+        # Crée l'utilisateur sans password_hash (Firebase gère l'auth)
+        cur = conn.execute(
+            "INSERT INTO users (email, password_hash) VALUES (?, ?)",
+            (email, f"firebase:{firebase_uid}")
+        )
+        user_id = cur.lastrowid
+
+        conn.execute(
+            "INSERT INTO user_tenants (user_id, tenant_id, role) VALUES (?, ?, 'admin')",
+            (user_id, tenant_id)
+        )
+        conn.execute(
+            "INSERT INTO subscriptions (tenant_id, plan, status) VALUES (?, 'free', 'active')",
+            (tenant_id,)
+        )
+        conn.commit()
+
+        user = row(conn.execute("SELECT * FROM users WHERE id = ?", (user_id,)).fetchone())
+        return user, tenant_id
+    finally:
+        conn.close()
+
+
 def get_tenant_id(user_id):
     conn = get_saas_conn()
     cur = conn.execute(

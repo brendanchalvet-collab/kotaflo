@@ -3,6 +3,15 @@
 const token = localStorage.getItem('token');
 if (!token) window.location.href = '/login';
 
+function validateProjDates() {
+    const start = document.getElementById('proj-start').value;
+    const end   = document.getElementById('proj-end').value;
+    if (end && start && end < start) {
+        alert('La date de fin doit être après la date de début');
+        document.getElementById('proj-end').value = '';
+    }
+}
+
 const clientId  = parseInt(window.location.pathname.split('/').pop());
 let contactData = null;
 
@@ -282,7 +291,7 @@ function openEditModal() {
     document.getElementById('edit-phone').value       = c.phone || '';
     document.getElementById('edit-email').value       = c.email || '';
     document.getElementById('edit-address').value     = c.address || '';
-    document.getElementById('edit-acquisition').value = c.acquisition_source || '';
+
     document.getElementById('edit-notes').value       = c.notes || '';
     document.querySelector(`input[name="edit-type"][value="${c.contact_type || 'client'}"]`).checked = true;
     document.getElementById('modal-edit').classList.remove('hidden');
@@ -295,7 +304,7 @@ async function handleEditSubmit(e) {
         phone:              document.getElementById('edit-phone').value,
         email:              document.getElementById('edit-email').value,
         address:            document.getElementById('edit-address').value,
-        acquisition_source: document.getElementById('edit-acquisition').value,
+
         notes:              document.getElementById('edit-notes').value,
         contact_type:       document.querySelector('input[name="edit-type"]:checked').value,
         pipeline_status:    contactData.pipeline_status || 'new',

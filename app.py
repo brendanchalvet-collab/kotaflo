@@ -1,4 +1,4 @@
-from flask import Flask, redirect, send_from_directory
+from flask import Flask, redirect, render_template, send_from_directory
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
@@ -44,6 +44,10 @@ app.register_blueprint(quote_access_bp,  url_prefix="/api/quote-access")
 
 # ===== ROUTES FRONTEND (serve HTML) =====
 @app.route("/")
+def landing_page():
+    return render_template("landing.html")
+
+
 @app.route("/login")
 def login_page():
     return send_from_directory("templates", "login.html")
@@ -92,6 +96,26 @@ def projects_page():
 @app.route("/projects/<int:job_id>")
 def project_detail_page(job_id):
     return send_from_directory("templates", "project_detail.html")
+
+
+@app.route("/pricing")
+def pricing_page():
+    return render_template("pricing.html")
+
+
+@app.route("/trial")
+def trial_page():
+    return render_template("trial.html")
+
+
+@app.route("/checkout-packs")
+def checkout_packs_page():
+    return render_template("checkout_packs.html")
+
+
+@app.route("/checkout-pro")
+def checkout_pro_page():
+    return render_template("checkout_pro.html")
 
 
 @app.route("/profile")

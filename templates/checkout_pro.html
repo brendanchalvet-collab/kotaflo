@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forfait Pro — Kotaflo</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/layout.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        .checkout-page {
+            max-width: 540px;
+            margin: 2rem auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .pro-header {
+            background: var(--color-sidebar);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .pro-header__icon {
+            width: 48px;
+            height: 48px;
+            background: var(--color-primary);
+            border-radius: var(--radius);
+            box-shadow: 0 3px 0 var(--color-primary-dk);
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+        .pro-header__icon i { width: 22px; height: 22px; stroke: #fff; }
+        .pro-header__title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-white);
+        }
+        .pro-header__price {
+            font-family: var(--font-mono);
+            font-size: .95rem;
+            color: var(--color-primary);
+            margin-top: .2rem;
+        }
+
+        .pro-features {
+            display: flex;
+            flex-direction: column;
+            gap: .55rem;
+        }
+        .pro-feature {
+            display: flex;
+            align-items: center;
+            gap: .65rem;
+            font-size: .88rem;
+            color: var(--color-gray-600);
+        }
+        .pro-feature i { width: 15px; height: 15px; color: var(--color-success); flex-shrink: 0; }
+
+        /* Stripe placeholder */
+        #stripe-card-element {
+            border: 1.5px solid var(--color-gray-200);
+            border-radius: var(--radius);
+            padding: .75rem .85rem;
+            background: var(--color-gray-50);
+            min-height: 44px;
+            color: var(--color-gray-400);
+            font-size: .85rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .cancel-note {
+            text-align: center;
+            font-size: .8rem;
+            color: var(--color-gray-400);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .35rem;
+            margin-top: .25rem;
+        }
+        .cancel-note i { width: 13px; height: 13px; }
+    </style>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <div class="sidebar__logo-icon"><i data-lucide="zap"></i></div>
+            <span class="sidebar__logo-text">Kota<span>flo</span></span>
+        </div>
+        <nav class="sidebar__nav">
+            <a href="/dashboard"><i data-lucide="layout-dashboard" class="sidebar__icon"></i> Tableau de bord</a>
+            <a href="/clients"><i data-lucide="users" class="sidebar__icon"></i> Clients</a>
+            <a href="/projects"><i data-lucide="hard-hat" class="sidebar__icon"></i> Chantiers</a>
+            <a href="/tasks"><i data-lucide="check-square" class="sidebar__icon"></i> Tâches</a>
+            <div class="sidebar__divider"></div>
+            <div class="sidebar__section-label">Facturation</div>
+            <a href="/quotes"><i data-lucide="file-text" class="sidebar__icon"></i> Devis</a>
+            <a href="/invoices"><i data-lucide="receipt" class="sidebar__icon"></i> Factures</a>
+            <a href="/leads"><i data-lucide="bell" class="sidebar__icon"></i> Relances</a>
+            <div class="sidebar__tokens">
+                <div class="sidebar__tokens-header"><b>Jetons devis</b><span class="sidebar__tokens-count">— / —</span></div>
+                <div class="sidebar__tokens-bar"><div class="sidebar__tokens-fill"></div></div>
+                <span class="sidebar__tokens-label">Forfait Pro · recharge auto</span>
+            </div>
+            <div class="sidebar__divider"></div>
+            <a href="/pricing"><i data-lucide="credit-card" class="sidebar__icon"></i> Tarifs</a>
+            <a href="/profile"><i data-lucide="settings" class="sidebar__icon"></i> Compte</a>
+        </nav>
+        <div class="sidebar__footer">
+            <div class="sidebar__footer-avatar" id="sidebar-avatar">?</div>
+            <div class="sidebar__footer-info">
+                <span class="sidebar__footer-name" id="sidebar-name"></span>
+                <span class="sidebar__footer-meta">Artisan</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+
+        <header class="topbar">
+            <span class="topbar__title">Passer au Pro</span>
+            <span class="topbar__user" onclick="logout()">Déconnexion →</span>
+        </header>
+
+        <main class="content">
+            <div class="checkout-page">
+
+                <!-- Header Pro -->
+                <div class="pro-header">
+                    <div class="pro-header__icon"><i data-lucide="zap"></i></div>
+                    <div>
+                        <div class="pro-header__title">Forfait Pro</div>
+                        <div class="pro-header__price">29 € / mois · sans engagement</div>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="card">
+                    <h3 style="margin-bottom:1rem;">Ce qui est inclus</h3>
+                    <div class="pro-features">
+                        <div class="pro-feature"><i data-lucide="check"></i> 30 jetons devis / mois</div>
+                        <div class="pro-feature"><i data-lucide="check"></i> Gestion clients illimitée</div>
+                        <div class="pro-feature"><i data-lucide="check"></i> Suivi des chantiers</div>
+                        <div class="pro-feature"><i data-lucide="check"></i> Factures illimitées</div>
+                        <div class="pro-feature"><i data-lucide="check"></i> Relances automatiques</div>
+                        <div class="pro-feature"><i data-lucide="check"></i> Support prioritaire</div>
+                    </div>
+                </div>
+
+                <!-- Formulaire paiement -->
+                <div class="card">
+                    <form id="checkout-pro-form" onsubmit="handleCheckoutPro(event)">
+                        <div class="form-group">
+                            <label for="pro-email">Email de facturation</label>
+                            <input type="email" id="pro-email" placeholder="vous@exemple.fr" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Carte bancaire</label>
+                            <div id="stripe-card-element">
+                                <!-- Stripe Elements — branché par Brendan -->
+                                Chargement du formulaire de paiement…
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn--primary" style="width:100%;justify-content:center;margin-top:.5rem">
+                            S'abonner à Pro
+                        </button>
+                        <div class="cancel-note">
+                            <i data-lucide="x-circle"></i>
+                            Vous pouvez annuler à tout moment
+                        </div>
+                        <p style="text-align:center;font-size:.78rem;color:var(--color-gray-400);margin-top:.5rem">
+                            <i data-lucide="lock" style="width:12px;height:12px;vertical-align:middle"></i>
+                            Paiement sécurisé par Stripe
+                        </p>
+                    </form>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+
+    function logout() {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) { window.location.href = '/login'; }
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const name = payload.name || payload.email || '?';
+        document.getElementById('sidebar-name').textContent = name;
+        document.getElementById('sidebar-avatar').textContent = name.charAt(0).toUpperCase();
+        document.getElementById('pro-email').value = payload.email || '';
+    } catch (_) {}
+
+    function handleCheckoutPro(e) {
+        e.preventDefault();
+        // Brendan branche ici Stripe
+        alert('Abonnement soumis — logique Stripe à brancher');
+    }
+</script>
+
+</body>
+</html>

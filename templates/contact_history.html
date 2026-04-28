@@ -350,7 +350,7 @@
                 </div>
                 <div class="form-group">
                     <label>Date fin</label>
-                    <input type="date" id="proj-end">
+                    <input type="date" id="proj-end" onchange="validateProjDates()">
                 </div>
             </div>
             <div class="form-group">
@@ -405,18 +405,6 @@
             <div class="form-group">
                 <label>Adresse</label>
                 <input type="text" id="edit-address">
-            </div>
-            <div class="form-group">
-                <label>Moyen d'acquisition</label>
-                <select id="edit-acquisition">
-                    <option value="">— Sélectionner —</option>
-                    <option value="Bouche à oreille">Bouche à oreille</option>
-                    <option value="Site web">Site web</option>
-                    <option value="Google">Google</option>
-                    <option value="Réseaux sociaux">Réseaux sociaux</option>
-                    <option value="Flyer / Affichage">Flyer / Affichage</option>
-                    <option value="Autre">Autre</option>
-                </select>
             </div>
             <div class="form-group">
                 <label>Notes</label>

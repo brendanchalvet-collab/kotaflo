@@ -56,7 +56,7 @@ function openModal() {
     document.getElementById('lead-phone').value       = '';
     document.getElementById('lead-email').value       = '';
     document.getElementById('lead-address').value     = '';
-    document.getElementById('lead-acquisition').value = '';
+
     document.getElementById('lead-notes').value       = '';
     document.getElementById('modal-overlay').classList.remove('hidden');
 }
@@ -73,7 +73,7 @@ function editCurrentLead() {
     document.getElementById('lead-phone').value       = lead.phone || '';
     document.getElementById('lead-email').value       = lead.email || '';
     document.getElementById('lead-address').value     = lead.address || '';
-    document.getElementById('lead-acquisition').value = lead.acquisition_source || '';
+
     document.getElementById('lead-notes').value       = lead.notes || '';
     document.getElementById('modal-overlay').classList.remove('hidden');
 }
@@ -92,7 +92,7 @@ async function handleSubmit(e) {
         phone:              document.getElementById('lead-phone').value,
         email:              document.getElementById('lead-email').value,
         address:            document.getElementById('lead-address').value,
-        acquisition_source: document.getElementById('lead-acquisition').value,
+
         notes:              document.getElementById('lead-notes').value,
         status:             'new',
     };

@@ -3,6 +3,62 @@
 > Journal des sessions côté Adrien (design, UI/UX, pricing, marketing, docs).
 > Après chaque session: ajouter entrée datée (format: "## 📅 DD/MM/YYYY à HH:MM")
 
+## 📅 28/04/2026 — Session complète UI/Pricing/Landing
+
+### Pages créées
+
+- **`templates/pricing.html`** — Page tarifs complète (3 plans Free/Pro/Enterprise + packs tokens à l'unité). Sidebar intégrée, mobile-first, CSS variables existantes. Lien ajouté dans les 9 sidebars de l'app.
+- **`templates/trial.html`** — Page d'essai gratuit 14 jours. Hero + 4 features incluses + formulaire (email, entreprise, CGU). Stub JS pour Brendan.
+- **`templates/checkout_packs.html`** — Achat jetons. 3 packs radio cliquables, résumé dynamique, `<div id="stripe-card-element">` vide, pré-sélection via `?pack=10|50|100`.
+- **`templates/checkout_pro.html`** — Abonnement Pro 29€/mois. Récap 6 features, form email, `<div id="stripe-card-element">` vide.
+- **`templates/landing.html`** — Landing page publique complète (sans sidebar) : hero + stats visuelles, 4 feature cards grid 2×2, tableau comparaison 5 lignes, 3 témoignages fictifs, CTA final dark, footer. Redirige vers /dashboard si token valide.
+- **`static/css/landing.css`** — CSS dédié landing (header sticky, hero, features, compare table, testimonials, CTA dark).
+
+### Routes ajoutées dans `app.py`
+
+| Route | Template | Note |
+|-------|----------|------|
+| `/` | `landing.html` | Séparée de `/login` |
+| `/pricing` | `pricing.html` | `render_template` |
+| `/trial` | `trial.html` | `render_template` |
+| `/checkout-packs` | `checkout_packs.html` | `render_template` |
+| `/checkout-pro` | `checkout_pro.html` | `render_template` |
+
+### Liens pricing.html
+
+- "Démarrer l'essai gratuit" → `/trial`
+- "Passer au Pro" → `/checkout-pro`
+- "Acheter" Pack 10/50/100 → `/checkout-packs?pack=10|50|100`
+
+### Bug fixes
+
+- **Moyen d'acquisition supprimé** : `form-group` retiré de `clients.html`, `contact_history.html`, `leads.html`. Refs JS nettoyées dans `clients.js`, `leads.js`, `contact_history.js` (reset, populate, envoi API).
+- **Validation dates projet** : `onchange="validateProjDates()"` ajouté sur `proj-end` dans `projects.html`, `dashboard.html`, `contact_history.html`. Fonction ajoutée dans les 3 JS correspondants.
+
+### Auth fix
+
+- **Diagnostic** : La DB `artisans_saas.db` avait été créée avec un ancien schéma (`firebase_uid`) alors que le code actuel utilise `password_hash`. Login bcrypt impossible.
+- **Fix** : Suppression de l'ancienne DB + réinit via `python init_db.py` → schéma correct restauré.
+- **Venv créé** : `.venv/` à la racine pour les installations pip sous Arch Linux.
+- **Dev bypass supprimé** : Routes `/dev-login` et `/dev-dashboard` créées puis retirées (non nécessaires après le fix DB).
+
+### Mise à jour stratégique des prix — Proposition 2
+
+- **Rationale** : Avant, les packs avaient un meilleur rapport €/token que Pro (0.39€ vs 0.97€). Ça poussait les users à acheter des gros packs plutôt que passer à l'abonnement.
+- **Changement** : Augmentation des packs pour les rendre moins attractifs. Pro devient le meilleur ratio.
+  - **Rationale** : Avant, les packs avaient un meilleur rapport €/token que Pro (0.39€ vs 0.97€). Ça poussait les users à acheter des gros packs plutôt que passer à l'abonnement.
+  - **Changement** : Augmentation des packs pour les rendre moins attractifs. Pro devient le meilleur ratio.
+
+  | Plan | Ancien | Nouveau | €/Token |
+  |------|--------|---------|---------|
+  | Pack 10 | 6€ | 15€ | 1.50€ |
+  | Pack 50 | 24€ | 50€ | 1.00€ |
+  | Pack 100 | 39€ | 80€ | 0.80€ |
+  | Pro | 29€ | 29€ | 0.97€ ← Meilleur |
+
+  - **Résultat attendu** : Free users achètent 1-2 petits packs (urgence), puis réalisent que Pro est plus rentable et basculent naturellement.
+  - **Modèle** : Option A confirmée (Free → Packs → Pro).
+
 ---
 
 ## 📅 18/04/2026 à 16:09

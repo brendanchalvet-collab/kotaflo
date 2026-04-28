@@ -10,33 +10,48 @@
 | Section | Lien | Description |
 | :--- | :--- | :--- |
 | **Analyse** | [📚 Veille Concurrentielle](veille_concurrentielle/INDEX.md) | Études de marché et stratégie de différenciation. |
-| **Planification** | [🗺️ Roadmap Projet](ROADMAP.md) | Phases de développement et timeline globale. |
 | **Exécution** | [📋 Backlog Priorisé](BACKLOG.md) | Liste des fonctionnalités (Must, Should, Could). |
 | **Historique** | [📝 Récapitulatifs de Session](RECAP_SESSION.md) | Journal de bord des avancées et décisions. |
-| **Technique** | [🛠️ Documentation Technique](backend/DOCS_TECH.md) | Setup, architecture, API et base de données. |
+| **Architecture** | [🏗️ Architecture](ARCHITECTURE.md) | Arborescence, patterns, BDD, lancement. |
+| **Brendan** | [🔧 TODO Brendan](BRENDAN_TODO.md) | Liste priorisée des tâches backend à implémenter. |
 
 ---
 
-## 🔥 Focus Actuel : Phase 1 — Fondations (En cours)
+## 🔥 Focus Actuel : Phase 1 — Sprint 1-2
 
-Nous sommes actuellement en train de stabiliser les bases stratégiques et techniques du SaaS.
+### ✅ Livré côté Adrien (28/04/2026)
 
-### 🎯 Tâches Prioritaires (Sprint 1-2)
-- [x] Étude de concurrence complète.
-- [ ] **Définition des plans** (Free/Pro/Enterprise) — *Adrien*
-- [ ] **Modèle de Tokens** (1 Token = 1 Devis) — *Adrien*
-- [ ] **Période d'essai** (Workflow sans CB) — *Adrien*
-- [ ] Stabilisation Auth & Audit Multi-tenant — *Brendan*
+- [x] Stratégie tarifaire — Proposition 2 (Free → Packs → Pro)
+- [x] Page `/pricing` — 3 plans + packs tokens
+- [x] Page `/trial` — formulaire essai 14j sans CB
+- [x] Page `/checkout-packs` — achat jetons (Stripe placeholder)
+- [x] Page `/checkout-pro` — abonnement Pro (Stripe placeholder)
+- [x] Page `/` — landing page publique complète
+- [x] Fix auth DB (schéma `password_hash` restauré, login fonctionnel)
+- [x] Bug fixes (champ acquisition supprimé, validation dates chantiers)
+- [x] Lien Tarifs ajouté dans toutes les sidebars (9 templates)
+
+### 🔴 En attente côté Brendan
+
+- [ ] Auth : vérifier login bcrypt end-to-end (**BLOCKER**)
+- [ ] Tokens system : table + service + `/api/tokens/balance`
+- [ ] Trial backend : `POST /api/trial/start`
+- [ ] Stripe webhooks : packs + abonnement Pro
+- [ ] Emails transactionnels : confirmation trial/achat/Pro
+- [ ] Audit multi-tenant isolation
+
+> Voir [BRENDAN_TODO.md](BRENDAN_TODO.md) pour le détail complet + ordre recommandé.
 
 ---
 
-## 🤔 Décisions & Arbitrages (À trancher)
+## 🤔 Décisions Actées
 
-| Sujet | Options | Statut |
+| Sujet | Décision | Date |
 | :--- | :--- | :--- |
-| **Pricing** | Option A (Packs de jetons) vs Option B (Seuil Freemium) | 🟡 **En attente de Brendan** |
-| **Essai** | 14 jours ou 30 jours ? | ⚪ À discuter |
-| **Offline** | Stockage SQLite local vs IndexedDB ? | ⚪ À arbitrer techniquement |
+| **Pricing** | Option A confirmée — Free → Packs → Pro | 28/04/2026 |
+| **Packs** | Proposition 2 — Packs augmentés, Pro = meilleur ratio | 28/04/2026 |
+| **Essai** | 14 jours sans CB | 28/04/2026 |
+| **Auth** | bcrypt (DB réinitialisée) — Firebase à décider par Brendan | 28/04/2026 |
 
 ---
 
@@ -50,18 +65,23 @@ Nous sommes actuellement en train de stabiliser les bases stratégiques et techn
 ### Brendan — Architecture & Backend
 - Infrastructure, sécurité et base de données.
 - Développement des APIs et logique métier complexe.
-- Déploiement et performances.
+- Intégration Stripe, emails, tokens system.
 
 ---
 
 ## 🛠️ État de la Plateforme
 
-- **Stack** : Flask (Python) + SQLite + Vanilla JS + Jinja2.
-- **Dernière release** : Migration de l'assistant de contexte (Antigravity).
-- **Setup rapide** : `pip install -r requirements.txt` && `python init_db.py`.
-- **Détails techniques** : [Voir DOCS_TECH.md](backend/DOCS_TECH.md).
+- **Stack** : Flask (Python) + SQLite + Vanilla JS + Jinja2
+- **Pages UI livrées** : 12 (dashboard, clients, devis, factures, chantiers, tâches, profil, pricing, trial, checkout×2, landing)
+- **Lancement** :
+  ```bash
+  source .venv/bin/activate
+  python init_db.py   # première fois seulement
+  python app.py       # → http://localhost:5000
+  ```
+- **Créer un compte** : aller sur `/login` → onglet "Créer un compte"
 
 ---
 
-*Dernière mise à jour : 17 Avril 2026 à 15:48*
-*Ce README est l'outil de synchronisation coeur entre Adrien et Brendan.*
+*Dernière mise à jour : 28 Avril 2026*
+*Ce README est l'outil de synchronisation cœur entre Adrien et Brendan.*

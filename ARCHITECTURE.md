@@ -24,146 +24,123 @@
 kotaflo/
 │
 ├── 🔧 Fichiers Core
-│   ├── app.py                  # Point d'entrée Flask (⚠️ RESTREINT)
-│   ├── config.py               # Configuration globale (⚠️ RESTREINT)
-│   ├── init_db.py              # Initialisation BDD (⚠️ RESTREINT)
-│   └── requirements.txt         # Dépendances Python
+│   ├── app.py                  # Point d'entrée Flask — routes HTML + blueprints API (⚠️ RESTREINT)
+│   ├── config.py               # Configuration globale — clés, BDD, SMTP (⚠️ RESTREINT)
+│   ├── init_db.py              # Initialisation + migrations BDD (⚠️ RESTREINT)
+│   └── requirements.txt        # Dépendances Python
 │
-├── 📁 backend/ (⚠️ RESTREINT)
-│   ├── routes/                 # Endpoints API HTTP uniquement (pas de logique)
-│   │   ├── auth.py             # POST /login, /register, /refresh
-│   │   ├── clients.py          # CRUD clients
-│   │   ├── quotes.py           # CRUD devis
-│   │   ├── invoices.py         # CRUD factures
-│   │   ├── jobs.py             # CRUD chantiers
-│   │   ├── tasks.py            # CRUD tâches
-│   │   ├── dashboard.py        # GET dashboard KPIs
+├── 📁 backend/ (⚠️ RESTREINT — Brendan)
+│   ├── routes/                 # Blueprints API (endpoints HTTP uniquement, pas de logique)
+│   │   ├── auth.py             # POST /api/auth/login, /register, /firebase-login
+│   │   ├── clients.py          # CRUD /api/clients
+│   │   ├── quotes.py           # CRUD /api/quotes
+│   │   ├── invoices.py         # CRUD /api/invoices
+│   │   ├── jobs.py             # CRUD /api/jobs (chantiers)
+│   │   ├── tasks.py            # CRUD /api/tasks
+│   │   ├── leads.py            # CRUD /api/leads
+│   │   ├── profile.py          # GET/PATCH /api/profile
+│   │   ├── google_auth.py      # OAuth Google /api/google
+│   │   ├── quote_access.py     # Accès public devis /api/quote-access
 │   │   └── __init__.py
 │   │
-│   ├── services/               # Logique métier (business rules)
-│   │   ├── auth_service.py     # Authentification, JWT, hash pwd
-│   │   ├── client_service.py   # Logique clients (validation, filters)
+│   ├── services/               # Logique métier
+│   │   ├── auth_service.py     # Authentification bcrypt + Firebase
+│   │   ├── client_service.py   # Logique clients
 │   │   ├── quote_service.py    # Logique devis (calculs, statuts)
-│   │   ├── invoice_service.py  # Logique factures (paiements, statuts)
+│   │   ├── invoice_service.py  # Logique factures
 │   │   ├── job_service.py      # Logique chantiers
-│   │   ├── task_service.py     # Logique tâches
-│   │   ├── token_service.py    # Système de tokens (pricing)
-│   │   ├── email_service.py    # Envoi emails transactionnels
-│   │   ├── pdf_service.py      # Génération PDF (factures, devis)
+│   │   ├── lead_service.py     # Logique leads/prospects
+│   │   ├── signature_service.py # Signature électronique
 │   │   └── __init__.py
 │   │
-│   ├── models/                 # Accès à la base de données
-│   │   ├── base.py             # Classe de base pour les modèles
-│   │   ├── user.py             # Requêtes utilisateurs (SaaS DB)
-│   │   ├── tenant.py           # Requêtes tenants (SaaS DB)
-│   │   ├── subscription.py     # Requêtes abonnements (SaaS DB)
-│   │   ├── client.py           # Requêtes clients (Client DB)
-│   │   ├── lead.py             # Requêtes prospects (Client DB)
-│   │   ├── quote.py            # Requêtes devis (Client DB)
-│   │   ├── invoice.py          # Requêtes factures (Client DB)
-│   │   ├── job.py              # Requêtes chantiers (Client DB)
-│   │   ├── task.py             # Requêtes tâches (Client DB)
-│   │   ├── appointment.py      # Requêtes RDV (Client DB)
-│   │   ├── reminder.py         # Requêtes relances auto (Client DB)
+│   ├── models/                 # Accès base de données (SQLite raw)
+│   │   ├── user_model.py       # users — SaaS DB
+│   │   ├── tenant_model.py     # tenants — SaaS DB
+│   │   ├── client_model.py     # clients — Client DB
+│   │   ├── lead_model.py       # leads — Client DB
+│   │   ├── quote_model.py      # quotes + quote_lines — Client DB
+│   │   ├── quote_token_model.py # quote_tokens — Client DB
+│   │   ├── invoice_model.py    # invoices — Client DB
+│   │   ├── job_model.py        # jobs — Client DB
+│   │   ├── task_model.py       # tasks — Client DB
+│   │   ├── interaction_model.py # interactions — Client DB
+│   │   ├── signature_model.py  # signature_events — Client DB
 │   │   └── __init__.py
 │   │
-│   └── utils/                  # Helpers & utilitaires
-│       ├── decorators.py       # @login_required, @tenant_check, etc.
-│       ├── validators.py       # Validation emails, téléphones, etc.
-│       ├── pagination.py       # Pagination & filtres
-│       ├── date_utils.py       # Gestion dates/heures
+│   └── utils/                  # Helpers
+│       ├── auth_utils.py       # JWT helpers, get_tenant_id
+│       ├── db.py               # Connexions SQLite (get_saas_conn, get_client_conn)
+│       ├── email_utils.py      # Envoi SMTP
+│       ├── firebase_utils.py   # Firebase Admin SDK (init + verify token)
+│       ├── gmail_api.py        # API Gmail OAuth
+│       ├── pdf_generator.py    # Génération PDF devis/factures (fpdf2)
 │       └── __init__.py
 │
-├── 📄 templates/ (✅ EDITABLE)
-│   ├── base.html               # Template de base (layout, nav)
-│   ├── auth/
-│   │   ├── login.html
-│   │   ├── register.html
-│   │   └── password_reset.html
-│   ├── dashboard/
-│   │   └── dashboard.html      # KPIs, vue d'ensemble
-│   ├── clients/
-│   │   ├── list.html           # Tableau clients
-│   │   ├── detail.html         # Fiche client
-│   │   ├── form.html           # Créer/éditer client
-│   │   └── leads.html          # Pipeline prospects
-│   ├── quotes/
-│   │   ├── list.html           # Tableau devis
-│   │   ├── form.html           # Créer/éditer devis
-│   │   ├── detail.html         # Détail devis
-│   │   └── signature.html      # Page signature publique
-│   ├── invoices/
-│   │   ├── list.html           # Tableau factures
-│   │   ├── form.html           # Créer/éditer facture
-│   │   └── detail.html         # Détail facture
-│   ├── jobs/
-│   │   ├── list.html           # Tableau chantiers
-│   │   ├── form.html           # Créer/éditer chantier
-│   │   └── detail.html         # Détail chantier
-│   ├── settings/
-│   │   ├── profile.html        # Profil utilisateur
-│   │   ├── subscription.html   # Abonnement & facturation
-│   │   ├── tokens.html         # Gestion tokens
-│   │   └── team.html           # Gestion équipe (Enterprise)
-│   └── errors/
-│       ├── 403.html            # Accès refusé
-│       ├── 404.html            # Page not found
-│       └── 500.html            # Erreur serveur
+├── 📄 templates/ (✅ EDITABLE — Adrien)
+│   │   ⚠️ Pas de base.html — chaque template est autonome (sidebar embarquée)
+│   │
+│   ├── landing.html            # / — Landing page publique (sans sidebar)
+│   ├── login.html              # /login — Connexion + inscription
+│   ├── dashboard.html          # /dashboard — KPIs, chantiers kanban
+│   ├── clients.html            # /clients — Liste clients + modal CRUD
+│   ├── contact_history.html    # /contacts/<id> — Fiche client + timeline
+│   ├── quotes.html             # /quotes — Liste devis
+│   ├── invoices.html           # /invoices — Liste factures
+│   ├── projects.html           # /projects — Chantiers kanban
+│   ├── project_detail.html     # /projects/<id> — Détail chantier + timeline
+│   ├── tasks.html              # /tasks — Tâches kanban
+│   ├── leads.html              # /leads — Pipeline prospects (→ redirect /clients)
+│   ├── profile.html            # /profile — Profil utilisateur
+│   ├── quote_sign.html         # /quote/<token> — Signature publique (sans auth)
+│   ├── pricing.html            # /pricing — Plans + packs tokens
+│   ├── trial.html              # /trial — Formulaire essai 14 jours
+│   ├── checkout_packs.html     # /checkout-packs — Achat jetons (Stripe placeholder)
+│   └── checkout_pro.html       # /checkout-pro — Abonnement Pro (Stripe placeholder)
 │
-├── 🎨 static/ (✅ EDITABLE)
+├── 🎨 static/ (✅ EDITABLE — Adrien)
 │   ├── css/
-│   │   ├── base.css            # Styles globaux
-│   │   ├── layout.css          # Layout & grid
-│   │   ├── components.css      # Boutons, formulaires, tableaux
-│   │   ├── responsive.css      # Media queries (mobile-first)
-│   │   ├── themes.css          # Thèmes couleurs
-│   │   └── print.css           # Styles impression PDF
+│   │   ├── base.css            # Variables CSS, reset, typographie, utilitaires
+│   │   ├── layout.css          # App shell — sidebar, topbar, content, responsive
+│   │   ├── components.css      # Boutons, cartes, tableaux, badges, modals, toasts
+│   │   └── landing.css         # Styles spécifiques landing page publique
 │   │
 │   └── js/
-│       ├── app.js              # App principale, routing
-│       ├── auth.js             # Gestion JWT, localStorage auth
-│       ├── clients.js          # Features clients (CRUD, filters)
-│       ├── quotes.js           # Features devis (formulaire, calculs)
-│       ├── invoices.js         # Features factures
-│       ├── jobs.js             # Features chantiers
-│       ├── dashboard.js        # Dashboard interactions
-│       ├── api.js              # Client API helper (fetch wrapper)
-│       ├── utils.js            # Helpers (dates, validation, etc.)
-│       └── pdf.js              # Génération PDF côté client (optional)
+│       ├── api.js              # fetch wrapper centralisé + gestion JWT 401
+│       ├── dashboard.js        # KPIs, kanban projets, modal projet
+│       ├── clients.js          # CRUD clients, modal, filtres
+│       ├── contact_history.js  # Timeline client, projets liés
+│       ├── quotes.js           # Liste devis, filtres
+│       ├── invoices.js         # Liste factures, filtres
+│       ├── projects.js         # Kanban chantiers, modal
+│       ├── project_detail.js   # Détail chantier — timeline, devis, tâches
+│       ├── project_detail_quotes.js # Gestion devis dans détail chantier
+│       ├── tasks.js            # Kanban tâches, modal
+│       ├── leads.js            # Pipeline prospects
+│       └── profile.js          # Profil — lecture/update tenant
 │
-├── 🧩 components/ (✅ EDITABLE)
-│   ├── navbar.html             # Barre navigation réutilisable
-│   ├── sidebar.html            # Sidebar réutilisable
-│   ├── form_fields.html        # Composants input, textarea, select
-│   ├── table.html              # Tableau générique avec pagination
-│   ├── card.html               # Carte générique
-│   ├── modal.html              # Modal générique
-│   ├── alert.html              # Alerte générique
-│   └── pagination.html         # Pagination réutilisable
+├── 🧩 components/
+│   └── sidebar.html            # Sidebar de référence (non chargée auto — chaque template l'embarque)
 │
-├── 🗄️ database/ (⚠️ RESTREINT)
-│   ├── schemas/
-│   │   ├── saas.sql            # Schéma BDD SaaS (users, tenants, subscriptions)
-│   │   └── client.sql          # Schéma BDD Client (clients, devis, factures, etc.)
-│   │
-│   └── migrations/ (future)
-│       └── (migrations alembic ou custom)
+├── 📊 BDD (racine — générées par init_db.py)
+│   ├── artisans_saas.db        # users, tenants, user_tenants, subscriptions
+│   └── artisans_client.db      # clients, leads, quotes, quote_lines, invoices,
+│                               # jobs, tasks, interactions, quote_tokens,
+│                               # signature_events, appointments, reminders
 │
-├── 📊 BDD (racine)
-│   ├── artisans_saas.db        # Base SaaS — tenants, users, subscriptions
-│   └── artisans_client.db      # Base Client — données métier (multi-tenant)
+├── 🐍 Environnement Python
+│   └── .venv/                  # Virtualenv (Arch Linux — `source .venv/bin/activate`)
 │
 ├── 📚 Documentation
-│   ├── README.md               # Vue d'ensemble projet & lancement
-│   ├── ARCHITECTURE.md         # ✅ CE FICHIER — Architecture détaillée
-│   ├── claude.md               # Règles Brendan (technique)
-│   ├── claude_adrien.md        # Règles Adrien (design, marketing)
-│   ├── BACKLOG.md              # Priorisation MoSCoW & sprints
-│   └── RECAP_SESSION_Adrien.md # Log des sessions
+│   ├── README.md               # Vue d'ensemble + lancement rapide
+│   ├── ARCHITECTURE.md         # ✅ CE FICHIER
+│   ├── BACKLOG.md              # Priorisation MoSCoW + sprints
+│   ├── RECAP_SESSION.md        # Log des sessions Adrien
+│   ├── DEV_NOTES.md            # Notes techniques ponctuelles
+│   ├── claude.md               # Règles assistant Brendan
+│   └── claude_adrien.md        # Règles assistant Adrien
 │
 └── 📁 Autres
-    ├── veille_concurrentielle/ # Analyse concurrence
-    └── style_preview.html      # Preview des composants CSS
+    └── veille_concurrentielle/ # Analyse 6 concurrents + stratégie tarifaire
 ```
 
 ---
@@ -497,15 +474,21 @@ def send_quote_reminder(quote_id, tenant_id):
 ## 🚀 Lancement de l'App
 
 ```bash
-# 1. Installer dépendances
+# 1. Créer et activer le virtualenv (Arch Linux)
+python3 -m venv .venv
+source .venv/bin/activate
+
+# 2. Installer dépendances
 pip install -r requirements.txt
 
-# 2. Initialiser les BDD
+# 3. Initialiser les BDD (première fois seulement)
 python init_db.py
 
-# 3. Lancer le serveur
+# 4. Lancer le serveur
 python app.py
 # → http://localhost:5000
+# → Landing : /
+# → Login   : /login  (créer un compte via le formulaire Register)
 ```
 
 ---
@@ -535,5 +518,5 @@ python app.py
 
 ---
 
-*Dernière mise à jour : 18/04/2026*
+*Dernière mise à jour : 28/04/2026*
 *Document vivant — à mettre à jour à chaque évolution architecture*

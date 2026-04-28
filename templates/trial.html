@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essai gratuit — Kotaflo</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/layout.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        .trial-page {
+            max-width: 520px;
+            margin: 2.5rem auto;
+        }
+
+        .trial-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .trial-hero__badge {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            background: var(--color-primary-lt);
+            color: var(--color-primary-dk);
+            font-size: .75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            padding: .3rem .75rem;
+            border-radius: 99px;
+            margin-bottom: 1rem;
+        }
+        .trial-hero__title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--color-sidebar);
+            letter-spacing: -.02em;
+            margin-bottom: .5rem;
+        }
+        .trial-hero__sub {
+            color: var(--color-gray-400);
+            font-size: .9rem;
+        }
+
+        .trial-card {
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 2rem;
+        }
+
+        .trial-features {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+            margin-bottom: 1.75rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--color-gray-100);
+        }
+        .trial-feature {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            font-size: .875rem;
+            color: var(--color-gray-600);
+        }
+        .trial-feature i { width: 15px; height: 15px; color: var(--color-success); flex-shrink: 0; }
+
+        .trial-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: .6rem;
+            font-size: .85rem;
+            color: var(--color-gray-600);
+            margin-bottom: 1.25rem;
+            cursor: pointer;
+        }
+        .trial-checkbox input { margin-top: 2px; accent-color: var(--color-primary); flex-shrink: 0; }
+
+        .trial-footer {
+            text-align: center;
+            margin-top: 1.25rem;
+            font-size: .8rem;
+            color: var(--color-gray-400);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: .4rem;
+        }
+        .trial-footer i { width: 13px; height: 13px; }
+    </style>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <div class="sidebar__logo-icon"><i data-lucide="zap"></i></div>
+            <span class="sidebar__logo-text">Kota<span>flo</span></span>
+        </div>
+        <nav class="sidebar__nav">
+            <a href="/dashboard"><i data-lucide="layout-dashboard" class="sidebar__icon"></i> Tableau de bord</a>
+            <a href="/clients"><i data-lucide="users" class="sidebar__icon"></i> Clients</a>
+            <a href="/projects"><i data-lucide="hard-hat" class="sidebar__icon"></i> Chantiers</a>
+            <a href="/tasks"><i data-lucide="check-square" class="sidebar__icon"></i> Tâches</a>
+            <div class="sidebar__divider"></div>
+            <div class="sidebar__section-label">Facturation</div>
+            <a href="/quotes"><i data-lucide="file-text" class="sidebar__icon"></i> Devis</a>
+            <a href="/invoices"><i data-lucide="receipt" class="sidebar__icon"></i> Factures</a>
+            <a href="/leads"><i data-lucide="bell" class="sidebar__icon"></i> Relances</a>
+            <div class="sidebar__tokens">
+                <div class="sidebar__tokens-header"><b>Jetons devis</b><span class="sidebar__tokens-count">— / —</span></div>
+                <div class="sidebar__tokens-bar"><div class="sidebar__tokens-fill"></div></div>
+                <span class="sidebar__tokens-label">Forfait Pro · recharge auto</span>
+            </div>
+            <div class="sidebar__divider"></div>
+            <a href="/pricing"><i data-lucide="credit-card" class="sidebar__icon"></i> Tarifs</a>
+            <a href="/profile"><i data-lucide="settings" class="sidebar__icon"></i> Compte</a>
+        </nav>
+        <div class="sidebar__footer">
+            <div class="sidebar__footer-avatar" id="sidebar-avatar">?</div>
+            <div class="sidebar__footer-info">
+                <span class="sidebar__footer-name" id="sidebar-name"></span>
+                <span class="sidebar__footer-meta">Artisan</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+
+        <header class="topbar">
+            <span class="topbar__title">Essai gratuit</span>
+            <span class="topbar__user" onclick="logout()">Déconnexion →</span>
+        </header>
+
+        <main class="content">
+            <div class="trial-page">
+
+                <!-- Hero -->
+                <div class="trial-hero">
+                    <div class="trial-hero__badge"><i data-lucide="gift"></i> 14 jours gratuits</div>
+                    <div class="trial-hero__title">Accès complet au forfait Pro</div>
+                    <p class="trial-hero__sub">Sans carte bancaire. Annulez en un clic.</p>
+                </div>
+
+                <!-- Card formulaire -->
+                <div class="trial-card">
+
+                    <!-- Features incluses -->
+                    <div class="trial-features">
+                        <div class="trial-feature"><i data-lucide="check"></i> 30 jetons devis / mois</div>
+                        <div class="trial-feature"><i data-lucide="check"></i> Factures illimitées</div>
+                        <div class="trial-feature"><i data-lucide="check"></i> Relances automatiques</div>
+                        <div class="trial-feature"><i data-lucide="check"></i> Gestion clients & chantiers</div>
+                    </div>
+
+                    <!-- Formulaire -->
+                    <form id="trial-form" onsubmit="handleTrial(event)">
+                        <div class="form-group">
+                            <label for="trial-email">Email professionnel</label>
+                            <input type="email" id="trial-email" placeholder="vous@exemple.fr" required autocomplete="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="trial-company">Nom de l'entreprise</label>
+                            <input type="text" id="trial-company" placeholder="Plomberie Martin" required>
+                        </div>
+                        <label class="trial-checkbox">
+                            <input type="checkbox" id="trial-cgu" required>
+                            J'accepte les <a href="#" style="color:var(--color-primary)">conditions d'utilisation</a>
+                        </label>
+                        <button type="submit" class="btn btn--primary" style="width:100%;justify-content:center;">
+                            Démarrer mon essai gratuit
+                        </button>
+                    </form>
+
+                    <div class="trial-footer">
+                        <i data-lucide="shield"></i>
+                        Nous ne facturons jamais sans confirmation
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+
+    function logout() {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) { window.location.href = '/login'; }
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const name = payload.name || payload.email || '?';
+        document.getElementById('sidebar-name').textContent = name;
+        document.getElementById('sidebar-avatar').textContent = name.charAt(0).toUpperCase();
+        document.getElementById('trial-email').value = payload.email || '';
+    } catch (_) {}
+
+    function handleTrial(e) {
+        e.preventDefault();
+        // Brendan branche ici la logique backend
+        alert('Formulaire soumis — logique Stripe à brancher');
+    }
+</script>
+
+</body>
+</html>

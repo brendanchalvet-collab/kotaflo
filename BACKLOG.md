@@ -306,12 +306,15 @@
 
 ### Sprint 1-2 (Phase 1 — En cours)
 - [x] Étude de concurrence ✅
-- [ ] **Définition des plans d'abonnement** (Adrien) — EN COURS
-  - Option A: Packs tokens (10/50/100) — 1 Devis = 1 Token
-  - Option B: Seuil Freemium (5 devis gratuits/mois) puis bascule vers Packs
-- [ ] **Période d'essai** (Adrien) — *14 jours sans CB*
-- [ ] **Modèle de tokens** (Adrien)
-- [ ] Stabilisation auth (Brendan)
+- [x] **Définition des plans d'abonnement** (Adrien) ✅ — Option A confirmée (Free → Packs → Pro)
+- [x] **Stratégie tarifaire Proposition 2** (Adrien) ✅ — Packs augmentés, Pro = meilleur ratio
+- [x] **Page pricing UI** (Adrien) ✅ — `/pricing` avec 3 plans + packs tokens
+- [x] **Période d'essai UI** (Adrien) ✅ — `/trial` formulaire 14 jours sans CB
+- [x] **Pages checkout UI** (Adrien) ✅ — `/checkout-packs` + `/checkout-pro` prêtes pour Stripe
+- [x] **Landing page** (Adrien) ✅ — `/` hero + features + comparaison + social proof + CTA
+- [x] **Fix auth DB** (Adrien) ✅ — Schéma `password_hash` restauré, login bcrypt fonctionnel
+- [ ] **Intégration Stripe** (Brendan) 🔴 — Brancher Stripe Elements sur `/trial`, `/checkout-packs`, `/checkout-pro`
+- [ ] Stabilisation auth Firebase (Brendan)
 - [ ] Audit multi-tenant (Brendan)
 - [ ] Charte graphique + Logo (Adrien)
 
@@ -346,12 +349,13 @@
 
 | Métrique | Cible | Actuel |
 |----------|-------|--------|
-| MUST HAVE implémentés | 7/7 | 0/7 |
-| SHOULD HAVE implémentés | 5/5 | 0/5 |
-| Taux complétion Sprint 1-2 | 100% | En cours |
+| MUST HAVE implémentés (UI) | 7/7 | 3/7 (dashboard, clients, devis) |
+| SHOULD HAVE implémentés | 5/5 | 3/5 (signature, chantiers, tâches) |
+| Taux complétion Sprint 1-2 | 100% | ~75% (Stripe + Firebase restants) |
 | Bugs critiques ouverts | < 5 | 0 |
+| Pages UI livrées | — | 12 (dashboard, clients, devis, factures, chantiers, tâches, profil, pricing, trial, checkout×2, landing) |
 
 ---
 
-*Dernière mise à jour : Avril 2026*
+*Dernière mise à jour : 28/04/2026*
 *Document vivant — à mettre à jour à chaque sprint*

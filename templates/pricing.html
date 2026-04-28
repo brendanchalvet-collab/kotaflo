@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarifs — Kotaflo</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/layout.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        /* ===== PRICING GRID ===== */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+        @media (max-width: 900px) { .pricing-grid { grid-template-columns: 1fr; } }
+
+        .pricing-card {
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 1.75rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            position: relative;
+        }
+        .pricing-card--pro {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 2px var(--color-primary), var(--shadow-md);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--color-primary);
+            color: var(--color-white);
+            font-size: .68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            padding: .2rem .7rem;
+            border-radius: 99px;
+            white-space: nowrap;
+        }
+
+        .pricing-card__header { text-align: center; }
+
+        .pricing-card__name {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--color-gray-400);
+        }
+
+        .pricing-card__price {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-sidebar);
+            letter-spacing: -.04em;
+            line-height: 1;
+            margin-top: .5rem;
+        }
+        .pricing-card__price sup {
+            font-size: 1.1rem;
+            font-weight: 600;
+            vertical-align: super;
+            letter-spacing: 0;
+        }
+        .pricing-card__price-sub {
+            font-size: .8rem;
+            color: var(--color-gray-400);
+            margin-top: .3rem;
+        }
+
+        .pricing-card__features {
+            display: flex;
+            flex-direction: column;
+            gap: .6rem;
+            flex: 1;
+        }
+        .pricing-feature {
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+            font-size: .88rem;
+            color: var(--color-gray-600);
+        }
+        .pricing-feature i {
+            width: 15px;
+            height: 15px;
+            flex-shrink: 0;
+            color: var(--color-success);
+        }
+        .pricing-feature--muted { color: var(--color-gray-400); }
+        .pricing-feature--muted i { color: var(--color-gray-200); }
+
+        /* ===== TRIAL BANNER ===== */
+        .trial-banner {
+            background: var(--color-primary-lt);
+            border: 1.5px solid var(--color-primary);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        .trial-banner__icon {
+            width: 40px;
+            height: 40px;
+            background: var(--color-primary);
+            border-radius: var(--radius);
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 0 var(--color-primary-dk);
+        }
+        .trial-banner__icon i { width: 20px; height: 20px; stroke: #fff; }
+        .trial-banner__text { flex: 1; }
+        .trial-banner__title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--color-sidebar);
+        }
+        .trial-banner__sub {
+            font-size: .83rem;
+            color: var(--color-gray-600);
+            margin-top: .15rem;
+        }
+
+        /* ===== TOKEN PACKS ===== */
+        .section-title {
+            font-family: var(--font-display);
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            color: var(--color-gray-400);
+            margin-bottom: 1rem;
+        }
+
+        .token-packs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        @media (max-width: 600px) { .token-packs { grid-template-columns: 1fr; } }
+
+        .token-pack {
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: .6rem;
+        }
+        .token-pack__amount {
+            font-family: var(--font-mono);
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--color-sidebar);
+            letter-spacing: -.03em;
+        }
+        .token-pack__label {
+            font-size: .78rem;
+            color: var(--color-gray-400);
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            font-weight: 700;
+        }
+        .token-pack__price {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+        .token-pack__unit {
+            font-size: .75rem;
+            color: var(--color-gray-400);
+            font-family: var(--font);
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar__logo">
+            <div class="sidebar__logo-icon"><i data-lucide="zap"></i></div>
+            <span class="sidebar__logo-text">Kota<span>flo</span></span>
+        </div>
+        <nav class="sidebar__nav">
+            <a href="/dashboard"><i data-lucide="layout-dashboard" class="sidebar__icon"></i> Tableau de bord</a>
+            <a href="/clients"><i data-lucide="users" class="sidebar__icon"></i> Clients</a>
+            <a href="/projects"><i data-lucide="hard-hat" class="sidebar__icon"></i> Chantiers</a>
+            <a href="/tasks"><i data-lucide="check-square" class="sidebar__icon"></i> Tâches</a>
+            <div class="sidebar__divider"></div>
+            <div class="sidebar__section-label">Facturation</div>
+            <a href="/quotes"><i data-lucide="file-text" class="sidebar__icon"></i> Devis</a>
+            <a href="/invoices"><i data-lucide="receipt" class="sidebar__icon"></i> Factures</a>
+            <a href="/leads"><i data-lucide="bell" class="sidebar__icon"></i> Relances</a>
+            <div class="sidebar__tokens">
+                <div class="sidebar__tokens-header"><b>Jetons devis</b><span class="sidebar__tokens-count">— / —</span></div>
+                <div class="sidebar__tokens-bar"><div class="sidebar__tokens-fill"></div></div>
+                <span class="sidebar__tokens-label">Forfait Pro · recharge auto</span>
+            </div>
+            <div class="sidebar__divider"></div>
+            <a href="/pricing" class="active"><i data-lucide="credit-card" class="sidebar__icon"></i> Tarifs</a>
+            <a href="/profile"><i data-lucide="settings" class="sidebar__icon"></i> Compte</a>
+        </nav>
+        <div class="sidebar__footer">
+            <div class="sidebar__footer-avatar" id="sidebar-avatar">?</div>
+            <div class="sidebar__footer-info">
+                <span class="sidebar__footer-name" id="sidebar-name"></span>
+                <span class="sidebar__footer-meta">Artisan</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN ===== -->
+    <div class="main">
+
+        <header class="topbar">
+            <span class="topbar__title">Tarifs</span>
+            <span class="topbar__user" onclick="logout()">Déconnexion →</span>
+        </header>
+
+        <main class="content">
+
+            <!-- Essai gratuit -->
+            <div class="trial-banner">
+                <div class="trial-banner__icon"><i data-lucide="gift"></i></div>
+                <div class="trial-banner__text">
+                    <div class="trial-banner__title">14 jours d'essai gratuit — sans carte bancaire</div>
+                    <div class="trial-banner__sub">Accès complet au forfait Pro pendant 14 jours. Aucun engagement, annulation en un clic.</div>
+                </div>
+                <a href="/trial" class="btn btn--primary">Démarrer l'essai gratuit</a>
+            </div>
+
+            <!-- Plans -->
+            <div class="page-header">
+                <h2>Choisissez votre forfait</h2>
+            </div>
+
+            <div class="pricing-grid">
+
+                <!-- FREE -->
+                <div class="pricing-card">
+                    <div class="pricing-card__header">
+                        <div class="pricing-card__name">Free</div>
+                        <div class="pricing-card__price"><sup>€</sup>0</div>
+                        <div class="pricing-card__price-sub">Pour toujours</div>
+                    </div>
+                    <div class="pricing-card__features">
+                        <div class="pricing-feature"><i data-lucide="check"></i> 5 devis / mois</div>
+                        <div class="pricing-feature"><i data-lucide="check"></i> Gestion clients</div>
+                        <div class="pricing-feature"><i data-lucide="check"></i> Suivi des chantiers</div>
+                        <div class="pricing-feature pricing-feature--muted"><i data-lucide="minus"></i> Factures</div>
+                        <div class="pricing-feature pricing-feature--muted"><i data-lucide="minus"></i> Relances automatiques</div>
+                        <div class="pricing-feature pricing-feature--muted"><i data-lucide="minus"></i> Support prioritaire</div>
+                    </div>
+                    <button class="btn btn--ghost" style="width:100%;justify-content:center;">Plan actuel</button>
+                </div>
+
+                <!-- PRO -->
+                <div class="pricing-card pricing-card--pro">
+                    <div class="pricing-badge">Recommandé</div>
+                    <div class="pricing-card__header">
+                        <div class="pricing-card__name">Pro</div>
+                        <div class="pricing-card__price"><sup>€</sup>29</div>
+                        <div class="pricing-card__price-sub">par mois · sans engagement</div>
+                    </div>
+                    <div class="pricing-card__features">
+                        <div class="pricing-feature"><i data-lucide="check"></i> 30 jetons devis / mois</div>
+                        <div class="pricing-feature"><i data-lucide="check"></i> Gestion clients</div>
+                        <div class="pricing-feature"><i data-lucide="check"></i> Suivi des chantiers</div>
+                        <div class="pricing-feature"><i data-lucide="check"></i> Factures illimitées</div>
+                        <div class="pricing-feature"><i data-lucide="check"></i> Relances automatiques</div>
+                        <div class="pricing-feature pricing-feature--muted"><i data-lucide="minus"></i> Support prioritaire</div>
+                    </div>
+                    <a href="/checkout-pro" class="btn btn--primary" style="width:100%;justify-content:center;">Passer au Pro</a>
+                </div>
+
+                <!-- ENTERPRISE -->
+                <div class="pricing-card">
+                    <div class="pricing-card__header">
+                        <div class="pricing-card__name">Enterprise</div>
+                        <div class="pricing-card__price"><sup>€</sup>99</div>
+                        <div class="pricing-card__price-sub">par mois · sur devis</div>
+                    </div>
+                    <div class="pricing-card__features">
+                        <div class="pricing-feature"><i data-lucide="check"></i> Jetons illimités</div>
+                        <div class="pricing-feature"><i data-lucide="check"></i> Gestion clients</div>
+                        <div class="pricing-feature"><i data-lucide="check"></i> Suivi des chantiers</div>
+                        <div class="pricing-feature"><i data-lucide="check"></i> Factures illimitées</div>
+                        <div class="pricing-feature"><i data-lucide="check"></i> Relances automatiques</div>
+                        <div class="pricing-feature"><i data-lucide="check"></i> Support dédié 7j/7</div>
+                    </div>
+                    <button class="btn btn--dark" style="width:100%;justify-content:center;">Nous contacter</button>
+                </div>
+
+            </div>
+
+            <!-- Token packs -->
+            <p class="section-title">Packs de jetons à l'unité — pour les utilisateurs Free</p>
+            <p style="font-size: 0.85rem; color: var(--color-gray-400); margin-bottom: 1rem;">
+                💡 Astuce : Le forfait Pro est plus rentable si vous créez plus de 30 devis/mois. Essayez-le !
+            </p>
+            <div class="token-packs">
+                <div class="token-pack">
+                    <div class="token-pack__amount">10</div>
+                    <div class="token-pack__label">Jetons</div>
+                    <div class="token-pack__price">15 € <span class="token-pack__unit">· 1,50 € / jeton</span></div>
+                    <a href="/checkout-packs?pack=10" class="btn btn--ghost btn--sm">Acheter</a>
+                </div>
+                <div class="token-pack">
+                    <div class="token-pack__amount">50</div>
+                    <div class="token-pack__label">Jetons</div>
+                    <div class="token-pack__price">50 € <span class="token-pack__unit">· 1,00 € / jeton</span></div>
+                    <a href="/checkout-packs?pack=50" class="btn btn--ghost btn--sm">Acheter</a>
+                </div>
+                <div class="token-pack">
+                    <div class="token-pack__amount">100</div>
+                    <div class="token-pack__label">Jetons</div>
+                    <div class="token-pack__price">80 € <span class="token-pack__unit">· 0,80 € / jeton</span></div>
+                    <a href="/checkout-packs?pack=100" class="btn btn--ghost btn--sm">Acheter</a>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+
+    function logout() {
+        localStorage.removeItem('access_token');
+        window.location.href = '/login';
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) { window.location.href = '/login'; }
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const name = payload.name || payload.email || '?';
+        document.getElementById('sidebar-name').textContent = name;
+        document.getElementById('sidebar-avatar').textContent = name.charAt(0).toUpperCase();
+    } catch (_) {}
+</script>
+
+</body>
+</html>

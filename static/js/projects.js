@@ -3,6 +3,15 @@
 const token = localStorage.getItem('token');
 if (!token) window.location.href = '/login';
 
+function validateProjDates() {
+    const start = document.getElementById('proj-start').value;
+    const end   = document.getElementById('proj-end').value;
+    if (end && start && end < start) {
+        alert('La date de fin doit être après la date de début');
+        document.getElementById('proj-end').value = '';
+    }
+}
+
 let allProjects = [];
 
 function showToast(msg, type = '') {

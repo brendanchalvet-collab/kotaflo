@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confidentialité — Kotaflo</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/landing.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        .priv-hero {
+            padding: 4rem 1.5rem 2.5rem;
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .priv-hero h1 { margin-bottom: .5rem; }
+        .priv-hero__date {
+            font-size: .85rem;
+            color: var(--color-gray-400);
+            margin-top: .4rem;
+        }
+
+        .priv-body {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 0 1.5rem 5rem;
+        }
+
+        .priv-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .priv-section h2 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--color-gray-800);
+            margin-bottom: .85rem;
+            padding-bottom: .4rem;
+            border-bottom: 2px solid var(--color-gray-100);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+        }
+        .priv-section h2 i { width: 16px; height: 16px; color: var(--color-primary); }
+
+        .priv-section p {
+            color: var(--color-gray-600);
+            line-height: 1.75;
+            margin-bottom: .6rem;
+        }
+
+        .priv-bullets {
+            display: flex;
+            flex-direction: column;
+            gap: .4rem;
+            margin: .5rem 0;
+        }
+        .priv-bullets li {
+            display: flex;
+            align-items: flex-start;
+            gap: .6rem;
+            color: var(--color-gray-600);
+            font-size: .93rem;
+            line-height: 1.5;
+        }
+        .priv-bullets li::before {
+            content: '';
+            flex-shrink: 0;
+            width: 5px;
+            height: 5px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            margin-top: .55rem;
+        }
+
+        .priv-highlight {
+            background: var(--color-gray-50);
+            border-left: 3px solid var(--color-primary);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: .85rem 1.1rem;
+            margin: .75rem 0;
+        }
+        .priv-highlight strong {
+            display: block;
+            font-size: .8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .07em;
+            color: var(--color-primary);
+            margin-bottom: .4rem;
+        }
+
+        .priv-contact-box {
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .priv-contact-box__icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--color-primary-lt);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .priv-contact-box__icon i { color: var(--color-primary); width: 16px; height: 16px; }
+        .priv-contact-box__text strong { display: block; font-size: .95rem; color: var(--color-gray-800); }
+        .priv-contact-box__text a { color: var(--color-primary); }
+
+        @media (max-width: 640px) {
+            .priv-hero { padding: 3rem 1rem 2rem; }
+            .priv-body { padding: 0 1rem 4rem; }
+        }
+    </style>
+</head>
+<body class="landing-body">
+
+<!-- ===== HEADER ===== -->
+<header class="lp-header">
+    <a href="/" class="lp-logo">
+        <div class="lp-logo__icon"><i data-lucide="zap"></i></div>
+        <span class="lp-logo__text">Kota<span>flo</span></span>
+    </a>
+    <nav class="lp-header__nav">
+        <a href="/pricing" class="btn btn--ghost btn--sm">Tarifs</a>
+        <a href="/login" class="btn btn--dark btn--sm">Connexion</a>
+    </nav>
+</header>
+
+<!-- ===== HERO ===== -->
+<div class="priv-hero">
+    <div class="section-label"><i data-lucide="shield"></i> Légal</div>
+    <h1>Politique de Confidentialité</h1>
+    <p class="priv-hero__date">Dernière mise à jour : 29 avril 2026</p>
+</div>
+
+<!-- ===== BODY ===== -->
+<div class="priv-body">
+
+    <!-- 1. Introduction -->
+    <div class="priv-section">
+        <h2><i data-lucide="info"></i> 1. Introduction</h2>
+        <p>
+            Kotaflo respecte votre vie privée. Cette politique explique comment nous collectons,
+            utilisons et protégeons vos données personnelles dans le cadre de l'utilisation de notre service.
+        </p>
+    </div>
+
+    <!-- 2. Qui sommes-nous -->
+    <div class="priv-section">
+        <h2><i data-lucide="building-2"></i> 2. Qui sommes-nous ?</h2>
+        <ul class="priv-bullets">
+            <li>Kotaflo — SaaS de gestion pour artisans</li>
+            <li>Email : <a href="mailto:contact@kotaflo.fr">contact@kotaflo.fr</a></li>
+            <li>Adresse : à compléter</li>
+        </ul>
+    </div>
+
+    <!-- 3. Données collectées -->
+    <div class="priv-section">
+        <h2><i data-lucide="database"></i> 3. Données Collectées</h2>
+        <ul class="priv-bullets">
+            <li>Email + mot de passe (pour votre authentification)</li>
+            <li>Infos entreprise : nom, téléphone, SIRET</li>
+            <li>Données clients : noms, adresses, téléphones</li>
+            <li>Données de facturation : montants, dates</li>
+            <li>Cookies : session JWT uniquement (technique)</li>
+        </ul>
+    </div>
+
+    <!-- 4. Utilisation -->
+    <div class="priv-section">
+        <h2><i data-lucide="settings-2"></i> 4. Comment nous les utilisons</h2>
+        <ul class="priv-bullets">
+            <li>Authentifier votre accès au service</li>
+            <li>Générer vos devis et factures</li>
+            <li>Traiter les paiements via Stripe</li>
+            <li>Envoyer les emails transactionnels (relances, confirmations)</li>
+            <li>Améliorer le service</li>
+        </ul>
+        <div class="priv-highlight">
+            <strong>Nous n'utilisons pas vos données pour :</strong>
+            Marketing sans consentement · Vente à des tiers · Profilage comportemental
+        </div>
+    </div>
+
+    <!-- 5. Sécurité -->
+    <div class="priv-section">
+        <h2><i data-lucide="lock"></i> 5. Sécurité</h2>
+        <ul class="priv-bullets">
+            <li>Chiffrement HTTPS obligatoire sur toutes les connexions</li>
+            <li>Isolation par tenant — vos données ne sont accessibles qu'à vous</li>
+            <li>Aucun accès humain à vos données (sauf bug critique signalé)</li>
+        </ul>
+    </div>
+
+    <!-- 6. Droits RGPD -->
+    <div class="priv-section">
+        <h2><i data-lucide="scale"></i> 6. Vos Droits (RGPD)</h2>
+        <p>Conformément au Règlement Général sur la Protection des Données, vous avez le droit de :</p>
+        <ul class="priv-bullets">
+            <li>Accéder à vos données personnelles</li>
+            <li>Les supprimer définitivement</li>
+            <li>Les exporter (format CSV)</li>
+            <li>Rectifier les erreurs</li>
+        </ul>
+        <p style="margin-top:.75rem">Pour exercer ces droits, contactez-nous à <a href="mailto:contact@kotaflo.fr">contact@kotaflo.fr</a>.</p>
+    </div>
+
+    <!-- 7. Cookies -->
+    <div class="priv-section">
+        <h2><i data-lucide="cookie"></i> 7. Cookies</h2>
+        <ul class="priv-bullets">
+            <li><strong>JWT session</strong> — cookie technique indispensable au fonctionnement du service</li>
+            <li><strong>Analytics</strong> — non implémenté pour l'instant</li>
+        </ul>
+    </div>
+
+    <!-- 8. Changements -->
+    <div class="priv-section">
+        <h2><i data-lucide="refresh-cw"></i> 8. Modifications</h2>
+        <p>
+            Nous pouvons mettre à jour cette politique de confidentialité à tout moment.
+            En cas de modification substantielle, vous serez notifié par email.
+        </p>
+    </div>
+
+    <!-- 9. Contact -->
+    <div class="priv-section">
+        <h2><i data-lucide="mail"></i> 9. Contact</h2>
+        <p>Des questions sur cette politique ? Contactez-nous.</p>
+        <div class="priv-contact-box">
+            <div class="priv-contact-box__icon"><i data-lucide="mail"></i></div>
+            <div class="priv-contact-box__text">
+                <strong>Équipe Kotaflo</strong>
+                <a href="mailto:contact@kotaflo.fr">contact@kotaflo.fr</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="lp-footer">
+    <span class="lp-footer__copy">© 2026 Kotaflo · Tous droits réservés</span>
+    <div class="lp-footer__links">
+        <a href="/pricing">Tarifs</a>
+        <a href="/documentation">Documentation</a>
+        <a href="/privacy">Confidentialité</a>
+        <a href="/trial">Essai gratuit</a>
+        <a href="/login">Connexion</a>
+    </div>
+</footer>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

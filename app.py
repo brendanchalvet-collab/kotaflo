@@ -118,6 +118,16 @@ def checkout_pro_page():
     return render_template("checkout_pro.html")
 
 
+@app.route("/documentation")
+def documentation_page():
+    return render_template("documentation.html")
+
+
+@app.route("/privacy")
+def privacy_page():
+    return render_template("privacy.html")
+
+
 @app.route("/profile")
 def profile_page():
     return send_from_directory("templates", "profile.html")

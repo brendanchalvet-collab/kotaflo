@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation — Kotaflo</title>
+    <link rel="stylesheet" href="/static/css/base.css">
+    <link rel="stylesheet" href="/static/css/components.css">
+    <link rel="stylesheet" href="/static/css/landing.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        .doc-hero {
+            padding: 4rem 1.5rem 3rem;
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .doc-hero h1 { margin-bottom: .75rem; }
+        .doc-hero p { color: var(--color-gray-600); font-size: 1.05rem; }
+
+        .doc-body {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 0 1.5rem 5rem;
+        }
+
+        .doc-section {
+            margin-bottom: 3rem;
+        }
+
+        .doc-section__label {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: var(--color-primary);
+            margin-bottom: .6rem;
+        }
+
+        .doc-section h2 {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-gray-800);
+            margin-bottom: 1rem;
+            padding-bottom: .5rem;
+            border-bottom: 2px solid var(--color-gray-100);
+        }
+
+        .doc-section p {
+            color: var(--color-gray-600);
+            line-height: 1.7;
+            margin-bottom: .75rem;
+        }
+
+        .doc-steps {
+            counter-reset: steps;
+            display: flex;
+            flex-direction: column;
+            gap: .6rem;
+        }
+        .doc-steps li {
+            counter-increment: steps;
+            display: flex;
+            align-items: flex-start;
+            gap: .75rem;
+            padding: .75rem 1rem;
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-100);
+            border-radius: var(--radius);
+        }
+        .doc-steps li::before {
+            content: counter(steps);
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            background: var(--color-primary);
+            color: #fff;
+            font-size: .75rem;
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .doc-steps li span { color: var(--color-gray-700); line-height: 1.5; padding-top: .05rem; }
+
+        .doc-bullets {
+            display: flex;
+            flex-direction: column;
+            gap: .5rem;
+        }
+        .doc-bullets li {
+            display: flex;
+            align-items: flex-start;
+            gap: .6rem;
+            color: var(--color-gray-600);
+            line-height: 1.5;
+        }
+        .doc-bullets li::before {
+            content: '';
+            flex-shrink: 0;
+            width: 6px;
+            height: 6px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            margin-top: .5rem;
+        }
+
+        .doc-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .doc-card {
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1rem;
+        }
+        .doc-card__title {
+            font-weight: 700;
+            font-size: .9rem;
+            color: var(--color-gray-800);
+            margin-bottom: .4rem;
+        }
+        .doc-card__sub {
+            font-size: .82rem;
+            color: var(--color-gray-400);
+            margin-bottom: .75rem;
+        }
+        .doc-card__price {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+        .doc-card__price span {
+            font-size: .8rem;
+            font-weight: 500;
+            color: var(--color-gray-400);
+        }
+        .doc-card ul { margin-top: .6rem; }
+        .doc-card--pro {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 2px var(--color-primary-lt);
+        }
+
+        .doc-faq { display: flex; flex-direction: column; gap: 1rem; }
+        .doc-faq__item {
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-100);
+            border-radius: var(--radius);
+            padding: 1rem 1.25rem;
+        }
+        .doc-faq__q {
+            font-weight: 600;
+            color: var(--color-gray-800);
+            margin-bottom: .35rem;
+        }
+        .doc-faq__a { color: var(--color-gray-600); font-size: .92rem; }
+
+        .doc-toc {
+            position: sticky;
+            top: 1rem;
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-100);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-bottom: 2.5rem;
+        }
+        .doc-toc h3 { font-size: .85rem; color: var(--color-gray-400); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .75rem; }
+        .doc-toc a {
+            display: block;
+            font-size: .88rem;
+            color: var(--color-gray-600);
+            padding: .2rem 0;
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+        .doc-toc a:hover { color: var(--color-primary); }
+
+        @media (max-width: 640px) {
+            .doc-hero { padding: 3rem 1rem 2rem; }
+            .doc-body { padding: 0 1rem 4rem; }
+            .doc-cards { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="landing-body">
+
+<!-- ===== HEADER ===== -->
+<header class="lp-header">
+    <a href="/" class="lp-logo">
+        <div class="lp-logo__icon"><i data-lucide="zap"></i></div>
+        <span class="lp-logo__text">Kota<span>flo</span></span>
+    </a>
+    <nav class="lp-header__nav">
+        <a href="/pricing" class="btn btn--ghost btn--sm">Tarifs</a>
+        <a href="/login" class="btn btn--dark btn--sm">Connexion</a>
+    </nav>
+</header>
+
+<!-- ===== HERO ===== -->
+<div class="doc-hero">
+    <div class="section-label"><i data-lucide="book-open"></i> Guide d'utilisation</div>
+    <h1>Bienvenue dans Kotaflo</h1>
+    <p>Cet outil est pensé pour être simple. Voici comment ça marche.</p>
+</div>
+
+<!-- ===== BODY ===== -->
+<div class="doc-body">
+
+    <!-- Table des matières -->
+    <div class="doc-toc">
+        <h3>Sommaire</h3>
+        <a href="#demarrer">1. Démarrer rapidement (5 min)</a>
+        <a href="#jetons">2. Jetons &amp; Abonnements</a>
+        <a href="#hors-ligne">3. Mode Hors-ligne</a>
+        <a href="#clients">4. Gestion Clients</a>
+        <a href="#devis">5. Créer un Devis</a>
+        <a href="#signature">6. Signature Électronique</a>
+        <a href="#facturation">7. Facturation</a>
+        <a href="#relances">8. Relances Automatiques</a>
+        <a href="#chantiers">9. Chantiers</a>
+        <a href="#faq">10. FAQ Rapide</a>
+    </div>
+
+    <!-- 1. Démarrer rapidement -->
+    <div class="doc-section" id="demarrer">
+        <div class="doc-section__label"><i data-lucide="zap"></i> Démarrage</div>
+        <h2>Démarrer Rapidement — 5 min</h2>
+        <ul class="doc-steps">
+            <li><span>Se connecter ou créer votre compte</span></li>
+            <li><span>Créer votre 1er client</span></li>
+            <li><span>Créer un devis en 2 minutes</span></li>
+            <li><span>Envoyer &amp; signer électroniquement</span></li>
+            <li><span>Facturer automatiquement</span></li>
+        </ul>
+    </div>
+
+    <!-- 2. Jetons -->
+    <div class="doc-section" id="jetons">
+        <div class="doc-section__label"><i data-lucide="coins"></i> Abonnement</div>
+        <h2>Jetons &amp; Abonnements</h2>
+        <p><strong>1 jeton = 1 devis envoyé.</strong> Les jetons vous permettent de contrôler votre usage sans surprise.</p>
+        <div class="doc-cards">
+            <div class="doc-card">
+                <div class="doc-card__title">Free</div>
+                <div class="doc-card__sub">Pour commencer</div>
+                <div class="doc-card__price">0€ <span>/mois</span></div>
+                <ul class="doc-bullets" style="margin-top:.75rem">
+                    <li>5 devis/mois gratuits</li>
+                    <li>Gestion clients illimitée</li>
+                </ul>
+            </div>
+            <div class="doc-card doc-card--pro">
+                <div class="doc-card__title">Pro</div>
+                <div class="doc-card__sub">Meilleur rapport qualité/prix</div>
+                <div class="doc-card__price">29€ <span>/mois</span></div>
+                <ul class="doc-bullets" style="margin-top:.75rem">
+                    <li>30 jetons/mois</li>
+                    <li>Toutes les fonctionnalités</li>
+                </ul>
+            </div>
+            <div class="doc-card">
+                <div class="doc-card__title">Packs à l'unité</div>
+                <div class="doc-card__sub">Pour les Free qui dépassent</div>
+                <div class="doc-card__price">À la carte</div>
+                <ul class="doc-bullets" style="margin-top:.75rem">
+                    <li>Pack 10 jetons</li>
+                    <li>Pack 50 jetons</li>
+                    <li>Pack 100 jetons</li>
+                </ul>
+            </div>
+        </div>
+        <p style="margin-top:1rem">En Free, achetez des packs si besoin urgent — ou passez directement au Pro pour le meilleur rapport.</p>
+    </div>
+
+    <!-- 3. Hors-ligne -->
+    <div class="doc-section" id="hors-ligne">
+        <div class="doc-section__label"><i data-lucide="wifi-off"></i> Hors-ligne</div>
+        <h2>Mode Hors-ligne</h2>
+        <p>Kotaflo fonctionne sans internet. Travaillez sur le terrain sans interruption.</p>
+        <ul class="doc-bullets">
+            <li>Votre data est sauvegardée localement sur votre appareil</li>
+            <li>Tout se synchronise automatiquement quand vous êtes connecté</li>
+            <li>Zéro perte de données</li>
+        </ul>
+    </div>
+
+    <!-- 4. Clients -->
+    <div class="doc-section" id="clients">
+        <div class="doc-section__label"><i data-lucide="users"></i> Clients</div>
+        <h2>Gestion Clients</h2>
+        <ul class="doc-bullets">
+            <li>Créer un client avec nom, téléphone, email et adresse</li>
+            <li>Associer un type : client ou prospect</li>
+            <li>Suivre l'historique complet : devis, factures, appels</li>
+        </ul>
+    </div>
+
+    <!-- 5. Devis -->
+    <div class="doc-section" id="devis">
+        <div class="doc-section__label"><i data-lucide="file-text"></i> Devis</div>
+        <h2>Créer un Devis</h2>
+        <ul class="doc-steps">
+            <li><span>Sélectionner le client</span></li>
+            <li><span>Ajouter les lignes (désignation, quantité, prix)</span></li>
+            <li><span>Le montant HT/TTC est calculé automatiquement</span></li>
+            <li><span>Envoyer ou sauvegarder en brouillon</span></li>
+            <li><span>Le client reçoit un lien de signature par email</span></li>
+        </ul>
+    </div>
+
+    <!-- 6. Signature -->
+    <div class="doc-section" id="signature">
+        <div class="doc-section__label"><i data-lucide="pen-line"></i> Signature</div>
+        <h2>Signature Électronique</h2>
+        <ul class="doc-bullets">
+            <li>Le client reçoit un email avec un lien public unique</li>
+            <li>Il clique pour consulter et signer le devis</li>
+            <li>Un PDF signé est généré automatiquement</li>
+            <li>L'historique de signature est conservé</li>
+        </ul>
+    </div>
+
+    <!-- 7. Facturation -->
+    <div class="doc-section" id="facturation">
+        <div class="doc-section__label"><i data-lucide="receipt"></i> Facturation</div>
+        <h2>Facturation</h2>
+        <ul class="doc-bullets">
+            <li>Convertir un devis en facture en 1 clic</li>
+            <li>Le montant est pré-rempli automatiquement</li>
+            <li>Suivi du statut : en attente / payée / en retard</li>
+            <li>Export PDF disponible</li>
+        </ul>
+    </div>
+
+    <!-- 8. Relances -->
+    <div class="doc-section" id="relances">
+        <div class="doc-section__label"><i data-lucide="bell"></i> Relances</div>
+        <h2>Relances Automatiques</h2>
+        <p>Ne perdez plus de temps à relancer manuellement les factures impayées.</p>
+        <ul class="doc-bullets">
+            <li>Relances automatiques des factures impayées</li>
+            <li>Délais configurables : J+3, J+7, J+15</li>
+            <li>Historique des emails envoyés disponible</li>
+        </ul>
+    </div>
+
+    <!-- 9. Chantiers -->
+    <div class="doc-section" id="chantiers">
+        <div class="doc-section__label"><i data-lucide="hard-hat"></i> Chantiers</div>
+        <h2>Chantiers</h2>
+        <ul class="doc-bullets">
+            <li>Créer un projet / chantier</li>
+            <li>Lier clients, devis et factures au chantier</li>
+            <li>Timeline des interventions</li>
+            <li>Suivre l'avancement en temps réel</li>
+        </ul>
+    </div>
+
+    <!-- 10. FAQ -->
+    <div class="doc-section" id="faq">
+        <div class="doc-section__label"><i data-lucide="help-circle"></i> FAQ</div>
+        <h2>FAQ Rapide</h2>
+        <div class="doc-faq">
+            <div class="doc-faq__item">
+                <div class="doc-faq__q">Comment annuler mon abonnement ?</div>
+                <div class="doc-faq__a">Allez dans Compte → Abonnement → Annuler. Aucun frais supplémentaire.</div>
+            </div>
+            <div class="doc-faq__item">
+                <div class="doc-faq__q">Puis-je récupérer mes données ?</div>
+                <div class="doc-faq__a">Oui, un export CSV est disponible depuis votre compte.</div>
+            </div>
+            <div class="doc-faq__item">
+                <div class="doc-faq__q">Ça marche sans internet ?</div>
+                <div class="doc-faq__a">Oui. Stockage local sur votre appareil + synchronisation automatique à la reconnexion.</div>
+            </div>
+            <div class="doc-faq__item">
+                <div class="doc-faq__q">Comment passer du Free au Pro ?</div>
+                <div class="doc-faq__a">Cliquez "Passer au Pro" depuis la page <a href="/pricing">Tarifs</a>.</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="lp-footer">
+    <span class="lp-footer__copy">© 2026 Kotaflo · Tous droits réservés</span>
+    <div class="lp-footer__links">
+        <a href="/pricing">Tarifs</a>
+        <a href="/documentation">Documentation</a>
+        <a href="/privacy">Confidentialité</a>
+        <a href="/trial">Essai gratuit</a>
+        <a href="/login">Connexion</a>
+    </div>
+</footer>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>
